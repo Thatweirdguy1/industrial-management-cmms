@@ -32,7 +32,7 @@ export default function TechnicianDashboard() {
   const [supervisorName, setSupervisorName] = useState(""); 
   const [technicianName, setTechnicianName] = useState("");
   const [operatorName, setOperatorName] = useState(""); 
-  const [resolutionNotes, setResolutionNotes] = useState(""); // NEW: Resolution Notes
+  const [resolutionNotes, setResolutionNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [signOffPhotoFiles, setSignOffPhotoFiles] = useState<File[]>([]);
@@ -199,7 +199,7 @@ export default function TechnicianDashboard() {
           supervisor_name: supervisorName, 
           technician_name: technicianName, 
           operator_name: operatorName,
-          resolution_notes: resolutionNotes // Passed explicitly 
+          resolution_notes: resolutionNotes 
         })
       });
       if (!res.ok) throw new Error("Failed");
@@ -296,7 +296,6 @@ export default function TechnicianDashboard() {
     }
   };
 
-  // NEW: Splitting logic so breakdowns are pinned to top
   const breakdownOrders = workOrders.filter(o => o.schedule_type === 'breakdown_report');
   const pmOrders = workOrders.filter(o => o.schedule_type !== 'breakdown_report');
 
@@ -355,7 +354,7 @@ export default function TechnicianDashboard() {
 
         {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-4 rounded-xl">{error}</div>}
         
-        {/* NEW UI: Active Breakdowns Section */}
+        {/* Active Breakdowns Section */}
         {breakdownOrders.length > 0 && (
           <div>
             <h2 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
@@ -403,7 +402,7 @@ export default function TechnicianDashboard() {
           </div>
         )}
 
-        {/* NEW UI: Preventive Maintenance Section */}
+        {/* Preventive Maintenance Section */}
         {pmOrders.length > 0 && (
           <div className="mt-8">
             <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
@@ -449,7 +448,6 @@ export default function TechnicianDashboard() {
           </div>
         )}
 
-        {/* Empty State */}
         {workOrders.length === 0 && !error && (
           <div className="col-span-full border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
             <span className="text-4xl mb-3 opacity-50">✨</span>
@@ -483,9 +481,8 @@ export default function TechnicianDashboard() {
                 <input type="text" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
               </div>
 
-              {/* NEW: Resolution Notes Field */}
               <div>
-                <label className="block text-zinc-400 text-xs mb-2">Resolution Notes / समस्या का समाधान (Optional)</label>
+                <label className="block text-zinc-400 text-xs mb-2">Resolution Notes / समस्या का समाधान</label>
                 <div className="flex gap-2">
                   <textarea 
                     rows={2} 
@@ -520,8 +517,6 @@ export default function TechnicianDashboard() {
           </div>
         </div>
       )}
-
-      {/* --- ALL OTHER MODALS (PM, REPORT FAULT, INSPECTION) REMAIN IDENTICAL --- */}
 
       {/* PM MODAL */}
       {showPMModal && (
