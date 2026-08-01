@@ -18,10 +18,8 @@ except ImportError:
     def start_scheduler(app): pass
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'maintenance.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -49,7 +47,7 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx'}
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# --- DATE PARSING HELPER TO PREVENT 500 ERRORS ---
+# --- DATE PARSING HELPER ---
 def parse_sqlite_date(date_str):
     if not date_str:
         return None
@@ -113,6 +111,7 @@ def save_and_upload_file(file_obj, prefix="file"):
         file_obj.save(filepath)
         return filename
 
+# --- TELEGRAM CONFIGURATION ---
 def send_telegram_alert(message):
     BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
     GROUP_CHAT_ID = '-5182937655' 
@@ -131,12 +130,10 @@ def to_utc_iso(dt):
     return iso
 
 # --- ROUTES ---
-
 @app.route('/static/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# --- PREDICTIVE RISK ENGINE: GET MACHINES ---
 @app.route('/api/machines', methods=['GET'])
 def get_machines():
     try:
@@ -150,14 +147,12 @@ def get_machines():
         for m in machines:
             m_id = m['id']
             
-            # 1. Calculate historical MTBF for this specific machine
             breakdowns = conn.execute("SELECT * FROM work_orders WHERE machine_id=? AND schedule_type='breakdown_report' AND status='completed'", (m_id,)).fetchall()
             b_count = len(breakdowns)
             
             assumed_op_hours = 720
             mtbf = (assumed_op_hours * 6) / b_count if b_count > 0 else 5000 
             
-            # 2. Calculate runtime duration using new parsing function
             last_fix_record = conn.execute("SELECT completed_at FROM work_orders WHERE machine_id=? AND status='completed' ORDER BY completed_at DESC LIMIT 1", (m_id,)).fetchone()
             
             hours_since_last_fix = 0
@@ -166,7 +161,6 @@ def get_machines():
                 if last_fix_date:
                     hours_since_last_fix = (now - last_fix_date).total_seconds() / 3600
             
-            # 3. Calculate PM Overdue Metrics Safely
             pm_penalty = 0
             if m['next_maintenance']:
                 try:
@@ -178,13 +172,12 @@ def get_machines():
                 except Exception:
                     pass
             
-            # 4. The Risk Algorithm (Base Risk + PM Penalty)
             base_risk = (hours_since_last_fix / mtbf) * 100
             total_risk = min(round(base_risk + pm_penalty, 1), 99.9)
             
             if m['status'] == 'breakdown':
                 total_risk = 100.0
-
+                
             output.append({
                 "id": m['id'],
                 "name": m['name'],
@@ -221,7 +214,6 @@ def get_machine_history(machine_id):
                     photo_urls.append(f"http://127.0.0.1:5000/static/uploads/{p.storage_url}")
             else:
                 photo_urls.append(f"http://127.0.0.1:5000/static/uploads/{p.storage_url}")
-
         output.append({
             "id": order.id,
             "schedule_type": order.schedule_type,
@@ -243,9 +235,14 @@ def get_pending_work_orders():
     output = []
     for order in pending_orders:
         machine = Machine.query.get(order.machine_id)
+        # Add a safely padded ID
+        formatted_id = f"{machine.id:03d}" if machine else "000"
+        
         output.append({
             "id": order.id,
-            "machine_name": f"{machine.name} ({machine.asset_tag})" if machine else "Unknown Machine",
+            "machine_raw_name": machine.name if machine else "Unknown Machine",
+            "machine_formatted_id": formatted_id,
+            "asset_tag": machine.asset_tag if machine else "Unknown Tag",
             "schedule_type": order.schedule_type,
             "task_category": order.task_category,
             "description": order.description, 
@@ -286,6 +283,8 @@ def report_breakdown():
             db.session.add(new_photo)
             db.session.commit()
     
+    # 3 Digit Padded ID formatting
+    formatted_id = f"{machine.id:03d}" if machine else "000"
     machine_name = machine.name if machine else "Unknown Machine"
     asset_tag = machine.asset_tag if machine else "Unknown Tag"
     
@@ -293,7 +292,7 @@ def report_breakdown():
         f"🚨 *URGENT BREAKDOWN / अति आवश्यक खराबी* 🚨\n\n"
         f"🎫 *Task ID:* {new_order.id}\n"
         f"🏭 *Plant / प्लांट:* Dadri Main Floor\n"
-        f"⚙️ *Machine / मशीन:* {machine_name} ({asset_tag})\n"
+        f"⚙️ *Machine / मशीन:* *[{formatted_id}]* {machine_name} ({asset_tag})\n"
         f"🔧 *Category / श्रेणी:* {task_category.upper()}\n"
         f"📝 *Notes / विवरण:* {description}\n\n"
         f"👉 _Please check the dashboard to assign a technician._"
@@ -344,9 +343,16 @@ def complete_work_order(order_id):
     if order.status == 'completed':
         return jsonify({"error": "Already completed"}), 400
         
-    order.supervisor_name = request.json.get('supervisor_name')
-    order.technician_name = request.json.get('technician_name')
-    order.operator_name = request.json.get('operator_name')
+    data = request.json or {}
+    order.supervisor_name = data.get('supervisor_name')
+    order.technician_name = data.get('technician_name')
+    order.operator_name = data.get('operator_name')
+    
+    # Append the resolution notes into the description
+    resolution_notes = data.get('resolution_notes', '')
+    if resolution_notes:
+        order.description = f"{order.description}\n\n[Resolution]: {resolution_notes}"
+
     now_utc = datetime.now(timezone.utc)
     order.completed_at = now_utc
     order.status = 'completed'
@@ -362,12 +368,14 @@ def complete_work_order(order_id):
     hours_taken = round(time_delta.total_seconds() / 3600, 2)
     db.session.commit()
     
+    formatted_id = f"{machine.id:03d}" if machine else "000"
     tech_name = order.technician_name or "Not Specified"
     
     completion_message = (
         f"✅ *MACHINE REPAIRED / मशीन की मरम्मत हो गई* ✅\n\n"
-        f"⚙️ *Machine / मशीन:* {machine.name if machine else 'Unknown'} ({machine.asset_tag if machine else 'N/A'})\n"
+        f"⚙️ *Machine / मशीन:* *[{formatted_id}]* {machine.name if machine else 'Unknown'} ({machine.asset_tag if machine else 'N/A'})\n"
         f"👨‍🔧 *Repaired By / तकनीशियन:* {tech_name}\n"
+        f"🛠 *Fix Details / विवरण:* {resolution_notes}\n"
         f"⏱️ *Total Downtime / कुल डाउनटाइम:* {hours_taken} Hrs\n"
         f"Status is now OPERATIONAL. / मशीन अब चालू है।"
     )
@@ -392,7 +400,6 @@ def upload_report():
         saved_filename = save_and_upload_file(report_file, prefix=f"rep_{machine_id}")
         if saved_filename:
             file_url = f"/static/uploads/{saved_filename}"
-
     try:
         conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
         conn.execute(
@@ -485,7 +492,6 @@ def update_spare_part(part_id):
         print(f"Update Part Error: {e}")
         return jsonify({'error': 'Failed to update spare part'}), 500
 
-# --- ADVANCED ANALYTICS ENGINE (PER-MACHINE METRICS) ---
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
     try:

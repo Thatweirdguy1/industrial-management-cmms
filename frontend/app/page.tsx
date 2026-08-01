@@ -1,11 +1,12 @@
 "use client";
-
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
 interface WorkOrder {
   id: number;
-  machine_name: string;
+  machine_formatted_id?: string;
+  machine_raw_name?: string;
+  asset_tag?: string;
   schedule_type: string;
   task_category: string;
   description?: string; 
@@ -31,12 +32,13 @@ export default function TechnicianDashboard() {
   const [supervisorName, setSupervisorName] = useState(""); 
   const [technicianName, setTechnicianName] = useState("");
   const [operatorName, setOperatorName] = useState(""); 
+  const [resolutionNotes, setResolutionNotes] = useState(""); // NEW: Resolution Notes
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [signOffPhotoFiles, setSignOffPhotoFiles] = useState<File[]>([]);
   const [pmPhotoFiles, setPmPhotoFiles] = useState<File[]>([]);
   const [reportPhotoFiles, setReportPhotoFiles] = useState<File[]>([]);
-
+  
   const [showPMModal, setShowPMModal] = useState(false);
   const [pmMachineId, setPmMachineId] = useState("");
   const [pmCategory, setPmCategory] = useState("mechanical");
@@ -44,25 +46,25 @@ export default function TechnicianDashboard() {
   const [pmSupervisorName, setPmSupervisorName] = useState("");
   const [pmTechnicianName, setPmTechnicianName] = useState("");
   const [pmOperatorName, setPmOperatorName] = useState("");
-
+  
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportMachineId, setReportMachineId] = useState(""); 
   const [reportCategory, setReportCategory] = useState("mechanical");
   const [reportDescription, setReportDescription] = useState("");
-
+  
   const [showInspectionModal, setShowInspectionModal] = useState(false);
   const [inspectionMachineId, setInspectionMachineId] = useState("");
   const [inspectionEngineerType, setInspectionEngineerType] = useState("internal");
   const [inspectionEngineerName, setInspectionEngineerName] = useState("");
   const [inspectionNotes, setInspectionNotes] = useState("");
   const [inspectionFile, setInspectionFile] = useState<File | null>(null);
-
+  
   const [isListening, setIsListening] = useState(false);
-  const [listeningField, setListeningField] = useState<"pm" | "report" | "inspection" | null>(null);
+  const [listeningField, setListeningField] = useState<"pm" | "report" | "inspection" | "resolve" | null>(null);
   const [transcript, setTranscript] = useState("");
   const [browserSupportsSpeech, setBrowserSupportsSpeech] = useState(false);
+  
   const recognitionRef = useRef<any>(null);
-
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://168.144.81.103:5000";
 
   useEffect(() => {
@@ -72,13 +74,11 @@ export default function TechnicianDashboard() {
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = false;
       recognitionRef.current.lang = 'hi-IN'; 
-
       recognitionRef.current.onresult = (event: any) => {
         const current = event.resultIndex;
         const newTranscript = event.results[current][0].transcript;
         setTranscript(newTranscript);
       };
-
       recognitionRef.current.onerror = () => setIsListening(false);
       recognitionRef.current.onend = () => setIsListening(false);
       setBrowserSupportsSpeech(true);
@@ -90,11 +90,12 @@ export default function TechnicianDashboard() {
       if (listeningField === 'pm') setPmDescription(p => p + (p ? " " : "") + transcript);
       else if (listeningField === 'report') setReportDescription(p => p + (p ? " " : "") + transcript);
       else if (listeningField === 'inspection') setInspectionNotes(p => p + (p ? " " : "") + transcript);
+      else if (listeningField === 'resolve') setResolutionNotes(p => p + (p ? " " : "") + transcript);
       setTranscript(""); 
     }
   }, [transcript, listeningField]);
 
-  const toggleListen = (field: "pm" | "report" | "inspection") => {
+  const toggleListen = (field: "pm" | "report" | "inspection" | "resolve") => {
     if (isListening && listeningField === field) {
       recognitionRef.current?.stop();
       setIsListening(false);
@@ -124,10 +125,13 @@ export default function TechnicianDashboard() {
         fetch(`${baseUrl}/api/machines`)
       ]);
       if (!ordersRes.ok || !machinesRes.ok) throw new Error("Failed to fetch data");
+      
       const ordersData = await ordersRes.json();
       const machinesData = await machinesRes.json();
+      
       setWorkOrders(ordersData);
       setMachines(machinesData);
+      
       if (machinesData.length > 0) {
         setReportMachineId(machinesData[0].id.toString());
         setPmMachineId(machinesData[0].id.toString());
@@ -147,14 +151,11 @@ export default function TechnicianDashboard() {
     stopListening();
     setIsSubmitting(true);
     try {
-      // --- SAFETY CHECK ---
       if (!pmMachineId || pmMachineId === "undefined" || pmMachineId === "") {
         alert("⚠️ Please select a valid machine from the dropdown first!");
         setIsSubmitting(false);
         return;
       }
-      // --------------------
-
       const formData = new FormData();
       formData.append("machine_id", pmMachineId);
       formData.append("task_category", pmCategory);
@@ -163,17 +164,15 @@ export default function TechnicianDashboard() {
       formData.append("technician_name", pmTechnicianName);
       formData.append("operator_name", pmOperatorName);
       
-      pmPhotoFiles.forEach((file) => {
-        formData.append("photos", file);
-      });
-
+      pmPhotoFiles.forEach((file) => formData.append("photos", file));
+      
       const res = await fetch(`${baseUrl}/api/work-orders/preventive`, {
         method: "POST",
         body: formData
       });
       
       if (!res.ok) throw new Error("Server error");
-
+      
       setShowPMModal(false);
       setPmDescription("");
       setPmSupervisorName("");
@@ -196,23 +195,27 @@ export default function TechnicianDashboard() {
       const res = await fetch(`${baseUrl}/api/work-orders/${selectedOrder.id}/complete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ supervisor_name: supervisorName, technician_name: technicianName, operator_name: operatorName })
+        body: JSON.stringify({ 
+          supervisor_name: supervisorName, 
+          technician_name: technicianName, 
+          operator_name: operatorName,
+          resolution_notes: resolutionNotes // Passed explicitly 
+        })
       });
       if (!res.ok) throw new Error("Failed");
-
+      
       if (signOffPhotoFiles.length > 0) {
         const formData = new FormData();
-        signOffPhotoFiles.forEach((file) => {
-          formData.append("photos", file);
-        });
+        signOffPhotoFiles.forEach((file) => formData.append("photos", file));
         await fetch(`${baseUrl}/api/work-orders/${selectedOrder.id}/photos`, { method: "POST", body: formData });
       }
-
+      
       alert("✅ Work order signed off successfully!");
       setSelectedOrder(null); 
       setSupervisorName("");
       setTechnicianName("");
       setOperatorName("");
+      setResolutionNotes("");
       setSignOffPhotoFiles([]);
       fetchData(); 
     } catch (err) {
@@ -227,23 +230,17 @@ export default function TechnicianDashboard() {
     stopListening();
     setIsSubmitting(true);
     try {
-      // --- SAFETY CHECK ---
       if (!reportMachineId || reportMachineId === "undefined" || reportMachineId === "") {
         alert("⚠️ Please select a valid machine from the dropdown first!");
         setIsSubmitting(false);
         return;
       }
-      // --------------------
-
       const formData = new FormData();
       formData.append("machine_id", reportMachineId);
       formData.append("task_category", reportCategory);
       formData.append("description", reportDescription);
-
-      reportPhotoFiles.forEach((file) => {
-        formData.append("photos", file);
-      });
-
+      reportPhotoFiles.forEach((file) => formData.append("photos", file));
+      
       const res = await fetch(`${baseUrl}/api/work-orders/report`, {
         method: "POST",
         body: formData
@@ -268,21 +265,18 @@ export default function TechnicianDashboard() {
     stopListening();
     setIsSubmitting(true);
     try {
-      // --- SAFETY CHECK ---
       if (!inspectionMachineId || inspectionMachineId === "undefined" || inspectionMachineId === "") {
         alert("⚠️ Please select a valid machine from the dropdown first!");
         setIsSubmitting(false);
         return;
       }
-      // --------------------
-
       const formData = new FormData();
       formData.append("machine_id", inspectionMachineId);
       formData.append("engineer_type", inspectionEngineerType);
       formData.append("engineer_name", inspectionEngineerName);
       formData.append("notes", inspectionNotes);
       if (inspectionFile) formData.append("file", inspectionFile);
-
+      
       const res = await fetch(`${baseUrl}/api/reports`, {
         method: "POST",
         body: formData
@@ -301,6 +295,10 @@ export default function TechnicianDashboard() {
       setIsSubmitting(false);
     }
   };
+
+  // NEW: Splitting logic so breakdowns are pinned to top
+  const breakdownOrders = workOrders.filter(o => o.schedule_type === 'breakdown_report');
+  const pmOrders = workOrders.filter(o => o.schedule_type !== 'breakdown_report');
 
   if (loading) return <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4"><p className="text-sm text-zinc-400 font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
 
@@ -323,7 +321,6 @@ export default function TechnicianDashboard() {
                   <div className="text-[10px] text-zinc-400">रजिस्ट्री देखें</div>
                 </div>
               </Link>
-
               <Link href="/analytics" className="bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">📊</span>
                 <div className="text-left">
@@ -331,7 +328,6 @@ export default function TechnicianDashboard() {
                   <div className="text-[10px] text-zinc-400">एनालिटिक्स</div>
                 </div>
               </Link>
-
               <button onClick={() => setShowPMModal(true)} className="bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/20 font-medium px-5 py-3 rounded-xl transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🔧</span>
                 <div className="text-left">
@@ -358,47 +354,174 @@ export default function TechnicianDashboard() {
         </header>
 
         {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-4 rounded-xl">{error}</div>}
+        
+        {/* NEW UI: Active Breakdowns Section */}
+        {breakdownOrders.length > 0 && (
+          <div>
+            <h2 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
+              🚨 Active Breakdowns <span className="bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded-full">{breakdownOrders.length}</span>
+            </h2>
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {breakdownOrders.map((order) => (
+                <div key={order.id} className="bg-red-950/20 border border-red-900/50 rounded-2xl p-5 flex flex-col hover:bg-red-900/30 transition-colors relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-red-500 animate-pulse"></div>
+                  
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border bg-red-500/10 text-red-400 border-red-500/20">
+                      URGENT
+                    </span>
+                    <span className="text-zinc-500 text-xs font-mono">Task #{order.id}</span>
+                  </div>
+                  
+                  <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+                    <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-sm">{order.machine_formatted_id}</span> 
+                    {order.machine_raw_name}
+                  </h2>
+                  <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
+                  
+                  <div className="bg-zinc-950/50 rounded-xl p-3 mb-4 border border-zinc-800/50 flex-grow">
+                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Issue Reported</p>
+                    <p className="text-zinc-300 text-xs leading-relaxed">{order.description}</p>
+                  </div>
+                  
+                  <div className="mb-5 flex items-center gap-2">
+                    <div className="w-1 h-8 rounded-full bg-zinc-700"></div>
+                    <div>
+                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Time Logged</p>
+                      <p className="text-zinc-300 text-xs">
+                        {new Date(order.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button onClick={() => setSelectedOrder(order)} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
+                    Resolve Issue
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-        <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {workOrders.map((order) => (
-            <div key={order.id} className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 flex flex-col hover:bg-zinc-900/60 transition-colors">
-              <div className="flex justify-between items-start mb-4">
-                <span className={`px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase border ${order.schedule_type === 'breakdown_report' ? 'bg-red-500/10 text-red-400 border-red-500/20 animate-pulse' : 'bg-amber-500/10 text-amber-400 border-amber-500/20'}`}>
-                  {order.schedule_type === 'breakdown_report' ? '🚨 Urgent / अति आवश्यक' : 'Routine / नियमित'}
-                </span>
-                <span className="text-zinc-500 text-xs font-mono">#{order.id}</span>
-              </div>
-              
-              <h2 className="text-base font-medium text-zinc-100 mb-4 leading-snug">{order.machine_name}</h2>
-              
-              <div className="bg-zinc-950/50 rounded-xl p-3 mb-4 border border-zinc-800/50 flex-grow">
-                <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Notes / विवरण</p>
-                <p className="text-zinc-300 text-xs leading-relaxed">{order.description}</p>
-              </div>
-              
-              <div className="mb-5 flex items-center gap-2">
-                <div className="w-1 h-8 rounded-full bg-zinc-700"></div>
+        {/* NEW UI: Preventive Maintenance Section */}
+        {pmOrders.length > 0 && (
+          <div className="mt-8">
+            <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
+              🛠️ Scheduled Maintenance <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full">{pmOrders.length}</span>
+            </h2>
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {pmOrders.map((order) => (
+                <div key={order.id} className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 flex flex-col hover:bg-zinc-900/60 transition-colors">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-medium tracking-wide uppercase border bg-amber-500/10 text-amber-400 border-amber-500/20">
+                      Routine / नियमित
+                    </span>
+                    <span className="text-zinc-500 text-xs font-mono">#{order.id}</span>
+                  </div>
+                  
+                  <h2 className="text-base font-medium text-white mb-1 flex items-center gap-2">
+                    <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-xs">{order.machine_formatted_id}</span> 
+                    {order.machine_raw_name}
+                  </h2>
+                  <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
+                  
+                  <div className="bg-zinc-950/50 rounded-xl p-3 mb-4 border border-zinc-800/50 flex-grow">
+                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider mb-1">Notes / विवरण</p>
+                    <p className="text-zinc-300 text-xs leading-relaxed">{order.description}</p>
+                  </div>
+                  
+                  <div className="mb-5 flex items-center gap-2">
+                    <div className="w-1 h-8 rounded-full bg-zinc-700"></div>
+                    <div>
+                      <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Logged On / दर्ज किया गया</p>
+                      <p className="text-zinc-300 text-xs">
+                        {new Date(order.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button onClick={() => setSelectedOrder(order)} className="w-full bg-white text-black font-medium py-3 rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
+                    Open Task / कार्य खोलें
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {workOrders.length === 0 && !error && (
+          <div className="col-span-full border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
+            <span className="text-4xl mb-3 opacity-50">✨</span>
+            <h3 className="text-lg font-medium text-zinc-400 tracking-tight">All Clear / सब ठीक है</h3>
+            <p className="text-zinc-500 text-sm mt-2">No pending faults or maintenance tasks.</p>
+          </div>
+        )}
+      </div>
+
+      {/* SIGN OFF / RESOLVE MODAL */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+          <div className="bg-zinc-900 border border-zinc-800 sm:rounded-3xl rounded-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+            <h3 className="text-lg font-medium text-white mb-2">Sign Off / साइन ऑफ</h3>
+            <p className="text-zinc-400 text-xs mb-6 font-mono bg-zinc-950 p-2 rounded-lg inline-block">Task #{selectedOrder.id}</p>
+            
+            <form onSubmit={(e) => { e.preventDefault(); handleCompleteTask(); }} className="space-y-5">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Reported On / दर्ज किया गया</p>
-                  <p className="text-zinc-300 text-xs">
-                    {new Date(order.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
-                  </p>
+                  <label className="block text-zinc-400 text-xs mb-2">Sup / सुपरवाइजर</label>
+                  <input type="text" required value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-zinc-400 text-xs mb-2">Tech / तकनीशियन (Optional)</label>
+                  <input type="text" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-zinc-400 text-xs mb-2">Operator / ऑपरेटर (Optional)</label>
+                <input type="text" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
+              </div>
+
+              {/* NEW: Resolution Notes Field */}
+              <div>
+                <label className="block text-zinc-400 text-xs mb-2">Resolution Notes / समस्या का समाधान (Optional)</label>
+                <div className="flex gap-2">
+                  <textarea 
+                    rows={2} 
+                    value={resolutionNotes} 
+                    onChange={(e) => setResolutionNotes(e.target.value)} 
+                    className="flex-grow bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 resize-none text-sm" 
+                    placeholder="Describe how the issue was fixed..."
+                  />
+                  {browserSupportsSpeech && (
+                    <button type="button" onClick={() => toggleListen('resolve')} className={`w-14 rounded-xl border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'resolve' ? 'bg-red-500/20 border-red-500 text-red-400 animate-pulse' : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-white'}`}>
+                      <span className="text-xl">🎤</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
-              <button onClick={() => setSelectedOrder(order)} className="w-full bg-white text-black font-medium py-3 rounded-xl transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
-                Open Task / कार्य खोलें
-              </button>
-            </div>
-          ))}
-          {workOrders.length === 0 && !error && (
-            <div className="col-span-full border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
-              <span className="text-4xl mb-3 opacity-50">✨</span>
-              <h3 className="text-lg font-medium text-zinc-400 tracking-tight">All Clear / सब ठीक है</h3>
-            </div>
-          )}
+              <div>
+                <label className="block text-zinc-400 text-xs mb-2">Evidence / सबूत (Optional)</label>
+                <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
+                  <input type="file" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  {signOffPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
+                </div>
+              </div>
+              
+              <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
+                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); stopListening(); setResolutionNotes(""); }} className="flex-1 bg-zinc-800 text-white rounded-xl p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className={`flex-1 text-white rounded-xl p-3.5 text-sm font-medium transition-colors disabled:opacity-50 ${selectedOrder.schedule_type === 'breakdown_report' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-blue-600 hover:bg-blue-500'}`}>
+                  {selectedOrder.schedule_type === 'breakdown_report' ? 'Resolve Issue' : 'Complete Task'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* --- ALL OTHER MODALS (PM, REPORT FAULT, INSPECTION) REMAIN IDENTICAL --- */}
 
       {/* PM MODAL */}
       {showPMModal && (
@@ -411,7 +534,7 @@ export default function TechnicianDashboard() {
                 <select value={pmMachineId} onChange={(e) => setPmMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {m.name} {m.risk_score ? `- Risk: ${m.risk_score}%` : ''} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
@@ -485,7 +608,7 @@ export default function TechnicianDashboard() {
                 <select value={reportMachineId} onChange={(e) => setReportMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {m.name} {m.risk_score ? `- Risk: ${m.risk_score}%` : ''} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
@@ -526,7 +649,6 @@ export default function TechnicianDashboard() {
                   {reportPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
                 </div>
               </div>
-
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
                 <button type="button" onClick={() => { setShowReportModal(false); stopListening(); setReportPhotoFiles([]); }} className="flex-1 bg-zinc-800 text-white rounded-xl p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="flex-1 bg-red-600 text-white rounded-xl p-3.5 text-sm font-medium hover:bg-red-500 transition-colors disabled:opacity-50">Alert Team</button>
@@ -547,7 +669,7 @@ export default function TechnicianDashboard() {
                 <select value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {m.name} {m.risk_score ? `- Risk: ${m.risk_score}%` : ''} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
@@ -597,42 +719,6 @@ export default function TechnicianDashboard() {
         </div>
       )}
 
-      {/* SIGN OFF MODAL */}
-      {selectedOrder && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-zinc-900 border border-zinc-800 sm:rounded-3xl rounded-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-white mb-2">Sign Off / साइन ऑफ</h3>
-            <p className="text-zinc-400 text-xs mb-6 font-mono bg-zinc-950 p-2 rounded-lg inline-block">Task #{selectedOrder.id}</p>
-            <form onSubmit={(e) => { e.preventDefault(); handleCompleteTask(); }} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-zinc-400 text-xs mb-2">Sup / सुपरवाइजर</label>
-                  <input type="text" required value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
-                </div>
-                <div>
-                  <label className="block text-zinc-400 text-xs mb-2">Tech / तकनीशियन (Optional)</label>
-                  <input type="text" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs mb-2">Operator / ऑपरेटर (Optional)</label>
-                <input type="text" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm" />
-              </div>
-              <div>
-                <label className="block text-zinc-400 text-xs mb-2">Evidence / सबूत (Optional)</label>
-                <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                  {signOffPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
-                </div>
-              </div>
-              <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); }} className="flex-1 bg-zinc-800 text-white rounded-xl p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 bg-blue-600 text-white rounded-xl p-3.5 text-sm font-medium hover:bg-blue-500 transition-colors disabled:opacity-50">Complete Task</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
