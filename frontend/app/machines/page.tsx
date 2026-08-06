@@ -436,7 +436,7 @@ export default function MachineDirectory() {
         
         <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
-            <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
+            <img src="/logo.jpeg" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
               <Link href="/" className="text-[#525252] hover:text-[#111111] text-xs font-medium uppercase tracking-wider mb-4 flex items-center gap-2 transition-colors">
                 <span>←</span> Dashboard Return
