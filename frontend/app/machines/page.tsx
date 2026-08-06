@@ -104,8 +104,13 @@ export default function MachineDirectory() {
   const [pmHistory, setPmHistory] = useState<any[]>([]);
   const filteredMachines = machines;
   
-  const openMachineDetails = (machine: any) => {};
-  const handleCloseDetails = () => {};
+  const openMachineDetails = (machine: any) => {
+    setSelectedMachine(machine);
+    setActiveView("home");
+  };
+  const handleCloseDetails = () => {
+    setSelectedMachine(null);
+  };
   const handleResolveSubmit = (e: any) => {};
   const handleFaultSubmit = (e: any) => {};
   const handlePMSubmit = (e: any) => {};
