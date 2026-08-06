@@ -321,7 +321,7 @@ export default function TechnicianDashboard() {
         
         <header className="bg-[#F9F9F7] border border-[#111111] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
-            <img src="/logo.jpeg" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
+            <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
               <h1 className="text-3xl sm:text-4xl font-semibold text-[#111111] tracking-tight">Dadri Plant Control</h1>
               <p className="text-[#737373] text-sm mt-1">दादरी प्लांट कंट्रोल</p>
