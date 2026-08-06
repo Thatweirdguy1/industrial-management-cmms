@@ -476,67 +476,94 @@ def download_monthly_pm_report():
         conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
         conn.row_factory = sqlite3.Row
         
-        now = datetime.now(timezone.utc)
-        first_day_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        
         query = '''
             SELECT w.*, m.name as machine_name, m.asset_tag
             FROM work_orders w
             LEFT JOIN machines m ON w.machine_id = m.id
             WHERE w.schedule_type != 'breakdown_report' 
               AND w.status = 'completed'
-              AND w.completed_at >= ?
             ORDER BY w.completed_at DESC
         '''
-        records = conn.execute(query, (first_day_of_month.isoformat(),)).fetchall()
+        records = conn.execute(query).fetchall()
         conn.close()
         
         wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = f"PM Report - {now.strftime('%b %Y')}"
         
-        headers = ["Machine Name", "Asset Tag", "Task Category", "Schedule Type", "Completed Date", "Technician", "Supervisor", "Service Notes"]
-        ws.append(headers)
+        # Group records by month (e.g., 'Jul 2026')
+        from collections import defaultdict
+        grouped_records = defaultdict(list)
         
         for r in records:
-            comp_date = r['completed_at']
-            if comp_date:
+            comp_date_str = r['completed_at']
+            month_key = "Unknown Month"
+            if comp_date_str:
                 try:
-                    comp_date = datetime.fromisoformat(comp_date.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
+                    dt = datetime.fromisoformat(comp_date_str.replace('Z', '+00:00'))
+                    month_key = dt.strftime('%b %Y')
                 except:
                     pass
+            grouped_records[month_key].append(r)
+            
+        if not grouped_records:
+            # If no records, just return an empty sheet
+            ws = wb.active
+            ws.title = "No Data"
+            ws.append(["No preventive maintenance records found."])
+        else:
+            # Remove default sheet
+            wb.remove(wb.active)
+            
+            # Create a sheet for each month
+            headers = ["Machine Name", "Asset Tag", "Task Category", "Schedule Type", "Completed Date", "Technician", "Supervisor", "Service Notes"]
+            from openpyxl.styles import Font
+            
+            # Sort month keys (descending by datetime if possible, but string sort might be messy. Best to just iterate in order of the first record found, which is already descending)
+            for month_key, month_records in grouped_records.items():
+                # Sheet names max 31 chars
+                safe_title = str(month_key)[:31]
+                ws = wb.create_sheet(title=safe_title)
+                ws.append(headers)
+                
+                for r in month_records:
+                    comp_date = r['completed_at']
+                    if comp_date:
+                        try:
+                            comp_date = datetime.fromisoformat(comp_date.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
+                        except:
+                            pass
+                            
+                    ws.append([
+                        r['machine_name'],
+                        r['asset_tag'] or 'N/A',
+                        r['task_category'],
+                        r['schedule_type'],
+                        comp_date,
+                        r['technician_name'],
+                        r['supervisor_name'],
+                        r['description']
+                    ])
                     
-            ws.append([
-                r['machine_name'],
-                r['asset_tag'] or 'N/A',
-                r['task_category'],
-                r['schedule_type'],
-                comp_date,
-                r['technician_name'],
-                r['supervisor_name'],
-                r['description']
-            ])
-            
-        from openpyxl.styles import Font
-        for cell in ws[1]:
-            cell.font = Font(bold=True)
-            
-        for col in ws.columns:
-            max_length = 0
-            column = col[0].column_letter
-            for cell in col:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(str(cell.value))
-                except:
-                    pass
-            ws.column_dimensions[column].width = min((max_length + 2), 50)
+                # Format headers
+                for cell in ws[1]:
+                    cell.font = Font(bold=True)
+                    
+                # Adjust column widths
+                for col in ws.columns:
+                    max_length = 0
+                    column = col[0].column_letter
+                    for cell in col:
+                        try:
+                            if len(str(cell.value)) > max_length:
+                                max_length = len(str(cell.value))
+                        except:
+                            pass
+                    ws.column_dimensions[column].width = min((max_length + 2), 50)
             
         output = io.BytesIO()
         wb.save(output)
         output.seek(0)
         
-        filename = f"PM_Report_{now.strftime('%Y_%m')}.xlsx"
+        filename = f"All_PM_Reports.xlsx"
         
         return send_file(
             output,
