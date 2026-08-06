@@ -129,10 +129,7 @@ export default function MobileMachineApp() {
         </div>
         
         <h1 className="text-2xl font-black text-white leading-tight flex items-center gap-3">
-          <span className="bg-zinc-800 text-amber-500 px-3 py-1 rounded-lg text-xl border border-zinc-700 shadow-inner">
-            {String(machine.id).padStart(3, '0')}
-          </span>
-          {machine.name}
+          <strong>{String(machine.id).padStart(3, '0')}</strong> - {machine.name}
         </h1>
         
         <p className="text-zinc-400 font-mono text-sm mt-2">{machine.asset_tag}</p>

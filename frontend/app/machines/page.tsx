@@ -68,7 +68,52 @@ export default function MachineDirectory() {
   const [category, setCategory] = useState("mechanical");
   const [supervisor, setSupervisor] = useState("");
 
+  const [error, setError] = useState("");
+  const [workOrders, setWorkOrders] = useState<any[]>([]);
+  
+  const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+  const [supervisorName, setSupervisorName] = useState(""); 
+  const [technicianName, setTechnicianName] = useState("");
+  const [operatorName, setOperatorName] = useState(""); 
+  
+  const [signOffPhotoFiles, setSignOffPhotoFiles] = useState<File[]>([]);
+  const [pmPhotoFiles, setPmPhotoFiles] = useState<File[]>([]);
+  const [reportPhotoFiles, setReportPhotoFiles] = useState<File[]>([]);
+  
+  const [showPMModal, setShowPMModal] = useState(false);
+  const [pmMachineId, setPmMachineId] = useState("");
+  const [pmCategory, setPmCategory] = useState("mechanical");
+  const [pmDescription, setPmDescription] = useState("");
+  const [pmSupervisorName, setPmSupervisorName] = useState("");
+  const [pmTechnicianName, setPmTechnicianName] = useState("");
+  const [pmOperatorName, setPmOperatorName] = useState("");
+  
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportMachineId, setReportMachineId] = useState(""); 
+  const [reportCategory, setReportCategory] = useState("mechanical");
+  const [reportDescription, setReportDescription] = useState("");
+  
+  const [showInspectionModal, setShowInspectionModal] = useState(false);
+  const [inspectionMachineId, setInspectionMachineId] = useState("");
+  const [inspectionEngineerType, setInspectionEngineerType] = useState("internal");
+  const [inspectionEngineerName, setInspectionEngineerName] = useState("");
+  const [inspectionNotes, setInspectionNotes] = useState("");
+  const [inspectionFile, setInspectionFile] = useState<File | null>(null);
+
+  const [breakdownHistory, setBreakdownHistory] = useState<any[]>([]);
+  const [pmHistory, setPmHistory] = useState<any[]>([]);
+  const filteredMachines = machines;
+  
+  const openMachineDetails = (machine: any) => {};
+  const handleCloseDetails = () => {};
+  const handleResolveSubmit = (e: any) => {};
+  const handleFaultSubmit = (e: any) => {};
+  const handlePMSubmit = (e: any) => {};
+  const handleUpdateQuantity = (id: number, delta: number, actionType: string) => {};
+  const handleAddPart = (e: any) => {};
+
   const [isListening, setIsListening] = useState(false);
+  const [listeningField, setListeningField] = useState<any>(null);
   const [transcript, setTranscript] = useState("");
   const [browserSupportsSpeech, setBrowserSupportsSpeech] = useState(false);
   const recognitionRef = useRef<any>(null);
@@ -351,9 +396,8 @@ export default function MachineDirectory() {
                     </span>
                     <span className="text-zinc-500 text-xs font-mono">{machine.asset_tag}</span>
                   </div>
-                  <h2 className="text-lg font-medium text-zinc-100 mb-4">
-                    <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-xs mr-2">[{String(machine.id).padStart(3, '0')}]</span>
-                    {machine.name}
+                  <h2 className="text-lg font-bold text-zinc-100 mb-4 flex items-center gap-2">
+                    <strong>{String(machine.id).padStart(3, '0')}</strong> - {machine.name}
                   </h2>
                   <div className="mt-auto pt-4 border-t border-zinc-800/50 flex justify-between items-center">
                     <div>
@@ -379,9 +423,8 @@ export default function MachineDirectory() {
                 <button onClick={handleCloseDetails} className="bg-zinc-800 hover:bg-zinc-700 text-white font-medium px-4 py-2.5 rounded-xl transition-all text-sm flex items-center gap-2">
                   <span>←</span> Back to Grid
                 </button>
-                <h2 className="text-xl font-medium text-white">
-                  <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-sm mr-2">[{String(selectedMachine.id).padStart(3, '0')}]</span>
-                  {selectedMachine.name}
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <strong>{String(selectedMachine.id).padStart(3, '0')}</strong> - {selectedMachine.name}
                   <span className="text-zinc-500 font-mono text-sm ml-2">{selectedMachine.asset_tag}</span>
                 </h2>
               </div>

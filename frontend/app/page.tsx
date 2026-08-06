@@ -387,8 +387,7 @@ export default function TechnicianDashboard() {
                   </div>
                   
                   <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                    <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-sm">{order.machine_formatted_id}</span> 
-                    {order.machine_raw_name}
+                    <strong>{order.machine_formatted_id}</strong> - {order.machine_raw_name}
                   </h2>
                   <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
                   
@@ -435,8 +434,7 @@ export default function TechnicianDashboard() {
                   </div>
                   
                   <h2 className="text-base font-medium text-white mb-1 flex items-center gap-2">
-                    <span className="bg-zinc-800 text-amber-500 px-2 py-0.5 rounded text-xs">{order.machine_formatted_id}</span> 
-                    {order.machine_raw_name}
+                    <strong>{order.machine_formatted_id}</strong> - {order.machine_raw_name}
                   </h2>
                   <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
                   
@@ -543,7 +541,7 @@ export default function TechnicianDashboard() {
                 <select value={pmMachineId} onChange={(e) => setPmMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
@@ -617,7 +615,7 @@ export default function TechnicianDashboard() {
                 <select value={reportMachineId} onChange={(e) => setReportMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
@@ -678,7 +676,7 @@ export default function TechnicianDashboard() {
                 <select value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-zinc-950 border border-zinc-800 text-zinc-200 rounded-xl p-3.5 outline-none focus:ring-2 focus:ring-blue-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      [{String(m.id).padStart(3, '0')}] {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
                     </option>
                   ))}
                 </select>
