@@ -1,17 +1,34 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #000000;
-  --color-foreground: #ffffff;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-artdeco-bg: #0A0A0A;
+  --color-artdeco-fg: #F2F0E4;
+  --color-artdeco-card: #141414;
+  --color-artdeco-gold: #D4AF37;
+  --color-artdeco-gold-light: #F2E8C4;
+  --color-artdeco-midnight: #1E3D59;
+  --color-artdeco-pewter: #888888;
+  
+  --font-marcellus: var(--font-marcellus);
+  --font-josefin: var(--font-josefin);
 }
 
 body {
-  background: #000000;
-  color: #ffffff;
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background: var(--color-artdeco-bg);
+  color: var(--color-artdeco-fg);
+  font-family: var(--font-josefin), sans-serif;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6, .font-display {
+  font-family: var(--font-marcellus), serif;
+}
+
+/* Diagonal Crosshatch Background Pattern */
+.bg-artdeco-pattern {
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(212, 175, 55, 0.03) 0, rgba(212, 175, 55, 0.03) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(-45deg, rgba(212, 175, 55, 0.03) 0, rgba(212, 175, 55, 0.03) 1px, transparent 1px, transparent 20px);
 }
 
 /* Dynamic Scrollbar Styling */
@@ -20,33 +37,61 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #0a0a0a; 
+  background: var(--color-artdeco-bg); 
 }
 ::-webkit-scrollbar-thumb {
-  background: #dc2626; /* Brutalist Red */
-  border: 1px solid #000000;
+  background: var(--color-artdeco-card); 
+  border: 1px solid var(--color-artdeco-gold);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #9333ea; /* Neon Purple */
+  background: var(--color-artdeco-gold); 
 }
 
-/* Brutalist Shadow Utilities */
-.shadow-brutal-red {
-  box-shadow: 4px 4px 0px 0px #dc2626;
+/* Art Deco Shadow Utilities */
+.shadow-artdeco-glow {
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
 }
-.shadow-brutal-purple {
-  box-shadow: 4px 4px 0px 0px #9333ea;
-}
-.shadow-brutal-white {
-  box-shadow: 4px 4px 0px 0px #ffffff;
+.hover-artdeco-glow:hover {
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  transform: translateY(-4px);
+  transition: all 500ms ease-out;
 }
 
-/* Hover effects for brutalist cards */
-.hover-brutal-red:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #dc2626;
+/* Glow specifically for Midnight Blue accents */
+.shadow-artdeco-blue-glow {
+  box-shadow: 0 0 15px rgba(30, 61, 89, 0.4);
 }
-.hover-brutal-purple:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px 0px #9333ea;
+
+/* Double Borders */
+.border-double-gold {
+  border: 3px double var(--color-artdeco-gold);
+}
+
+/* Stepped Corner Elements (Pseudo) */
+.artdeco-card-decor {
+  position: relative;
+}
+.artdeco-card-decor::before, .artdeco-card-decor::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
+  transition: opacity 500ms ease;
+  pointer-events: none;
+}
+.artdeco-card-decor::before {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid var(--color-artdeco-gold);
+  border-left: 2px solid var(--color-artdeco-gold);
+}
+.artdeco-card-decor::after {
+  bottom: 4px;
+  right: 4px;
+  border-bottom: 2px solid var(--color-artdeco-gold);
+  border-right: 2px solid var(--color-artdeco-gold);
+}
+.artdeco-card-decor:hover::before, .artdeco-card-decor:hover::after {
+  opacity: 1;
 }
