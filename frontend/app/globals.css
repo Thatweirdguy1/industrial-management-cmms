@@ -1,97 +1,93 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-artdeco-bg: #0A0A0A;
-  --color-artdeco-fg: #F2F0E4;
-  --color-artdeco-card: #141414;
-  --color-artdeco-gold: #D4AF37;
-  --color-artdeco-gold-light: #F2E8C4;
-  --color-artdeco-midnight: #1E3D59;
-  --color-artdeco-pewter: #888888;
+  --color-news-bg: #F9F9F7;
+  --color-news-ink: #111111;
+  --color-news-gray: #E5E5E0;
+  --color-news-red: #CC0000;
   
-  --font-marcellus: var(--font-marcellus);
-  --font-josefin: var(--font-josefin);
+  --font-playfair: var(--font-playfair);
+  --font-lora: var(--font-lora);
+  --font-inter: var(--font-inter);
+  --font-mono: var(--font-mono);
 }
 
 body {
-  background: var(--color-artdeco-bg);
-  color: var(--color-artdeco-fg);
-  font-family: var(--font-josefin), sans-serif;
+  background: var(--color-news-bg);
+  color: var(--color-news-ink);
+  font-family: var(--font-lora), serif;
   overflow-x: hidden;
+  /* Newsprint background dot pattern */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
 }
 
-h1, h2, h3, h4, h5, h6, .font-display {
-  font-family: var(--font-marcellus), serif;
+h1, h2, h3, h4, h5, h6, .font-serif, .font-display {
+  font-family: var(--font-playfair), serif;
 }
 
-/* Diagonal Crosshatch Background Pattern */
-.bg-artdeco-pattern {
-  background-image: 
-    repeating-linear-gradient(45deg, rgba(212, 175, 55, 0.03) 0, rgba(212, 175, 55, 0.03) 1px, transparent 1px, transparent 20px),
-    repeating-linear-gradient(-45deg, rgba(212, 175, 55, 0.03) 0, rgba(212, 175, 55, 0.03) 1px, transparent 1px, transparent 20px);
+.font-sans, .font-ui {
+  font-family: var(--font-inter), sans-serif;
+}
+
+.font-mono {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Enforce sharp corners everywhere */
+.sharp-corners, * {
+  border-radius: 0px !important;
 }
 
 /* Dynamic Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-artdeco-bg); 
+  background: var(--color-news-bg); 
+  border-left: 1px solid var(--color-news-ink);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--color-artdeco-card); 
-  border: 1px solid var(--color-artdeco-gold);
+  background: var(--color-news-ink); 
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-artdeco-gold); 
+  background: var(--color-news-red); 
 }
 
-/* Art Deco Shadow Utilities */
-.shadow-artdeco-glow {
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+/* Hard Shadow Hover Effect for Cards & Buttons */
+.hard-shadow-hover {
+  transition: all 150ms ease-out;
 }
-.hover-artdeco-glow:hover {
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  transform: translateY(-4px);
-  transition: all 500ms ease-out;
-}
-
-/* Glow specifically for Midnight Blue accents */
-.shadow-artdeco-blue-glow {
-  box-shadow: 0 0 15px rgba(30, 61, 89, 0.4);
+.hard-shadow-hover:hover {
+  box-shadow: 4px 4px 0px 0px var(--color-news-ink);
+  transform: translate(-2px, -2px);
 }
 
-/* Double Borders */
-.border-double-gold {
-  border: 3px double var(--color-artdeco-gold);
-}
-
-/* Stepped Corner Elements (Pseudo) */
-.artdeco-card-decor {
+/* Section Line Grid Texture */
+.newsprint-texture {
   position: relative;
 }
-.artdeco-card-decor::before, .artdeco-card-decor::after {
+.newsprint-texture::before {
   content: '';
   position: absolute;
-  width: 12px;
-  height: 12px;
-  opacity: 0.5;
-  transition: opacity 500ms ease;
+  inset: 0;
+  background-image:
+    linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.02) 100%),
+    linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.02) 100%);
+  background-size: 3px 3px;
   pointer-events: none;
+  opacity: 0.5;
 }
-.artdeco-card-decor::before {
-  top: 4px;
-  left: 4px;
-  border-top: 2px solid var(--color-artdeco-gold);
-  border-left: 2px solid var(--color-artdeco-gold);
+
+/* Grid Borders */
+.news-grid-cell {
+  border-bottom: 1px solid var(--color-news-ink);
 }
-.artdeco-card-decor::after {
-  bottom: 4px;
-  right: 4px;
-  border-bottom: 2px solid var(--color-artdeco-gold);
-  border-right: 2px solid var(--color-artdeco-gold);
-}
-.artdeco-card-decor:hover::before, .artdeco-card-decor:hover::after {
-  opacity: 1;
+@media (min-width: 768px) {
+  .news-grid-cell {
+    border-right: 1px solid var(--color-news-ink);
+  }
+  .news-grid-cell:last-child {
+    border-right: none;
+  }
 }

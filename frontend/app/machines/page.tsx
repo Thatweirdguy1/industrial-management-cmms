@@ -428,19 +428,19 @@ export default function MachineDirectory() {
   const breakdownOrders = workOrders.filter(o => o.schedule_type === 'breakdown_report');
   const pmOrders = workOrders.filter(o => o.schedule_type !== 'breakdown_report');
 
-  if (loading) return <div className="min-h-screen bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 flex items-center justify-center p-4"><p className="text-sm text-[#888888] font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
+  if (loading) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] flex items-center justify-center p-4"><p className="text-sm text-[#525252] font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
 
   return (
-    <main className="min-h-screen bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 text-[#F2F0E4] font-display p-4 sm:p-6 font-sans">
+    <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow border border-[#D4AF37]/40 border hover:border-[#D4AF37] rounded-none-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div>
-            <Link href="/" className="text-[#888888] hover:text-[#F2F0E4] text-xs font-medium uppercase tracking-wider mb-4 flex items-center gap-2 transition-colors">
+            <Link href="/" className="text-[#525252] hover:text-[#111111] text-xs font-medium uppercase tracking-wider mb-4 flex items-center gap-2 transition-colors">
               <span>←</span> Dashboard Return
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-[#F2F0E4] tracking-tight">Asset Registry</h1>
-            <p className="text-[#888888]/80 text-sm mt-1">मशीन डायरेक्टरी</p>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] tracking-tight">Asset Registry</h1>
+            <p className="text-[#737373] text-sm mt-1">मशीन डायरेक्टरी</p>
           </div>
           {!selectedMachine && (
             <div className="relative w-full md:w-80 shrink-0">
@@ -450,7 +450,7 @@ export default function MachineDirectory() {
                 placeholder="Search name or asset tag..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/50 text-[#F2F0E4] rounded-none-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
+                className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] text-[#111111] rounded-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
               />
             </div>
           )}
@@ -463,30 +463,30 @@ export default function MachineDirectory() {
                 <div 
                   key={machine.id} 
                   onClick={() => openMachineDetails(machine)}
-                  className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow border border-[#D4AF37]/40 border hover:border-[#D4AF37] rounded-none-none p-5 flex flex-col hover:bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 hover-artdeco-glow hover:border-[#D4AF37]/50 transition-all cursor-pointer group"
+                  className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover hover:border-[#111111] transition-all cursor-pointer group"
                 >
                   <div className="flex justify-between items-start mb-4">
-                    <span className={`px-2.5 py-1 rounded-none-none text-[10px] font-medium tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20 animate-pulse' : 'bg-[#D4AF37]/10 text-[#D4AF37] border-[#D4AF37]/20'}`}>
+                    <span className={`px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-[#111111]/10 text-[#CC0000] border-[#111111]/20 animate-pulse' : 'bg-[#111111]/10 text-[#CC0000] border-[#111111]/20'}`}>
                       {machine.status === 'breakdown' ? 'Offline' : 'Operational'}
                     </span>
-                    <span className="text-[#888888]/80 text-xs font-mono">{machine.asset_tag}</span>
+                    <span className="text-[#737373] text-xs font-mono">{machine.asset_tag}</span>
                   </div>
-                  <h2 className="text-lg font-display text-[#F2F0E4] font-display mb-4 flex items-center gap-2">
+                  <h2 className="text-lg font-serif text-[#111111] font-serif mb-4 flex items-center gap-2">
                     <strong>{String(machine.id).padStart(3, '0')}</strong> - {machine.name}
                   </h2>
-                  <div className="mt-auto pt-4 border-t border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 flex justify-between items-center">
+                  <div className="mt-auto pt-4 border-t border-[#111111] border/50 flex justify-between items-center">
                     <div>
-                      <p className="text-[10px] text-[#888888]/80 uppercase tracking-widest">Next PM</p>
-                      <p className="text-[#F2F0E4]/90 text-xs">{machine.next_maintenance}</p>
+                      <p className="text-[10px] text-[#737373] uppercase tracking-widest">Next PM</p>
+                      <p className="text-[#111111] text-xs">{machine.next_maintenance}</p>
                     </div>
-                    <div className="w-8 h-8 rounded-none-none bg-[#1E3D59] flex items-center justify-center group-hover:bg-gray-200/20 group-hover:text-blue-400 transition-colors">
+                    <div className="w-8 h-8 rounded-none bg-[#111111] flex items-center justify-center group-hover:bg-gray-200/20 group-hover:text-blue-400 transition-colors">
                       →
                     </div>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="col-span-full py-20 text-center text-[#888888]/80">
+              <div className="col-span-full py-20 text-center text-[#737373]">
                 No machines found matching "{searchTerm}"
               </div>
             )}
@@ -495,30 +495,30 @@ export default function MachineDirectory() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-4">
-                <button onClick={handleCloseDetails} className="bg-[#1E3D59] hover:bg-zinc-700 text-[#F2F0E4] font-medium px-4 py-2.5 rounded-none-none transition-all text-sm flex items-center gap-2">
+                <button onClick={handleCloseDetails} className="bg-[#111111] hover:bg-zinc-700 text-[#111111] font-medium px-4 py-2.5 rounded-none transition-all text-sm flex items-center gap-2">
                   <span>←</span> Back to Grid
                 </button>
-                <h2 className="text-xl font-display text-[#F2F0E4] flex items-center gap-2">
+                <h2 className="text-xl font-serif text-[#111111] flex items-center gap-2">
                   <strong>{String(selectedMachine.id).padStart(3, '0')}</strong> - {selectedMachine.name}
-                  <span className="text-[#888888]/80 font-mono text-sm ml-2">{selectedMachine.asset_tag}</span>
+                  <span className="text-[#737373] font-mono text-sm ml-2">{selectedMachine.asset_tag}</span>
                 </h2>
               </div>
-              <div className="bg-white p-2 rounded-none-none flex items-center gap-4 border border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 shrink-0">
+              <div className="bg-white p-2 rounded-none flex items-center gap-4 border border-[#111111] border/50 shrink-0">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(`${frontendUrl}/m.html?id=${selectedMachine.id}`)}`} 
                   alt="QR Code" 
-                  className="rounded-none-none w-[70px] h-[70px]"
+                  className="rounded-none w-[70px] h-[70px]"
                 />
               </div>
             </div>
 
-            <div className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-6">
+            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-6">
               {activeView === "home" && (
                 <div className="space-y-4">
                   {selectedMachine.status === 'breakdown' ? (
                     <button 
                       onClick={() => setActiveView("resolve")}
-                      className="w-full bg-[#D4AF37] text-black font-display tracking-widest hover:bg-emerald-500 text-[#F2F0E4] font-display py-5 rounded-none-none shadow-lg border border-emerald-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-emerald-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
                       <span className="text-2xl">✅</span>
                       <span className="text-xl tracking-wide">RESOLVE BREAKDOWN</span>
@@ -527,7 +527,7 @@ export default function MachineDirectory() {
                   ) : (
                     <button 
                       onClick={() => setActiveView("fault")}
-                      className="w-full bg-[#D4AF37] text-black font-display tracking-[0.1em] border-2 border-[#D4AF37] shadow-artdeco-glow hover:bg-red-500 text-[#F2F0E4] font-display py-5 rounded-none-none shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
                       <span className="text-2xl">🚨</span>
                       <span className="text-xl tracking-wide">REPORT BREAKDOWN</span>
@@ -536,7 +536,7 @@ export default function MachineDirectory() {
                   )}
                   <button 
                     onClick={() => setActiveView("pm")}
-                    className="w-full bg-[#1E3D59] text-[#F2F0E4] font-display tracking-[0.1em] border-2 border-[#1E3D59] shadow-artdeco-blue-glow hover:bg-amber-500 text-[#F2F0E4] font-display py-5 rounded-none-none shadow-lg border border-amber-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                    className="w-full bg-[#111111] text-[#111111] font-serif tracking-[0.1em] border-2 border-[#1E3D59] hard-shadow-hover hover:bg-amber-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-amber-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                   >
                     <span className="text-2xl">🛠️</span>
                     <span className="text-xl tracking-wide">LOG SERVICE (PM)</span>
@@ -547,115 +547,115 @@ export default function MachineDirectory() {
 
               {activeView === "resolve" && (
                 <form onSubmit={handleResolveSubmit} className="space-y-6">
-                  <h2 className="text-[#D4AF37] font-display mb-4 flex items-center gap-2 text-xl">✅ Resolve Issue</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Issue</h2>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Technician Name</label>
-                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-emerald-500 outline-none" />
+                    <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
+                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" />
                   </div>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Resolution Notes</label>
-                    <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-emerald-500 outline-none" placeholder="How did you fix it?"></textarea>
+                    <label className="block text-[#525252] text-sm mb-1">Resolution Notes</label>
+                    <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" placeholder="How did you fix it?"></textarea>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#1E3D59] text-[#F2F0E4] py-4 rounded-none-none font-display">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#D4AF37] text-black font-display tracking-widest text-[#F2F0E4] py-4 rounded-none-none font-display disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
                   </div>
                 </form>
               )}
 
               {activeView === "fault" && (
                 <form onSubmit={handleFaultSubmit} className="space-y-6">
-                  <h2 className="text-[#D4AF37] font-display mb-4 flex items-center gap-2 text-xl">🚨 Report Breakdown</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🚨 Report Breakdown</h2>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Category</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-red-500 outline-none">
+                    <label className="block text-[#525252] text-sm mb-1">Category</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none">
                       <option value="mechanical">Mechanical</option>
                       <option value="electrical">Electrical</option>
                       <option value="other">Other</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Issue Details</label>
-                    <textarea required rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-red-500 outline-none" placeholder="Describe the problem..."></textarea>
+                    <label className="block text-[#525252] text-sm mb-1">Issue Details</label>
+                    <textarea required rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none" placeholder="Describe the problem..."></textarea>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#1E3D59] text-[#F2F0E4] py-4 rounded-none-none font-display">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#D4AF37] text-black font-display tracking-[0.1em] border-2 border-[#D4AF37] shadow-artdeco-glow text-[#F2F0E4] py-4 rounded-none-none font-display disabled:opacity-50">{isSubmitting ? "SENDING..." : "SUBMIT FAULT"}</button>
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SENDING..." : "SUBMIT FAULT"}</button>
                   </div>
                 </form>
               )}
 
               {activeView === "pm" && (
                 <form onSubmit={handlePMSubmit} className="space-y-6">
-                  <h2 className="text-[#D4AF37] font-display mb-4 flex items-center gap-2 text-xl">🛠️ Log Service</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🛠️ Log Service</h2>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Service Type</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-amber-500 outline-none">
+                    <label className="block text-[#525252] text-sm mb-1">Service Type</label>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none">
                       <option value="mechanical">Mechanical</option>
                       <option value="electrical">Electrical</option>
                       <option value="cleaning">Cleaning</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Technician Name</label>
-                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-amber-500 outline-none" />
+                    <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
+                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" />
                   </div>
                   <div>
-                    <label className="block text-[#888888] text-sm mb-1">Service Notes</label>
-                    <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-3 text-[#F2F0E4] focus:border-amber-500 outline-none" placeholder="What was done?"></textarea>
+                    <label className="block text-[#525252] text-sm mb-1">Service Notes</label>
+                    <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" placeholder="What was done?"></textarea>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#1E3D59] text-[#F2F0E4] py-4 rounded-none-none font-display">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#1E3D59] text-[#F2F0E4] font-display tracking-[0.1em] border-2 border-[#1E3D59] shadow-artdeco-blue-glow text-[#F2F0E4] py-4 rounded-none-none font-display disabled:opacity-50">{isSubmitting ? "SAVING..." : "LOG SERVICE"}</button>
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#111111] font-serif tracking-[0.1em] border-2 border-[#1E3D59] hard-shadow-hover text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "LOG SERVICE"}</button>
                   </div>
                 </form>
               )}
             </div>
 
-            <div className="flex border-b border-[#D4AF37]/30 border hover:border-[#D4AF37] overflow-x-auto mt-8">
-              <button onClick={() => setActiveTab("breakdowns")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-[#D4AF37]" : "border-transparent text-[#888888] hover:text-[#F2F0E4]"}`}>
+            <div className="flex border-b border-[#111111] border overflow-x-auto mt-8">
+              <button onClick={() => setActiveTab("breakdowns")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
                 🚨 Breakdowns
               </button>
-              <button onClick={() => setActiveTab("pms")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "pms" ? "border-amber-500 text-[#D4AF37]" : "border-transparent text-[#888888] hover:text-[#F2F0E4]"}`}>
+              <button onClick={() => setActiveTab("pms")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "pms" ? "border-amber-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
                 🛠️ PM Logs
               </button>
-              <button onClick={() => setActiveTab("reports")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "reports" ? "border-gray-200 text-blue-400" : "border-transparent text-[#888888] hover:text-[#F2F0E4]"}`}>
+              <button onClick={() => setActiveTab("reports")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "reports" ? "border-gray-200 text-blue-400" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
                 📋 Reports
               </button>
-              <button onClick={() => setActiveTab("inventory")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "inventory" ? "border-emerald-500 text-[#D4AF37]" : "border-transparent text-[#888888] hover:text-[#F2F0E4]"}`}>
+              <button onClick={() => setActiveTab("inventory")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "inventory" ? "border-emerald-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
                 📦 Parts
               </button>
             </div>
 
             {isPanelLoading ? (
-              <div className="py-20 text-center text-[#888888]/80 text-sm animate-pulse">Loading data...</div>
+              <div className="py-20 text-center text-[#737373] text-sm animate-pulse">Loading data...</div>
             ) : (
               <div className="min-h-[400px]">
                 
                 {activeTab === "breakdowns" && (
                   <div className="space-y-4">
                     {breakdownHistory.length > 0 ? breakdownHistory.map((log) => (
-                      <div key={log.id} className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
-                          <span className="inline-block px-2.5 py-1 rounded-none-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#D4AF37]/10 text-[#D4AF37]">
+                          <span className="inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#111111]/10 text-[#CC0000]">
                             BREAKDOWN
                           </span>
-                          <p className="text-[#888888]/80 text-xs mb-1">Resolved On</p>
-                          <p className="text-[#F2F0E4] text-sm mb-4">{new Date(log.completed_at).toLocaleDateString()}</p>
-                          <p className="text-[#888888]/80 text-xs mb-1">Downtime</p>
-                          <p className="text-[#F2F0E4] text-sm">{log.time_taken_hours} Hrs</p>
+                          <p className="text-[#737373] text-xs mb-1">Resolved On</p>
+                          <p className="text-[#111111] text-sm mb-4">{new Date(log.completed_at).toLocaleDateString()}</p>
+                          <p className="text-[#737373] text-xs mb-1">Downtime</p>
+                          <p className="text-[#111111] text-sm">{log.time_taken_hours} Hrs</p>
                         </div>
-                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#D4AF37]/30 border hover:border-[#D4AF37] pt-4 sm:pt-0 sm:pl-6">
-                          <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2">Technician</p>
-                          <p className="text-[#F2F0E4] font-display font-medium mb-4">{log.technician}</p>
-                          <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2">Report & Resolution Notes</p>
-                          <div className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 rounded-none-none p-4 text-sm text-[#F2F0E4]/90 leading-relaxed mb-4 whitespace-pre-wrap">
+                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#111111] border pt-4 sm:pt-0 sm:pl-6">
+                          <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Technician</p>
+                          <p className="text-[#111111] font-serif font-medium mb-4">{log.technician}</p>
+                          <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Report & Resolution Notes</p>
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 whitespace-pre-wrap">
                             {log.description || "No notes provided."}
                           </div>
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none text-[#888888]/80 text-sm">No breakdown history found.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No breakdown history found.</div>
                     )}
                   </div>
                 )}
@@ -663,27 +663,27 @@ export default function MachineDirectory() {
                 {activeTab === "pms" && (
                   <div className="space-y-4">
                     {pmHistory.length > 0 ? pmHistory.map((log) => (
-                      <div key={log.id} className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
-                          <span className="inline-block px-2.5 py-1 rounded-none-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#1E3D59]/20 border-2 border-purple-500 text-[#D4AF37]">
+                          <span className="inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#111111]/20 border-2 border-purple-500 text-[#CC0000]">
                             PREVENTIVE
                           </span>
-                          <p className="text-[#888888]/80 text-xs mb-1">Completed On</p>
-                          <p className="text-[#F2F0E4] text-sm mb-4">{new Date(log.completed_at).toLocaleDateString()}</p>
-                          <p className="text-[#888888]/80 text-xs mb-1">Time Taken</p>
-                          <p className="text-[#F2F0E4] text-sm">{log.time_taken_hours} Hrs</p>
+                          <p className="text-[#737373] text-xs mb-1">Completed On</p>
+                          <p className="text-[#111111] text-sm mb-4">{new Date(log.completed_at).toLocaleDateString()}</p>
+                          <p className="text-[#737373] text-xs mb-1">Time Taken</p>
+                          <p className="text-[#111111] text-sm">{log.time_taken_hours} Hrs</p>
                         </div>
-                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#D4AF37]/30 border hover:border-[#D4AF37] pt-4 sm:pt-0 sm:pl-6">
-                          <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2">Technician</p>
-                          <p className="text-[#F2F0E4] font-display font-medium mb-4">{log.technician}</p>
-                          <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2">Service Notes</p>
-                          <div className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 rounded-none-none p-4 text-sm text-[#F2F0E4]/90 leading-relaxed mb-4">
+                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#111111] border pt-4 sm:pt-0 sm:pl-6">
+                          <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Technician</p>
+                          <p className="text-[#111111] font-serif font-medium mb-4">{log.technician}</p>
+                          <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Service Notes</p>
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4">
                             {log.description || "No notes provided."}
                           </div>
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none text-[#888888]/80 text-sm">No scheduled maintenance records found.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No scheduled maintenance records found.</div>
                     )}
                   </div>
                 )}
@@ -691,30 +691,30 @@ export default function MachineDirectory() {
                 {activeTab === "reports" && (
                   <div className="space-y-4">
                     {reports.length > 0 ? reports.map((report) => (
-                      <div key={report.id} className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={report.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
-                          <span className={`inline-block px-2.5 py-1 rounded-none-none text-[10px] font-medium tracking-wide uppercase mb-3 ${report.engineer_type === 'internal' ? 'bg-gray-200/10 text-blue-400 border border-gray-200/20' : 'bg-[#1E3D59]/20 text-[#D4AF37] border border-purple-500/20'}`}>
+                          <span className={`inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 ${report.engineer_type === 'internal' ? 'bg-gray-200/10 text-blue-400 border border-gray-200/20' : 'bg-[#111111]/20 text-[#CC0000] border border-purple-500/20'}`}>
                             {report.engineer_type} Engineer
                           </span>
-                          <p className="text-[#888888]/80 text-xs mb-1">Date Uploaded</p>
-                          <p className="text-[#F2F0E4] text-sm mb-4">{new Date(report.created_at).toLocaleDateString()}</p>
-                          <p className="text-[#888888]/80 text-xs mb-1">Uploaded By</p>
-                          <p className="text-[#F2F0E4] text-sm font-medium">{report.engineer_name}</p>
+                          <p className="text-[#737373] text-xs mb-1">Date Uploaded</p>
+                          <p className="text-[#111111] text-sm mb-4">{new Date(report.created_at).toLocaleDateString()}</p>
+                          <p className="text-[#737373] text-xs mb-1">Uploaded By</p>
+                          <p className="text-[#111111] text-sm font-medium">{report.engineer_name}</p>
                         </div>
-                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#D4AF37]/30 border hover:border-[#D4AF37] pt-4 sm:pt-0 sm:pl-6 flex flex-col">
-                          <p className="text-[#888888] text-[10px] uppercase tracking-wider mb-2">Inspection Notes</p>
-                          <div className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 rounded-none-none p-4 text-sm text-[#F2F0E4]/90 leading-relaxed mb-4 flex-grow">
+                        <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#111111] border pt-4 sm:pt-0 sm:pl-6 flex flex-col">
+                          <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Inspection Notes</p>
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 flex-grow">
                             {report.notes || "No additional notes provided."}
                           </div>
                           {report.file_url && (
-                            <a href={report.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-white shadow-artdeco-glow hover-artdeco-glow/10 hover:bg-white text-black border-2 border-white shadow-artdeco-glow hover-artdeco-glow/20 text-blue-400 border border-gray-200/20 py-3 px-4 rounded-none-none text-sm font-medium transition-colors w-full sm:w-max">
+                            <a href={report.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-white hard-shadow-hover/10 hover:bg-white text-black border-2 border-white hard-shadow-hover/20 text-blue-400 border border-gray-200/20 py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
                               <span>📄</span> View Attached Document
                             </a>
                           )}
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none text-[#888888]/80 text-sm">No inspection reports uploaded.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No inspection reports uploaded.</div>
                     )}
                   </div>
                 )}
@@ -722,16 +722,16 @@ export default function MachineDirectory() {
                 {activeTab === "inventory" && (
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <p className="text-[#888888] text-sm">Live spare parts inventory</p>
-                      <button onClick={() => setShowAddPart(true)} className="bg-[#D4AF37] text-black font-display tracking-widest hover:bg-emerald-500 text-[#F2F0E4] font-medium px-4 py-2 rounded-none-none text-sm transition-colors">
+                      <p className="text-[#525252] text-sm">Live spare parts inventory</p>
+                      <button onClick={() => setShowAddPart(true)} className="bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500 text-[#111111] font-medium px-4 py-2 rounded-none text-sm transition-colors">
                         + Add Part
                       </button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                       {Array.isArray(parts) && parts.length > 0 ? (
                         parts.map((part) => (
-                          <div key={part.id} className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none p-4 flex gap-4 items-center hover:border-[#D4AF37]/50 transition-colors">
-                            <div className="h-20 w-20 shrink-0 bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 rounded-none-none overflow-hidden border border-[#D4AF37]/30 border hover:border-[#D4AF37]/50 flex items-center justify-center relative">
+                          <div key={part.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-4 flex gap-4 items-center hover:border-[#111111] transition-colors">
+                            <div className="h-20 w-20 shrink-0 bg-[#F9F9F7] border-2 border-[#111111] rounded-none overflow-hidden border border-[#111111] border/50 flex items-center justify-center relative">
                               {part.photo_url ? (
                                 <img src={part.photo_url} alt={part.part_name} className="absolute inset-0 w-full h-full object-cover" />
                               ) : (
@@ -739,18 +739,18 @@ export default function MachineDirectory() {
                               )}
                             </div>
                             <div className="flex-grow min-w-0">
-                              <h3 className="text-[#F2F0E4] font-display font-medium truncate">{part.part_name}</h3>
-                              <p className="text-[#888888]/80 text-xs font-mono mb-3 truncate">{part.part_number || "No Part #"}</p>
+                              <h3 className="text-[#111111] font-serif font-medium truncate">{part.part_name}</h3>
+                              <p className="text-[#737373] text-xs font-mono mb-3 truncate">{part.part_number || "No Part #"}</p>
                               <div className="flex items-center gap-3">
-                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, -1)} className="w-8 h-8 rounded-none-none bg-[#1E3D59] hover:bg-zinc-700 text-[#F2F0E4]/90 flex items-center justify-center font-display">-</button>
-                                <span className={`text-base font-medium w-6 text-center ${part.quantity === 0 ? 'text-[#D4AF37]' : 'text-[#F2F0E4]'}`}>{part.quantity}</span>
-                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, 1)} className="w-8 h-8 rounded-none-none bg-[#1E3D59] hover:bg-zinc-700 text-[#F2F0E4]/90 flex items-center justify-center font-display">+</button>
+                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, -1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-zinc-700 text-[#111111] flex items-center justify-center font-serif">-</button>
+                                <span className={`text-base font-medium w-6 text-center ${part.quantity === 0 ? 'text-[#CC0000]' : 'text-[#111111]'}`}>{part.quantity}</span>
+                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, 1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-zinc-700 text-[#111111] flex items-center justify-center font-serif">+</button>
                               </div>
                             </div>
                           </div>
                         ))
                       ) : (
-                        <div className="col-span-full text-center py-12 border border-dashed border-[#D4AF37]/30 border hover:border-[#D4AF37] rounded-none-none text-[#888888]/80 text-sm">
+                        <div className="col-span-full text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">
                           Inventory is empty.
                         </div>
                       )}
@@ -765,27 +765,27 @@ export default function MachineDirectory() {
 
       {/* ADD PART MODAL */}
       {showAddPart && (
-        <div className="fixed inset-0 bg-[#0A0A0A] bg-artdeco-pattern/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 shadow-artdeco-glow hover-artdeco-glow border border-[#D4AF37]/30 border hover:border-[#D4AF37] sm:rounded-none-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-[#F2F0E4] mb-6">📦 Register New Spare Part</h3>
+        <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+            <h3 className="text-lg font-medium text-[#111111] mb-6">📦 Register New Spare Part</h3>
             <form onSubmit={handleAddPart} className="space-y-5">
               <div>
-                <label className="block text-[#888888] text-xs mb-2">Part Name</label>
-                <input type="text" required value={newPartName} onChange={(e) => setNewPartName(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] text-[#F2F0E4] rounded-none-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
+                <label className="block text-[#525252] text-xs mb-2">Part Name</label>
+                <input type="text" required value={newPartName} onChange={(e) => setNewPartName(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[#888888] text-xs mb-2">Part No.</label>
-                  <input type="text" value={newPartNumber} onChange={(e) => setNewPartNumber(e.target.value)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] text-[#F2F0E4] rounded-none-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-mono" />
+                  <label className="block text-[#525252] text-xs mb-2">Part No.</label>
+                  <input type="text" value={newPartNumber} onChange={(e) => setNewPartNumber(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-mono" />
                 </div>
                 <div>
-                  <label className="block text-[#888888] text-xs mb-2">Stock</label>
-                  <input type="number" required min="0" value={newPartQuantity} onChange={(e) => setNewPartQuantity(parseInt(e.target.value) || 0)} className="w-full bg-[#0A0A0A] bg-artdeco-pattern border-2 border-[#D4AF37]/30 border border-[#D4AF37]/30 border hover:border-[#D4AF37] text-[#F2F0E4] rounded-none-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
+                  <label className="block text-[#525252] text-xs mb-2">Stock</label>
+                  <input type="number" required min="0" value={newPartQuantity} onChange={(e) => setNewPartQuantity(parseInt(e.target.value) || 0)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
                 </div>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => setShowAddPart(false)} className="flex-1 bg-[#1E3D59] text-[#F2F0E4] rounded-none-none p-3.5 text-sm font-medium hover:bg-zinc-700">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#D4AF37] text-black font-display tracking-widest text-[#F2F0E4] rounded-none-none p-3.5 text-sm font-medium hover:bg-emerald-50 disabled:opacity-50">Save Part</button>
+                <button type="button" onClick={() => setShowAddPart(false)} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-emerald-50 disabled:opacity-50">Save Part</button>
               </div>
             </form>
           </div>

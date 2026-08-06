@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
-import { Marcellus, Josefin_Sans } from "next/font/google";
+import { Playfair_Display, Lora, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const fontMarcellus = Marcellus({
-  weight: "400",
-  variable: "--font-marcellus",
+const fontPlayfair = Playfair_Display({
+  variable: "--font-playfair",
   subsets: ["latin"],
 });
 
-const fontJosefin = Josefin_Sans({
-  variable: "--font-josefin",
+const fontLora = Lora({
+  variable: "--font-lora",
+  subsets: ["latin"],
+});
+
+const fontInter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const fontMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
 });
 
@@ -26,7 +35,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontMarcellus.variable} ${fontJosefin.variable} h-full antialiased`}
+      className={`${fontPlayfair.variable} ${fontLora.variable} ${fontInter.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
