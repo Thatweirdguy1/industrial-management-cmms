@@ -27,6 +27,7 @@ export default function TechnicianDashboard() {
   const [machines, setMachines] = useState<Machine[]>([]); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [activeTab, setActiveTab] = useState<"breakdowns" | "pms">("breakdowns");
   
   const [selectedOrder, setSelectedOrder] = useState<WorkOrder | null>(null);
   const [supervisorName, setSupervisorName] = useState(""); 
@@ -354,12 +355,25 @@ export default function TechnicianDashboard() {
 
         {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-4 rounded-xl">{error}</div>}
         
-        {/* Active Breakdowns Section */}
-        {breakdownOrders.length > 0 && (
-          <div>
-            <h2 className="text-xl font-bold text-red-400 mb-4 flex items-center gap-2">
-              🚨 Active Breakdowns <span className="bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded-full">{breakdownOrders.length}</span>
-            </h2>
+        {/* Tab Controls */}
+        <div className="flex border-b border-zinc-800 overflow-x-auto mt-4 mb-6">
+          <button 
+            onClick={() => setActiveTab("breakdowns")} 
+            className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-red-400" : "border-transparent text-zinc-400 hover:text-zinc-200"}`}
+          >
+            🚨 Active Breakdowns ({breakdownOrders.length})
+          </button>
+          <button 
+            onClick={() => setActiveTab("pms")} 
+            className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "pms" ? "border-amber-500 text-amber-400" : "border-transparent text-zinc-400 hover:text-zinc-200"}`}
+          >
+            🛠️ Scheduled Maintenance ({pmOrders.length})
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === "breakdowns" && (
+          breakdownOrders.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {breakdownOrders.map((order) => (
                 <div key={order.id} className="bg-red-950/20 border border-red-900/50 rounded-2xl p-5 flex flex-col hover:bg-red-900/30 transition-colors relative overflow-hidden">
@@ -399,15 +413,17 @@ export default function TechnicianDashboard() {
                 </div>
               ))}
             </div>
-          </div>
+          ) : (
+            <div className="border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
+              <span className="text-4xl mb-3 opacity-50">✨</span>
+              <h3 className="text-lg font-medium text-zinc-400 tracking-tight">No Active Breakdowns</h3>
+              <p className="text-zinc-500 text-sm mt-2">All machines are operational.</p>
+            </div>
+          )
         )}
 
-        {/* Preventive Maintenance Section */}
-        {pmOrders.length > 0 && (
-          <div className="mt-8">
-            <h2 className="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
-              🛠️ Scheduled Maintenance <span className="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded-full">{pmOrders.length}</span>
-            </h2>
+        {activeTab === "pms" && (
+          pmOrders.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {pmOrders.map((order) => (
                 <div key={order.id} className="bg-zinc-900/40 border border-zinc-800/80 rounded-2xl p-5 flex flex-col hover:bg-zinc-900/60 transition-colors">
@@ -445,15 +461,13 @@ export default function TechnicianDashboard() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {workOrders.length === 0 && !error && (
-          <div className="col-span-full border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
-            <span className="text-4xl mb-3 opacity-50">✨</span>
-            <h3 className="text-lg font-medium text-zinc-400 tracking-tight">All Clear / सब ठीक है</h3>
-            <p className="text-zinc-500 text-sm mt-2">No pending faults or maintenance tasks.</p>
-          </div>
+          ) : (
+            <div className="border border-dashed border-zinc-800 p-12 rounded-3xl text-center bg-zinc-900/20 flex flex-col items-center justify-center">
+              <span className="text-4xl mb-3 opacity-50">✨</span>
+              <h3 className="text-lg font-medium text-zinc-400 tracking-tight">No Scheduled Tasks</h3>
+              <p className="text-zinc-500 text-sm mt-2">No pending maintenance required.</p>
+            </div>
+          )
         )}
       </div>
 
