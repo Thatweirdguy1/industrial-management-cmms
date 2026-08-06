@@ -495,7 +495,7 @@ export default function MachineDirectory() {
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-4">
-                <button onClick={handleCloseDetails} className="bg-[#111111] hover:bg-zinc-700 text-[#111111] font-medium px-4 py-2.5 rounded-none transition-all text-sm flex items-center gap-2">
+                <button onClick={handleCloseDetails} className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-4 py-2.5 rounded-none transition-all text-sm flex items-center gap-2">
                   <span>←</span> Back to Grid
                 </button>
                 <h2 className="text-xl font-serif text-[#111111] flex items-center gap-2">
@@ -742,9 +742,9 @@ export default function MachineDirectory() {
                               <h3 className="text-[#111111] font-serif font-medium truncate">{part.part_name}</h3>
                               <p className="text-[#737373] text-xs font-mono mb-3 truncate">{part.part_number || "No Part #"}</p>
                               <div className="flex items-center gap-3">
-                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, -1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-zinc-700 text-[#111111] flex items-center justify-center font-serif">-</button>
+                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, -1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] flex items-center justify-center font-serif">-</button>
                                 <span className={`text-base font-medium w-6 text-center ${part.quantity === 0 ? 'text-[#CC0000]' : 'text-[#111111]'}`}>{part.quantity}</span>
-                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, 1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-zinc-700 text-[#111111] flex items-center justify-center font-serif">+</button>
+                                <button onClick={() => handleUpdateQuantity(part.id, part.quantity, 1)} className="w-8 h-8 rounded-none bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] flex items-center justify-center font-serif">+</button>
                               </div>
                             </div>
                           </div>

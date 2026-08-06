@@ -437,6 +437,26 @@ def upload_report():
         print(f"Report Database Error: {e}")
         return jsonify({'error': 'Failed to save report to database'}), 500
 
+@app.route('/api/reports', methods=['GET'])
+def get_all_reports():
+    try:
+        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn.row_factory = sqlite3.Row
+        
+        # Join with machines to get machine details
+        reports = conn.execute('''
+            SELECT r.*, m.machine_name, m.formatted_id
+            FROM machine_reports r
+            LEFT JOIN machines m ON r.machine_id = m.id
+            ORDER BY r.created_at DESC
+        ''').fetchall()
+        
+        conn.close()
+        return jsonify([dict(r) for r in reports]), 200
+    except Exception as e:
+        print(f"❌ Error getting all reports: {e}")
+        return jsonify({"error": "Failed to fetch reports"}), 500
+
 @app.route('/api/machines/<int:machine_id>/parts', methods=['GET'])
 def get_spare_parts(machine_id):
     try:

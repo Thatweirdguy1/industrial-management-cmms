@@ -25,9 +25,13 @@ interface Machine {
 export default function TechnicianDashboard() {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [machines, setMachines] = useState<Machine[]>([]); 
+  const [breakdownOrders, setBreakdownOrders] = useState<any[]>([]);
+  const [pmOrders, setPmOrders] = useState<any[]>([]);
+  const [allReports, setAllReports] = useState<any[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"breakdowns" | "pms">("breakdowns");
+  const [activeTab, setActiveTab] = useState<"breakdowns" | "pms" | "reports">("breakdowns");
   
   const [selectedOrder, setSelectedOrder] = useState<WorkOrder | null>(null);
   const [supervisorName, setSupervisorName] = useState(""); 
@@ -121,22 +125,32 @@ export default function TechnicianDashboard() {
 
   const fetchData = async () => {
     try {
-      const [ordersRes, machinesRes] = await Promise.all([
+      const [res, repRes, machinesRes] = await Promise.all([
         fetch(`${baseUrl}/api/work-orders`),
+        fetch(`${baseUrl}/api/reports`),
         fetch(`${baseUrl}/api/machines`)
       ]);
-      if (!ordersRes.ok || !machinesRes.ok) throw new Error("Failed to fetch data");
       
-      const ordersData = await ordersRes.json();
-      const machinesData = await machinesRes.json();
+      if (res.ok) {
+        const data = await res.json();
+        setWorkOrders(data);
+        setBreakdownOrders(data.filter((wo: any) => (wo.order_type === 'breakdown' || wo.schedule_type === 'breakdown_report') && wo.status !== 'completed'));
+        setPmOrders(data.filter((wo: any) => (wo.order_type === 'preventive' || wo.schedule_type !== 'breakdown_report') && wo.status !== 'completed'));
+      }
       
-      setWorkOrders(ordersData);
-      setMachines(machinesData);
+      if (repRes.ok) {
+        const reportsData = await repRes.json();
+        setAllReports(reportsData);
+      }
       
-      if (machinesData.length > 0) {
-        setReportMachineId(machinesData[0].id.toString());
-        setPmMachineId(machinesData[0].id.toString());
-        setInspectionMachineId(machinesData[0].id.toString());
+      if (machinesRes.ok) {
+        const machinesData = await machinesRes.json();
+        setMachines(machinesData);
+        if (machinesData.length > 0) {
+          setReportMachineId(machinesData[0].id.toString());
+          setPmMachineId(machinesData[0].id.toString());
+          setInspectionMachineId(machinesData[0].id.toString());
+        }
       }
     } catch (err: any) {
       setError("Could not reach the server.");
@@ -290,15 +304,13 @@ export default function TechnicianDashboard() {
       setInspectionNotes("");
       setInspectionFile(null);
       alert("📋 Inspection Report Uploaded Successfully!");
+      fetchData();
     } catch (err) {
       alert("Error uploading report.");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const breakdownOrders = workOrders.filter(o => o.schedule_type === 'breakdown_report');
-  const pmOrders = workOrders.filter(o => o.schedule_type !== 'breakdown_report');
 
   if (loading) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] flex items-center justify-center p-4"><p className="text-sm text-[#525252] font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
 
@@ -314,39 +326,39 @@ export default function TechnicianDashboard() {
             </div>
             
             <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-              <Link href="/machines" className="bg-[#111111] hover:bg-zinc-700 text-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <Link href="/machines" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🗄️</span>
                 <div className="text-left">
                   <div className="text-sm">View Registry</div>
-                  <div className="text-[10px] text-[#525252]">रजिस्ट्री देखें</div>
+                  <div className="text-[10px] text-current opacity-70">रजिस्ट्री देखें</div>
                 </div>
               </Link>
-              <Link href="/analytics" className="bg-[#111111] hover:bg-zinc-700 text-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <Link href="/analytics" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">📊</span>
                 <div className="text-left">
                   <div className="text-sm">Plant Analytics</div>
-                  <div className="text-[10px] text-[#525252]">एनालिटिक्स</div>
+                  <div className="text-[10px] text-current opacity-70">एनालिटिक्स</div>
                 </div>
               </Link>
-              <button onClick={() => setShowPMModal(true)} className="bg-[#111111]/20 border-2 border-purple-500 text-[#CC0000] hover:bg-amber-500/20 border  font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowPMModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] border  font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🔧</span>
                 <div className="text-left">
                   <div className="text-sm">Log PM</div>
-                  <div className="text-[10px] text-[#CC0000]/70">पीएम दर्ज करें</div>
+                  <div className="text-[10px] text-current opacity-70">पीएम दर्ज करें</div>
                 </div>
               </button>
-              <button onClick={() => setShowInspectionModal(true)} className="bg-gray-200/10 text-gray-200 hover:bg-gray-200/20 border border-gray-200/20 font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowInspectionModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">📋</span>
                 <div className="text-left">
                   <div className="text-sm">Upload Report</div>
-                  <div className="text-[10px] text-gray-200/70">रिपोर्ट अपलोड करें</div>
+                  <div className="text-[10px] text-current opacity-70">रिपोर्ट अपलोड करें</div>
                 </div>
               </button>
-              <button onClick={() => setShowReportModal(true)} className="bg-[#111111]/10 text-red-500 hover:bg-red-500/20 border border-[#111111]/20 font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowReportModal(true)} className="bg-white border-2 border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🚨</span>
                 <div className="text-left">
                   <div className="text-sm">Report Fault</div>
-                  <div className="text-[10px] text-red-500/70">खराबी दर्ज करें</div>
+                  <div className="text-[10px] text-current opacity-70">खराबी दर्ज करें</div>
                 </div>
               </button>
             </div>
@@ -369,6 +381,16 @@ export default function TechnicianDashboard() {
           >
             🛠️ Scheduled Maintenance ({pmOrders.length})
           </button>
+          <button
+            onClick={() => setActiveTab("reports")}
+            className={`pb-4 px-2 text-sm font-medium transition-colors border-b-4 rounded-none ${
+              activeTab === "reports"
+                ? "border-b-2 border-[#111111] text-[#111111]"
+                : "border-transparent text-[#737373] hover:text-[#111111] hover:border-[#111111]/30"
+            }`}
+          >
+            📋 All Reports ({allReports.length})
+          </button>
         </div>
 
         {/* Tab Content */}
@@ -376,7 +398,7 @@ export default function TechnicianDashboard() {
           breakdownOrders.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {breakdownOrders.map((order) => (
-                <div key={order.id} className="bg-red-950/20 border border-red-900/50 rounded-none p-5 flex flex-col hover:bg-red-900/30 transition-colors relative overflow-hidden">
+                <div key={order.id} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 border border-black rounded-none p-5 flex flex-col hover:bg-neutral-100 transition-colors relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-red-500 animate-pulse"></div>
                   
                   <div className="flex justify-between items-start mb-4">
@@ -464,6 +486,45 @@ export default function TechnicianDashboard() {
               <span className="text-4xl mb-3 opacity-50">✨</span>
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Scheduled Tasks</h3>
               <p className="text-[#737373] text-sm mt-2">No pending maintenance required.</p>
+            </div>
+          )
+        )}
+        
+        {activeTab === "reports" && (
+          allReports.length > 0 ? (
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {allReports.map((report) => (
+                <div key={report.id} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 p-5 flex flex-col hover:bg-neutral-100 transition-colors">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="px-2.5 py-1 rounded-none text-[10px] font-serif tracking-wide uppercase border bg-[#111111]/10 text-[#CC0000] border-[#111111]/20">
+                      REPORT
+                    </span>
+                    <span className="text-[#737373] text-xs font-mono">{new Date(report.created_at).toLocaleDateString()}</span>
+                  </div>
+                  
+                  <h2 className="text-lg font-serif text-[#111111] mb-1">
+                    <strong>{report.formatted_id || "000"}</strong> - {report.machine_name || "Unknown"}
+                  </h2>
+                  <p className="text-[#111111] font-mono text-xs mb-4">By: {report.engineer_name || "Unknown"} ({report.engineer_type || "N/A"})</p>
+                  
+                  <div className="bg-white border border-[#111111] border/50 rounded-none p-3 mb-4 flex-grow">
+                    <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1">Notes</p>
+                    <p className="text-[#111111] text-xs leading-relaxed">{report.notes || "No notes provided."}</p>
+                  </div>
+                  
+                  {report.file_url && (
+                    <a href={`${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="w-full text-center bg-white border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] text-sm py-2 px-4 transition-colors">
+                      View File
+                    </a>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
+              <span className="text-4xl mb-3 opacity-50">📋</span>
+              <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Reports</h3>
+              <p className="text-[#737373] text-sm mt-2">No inspection reports have been uploaded yet.</p>
             </div>
           )
         )}
