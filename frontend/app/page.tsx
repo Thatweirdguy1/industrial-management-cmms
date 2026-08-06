@@ -137,7 +137,6 @@ export default function TechnicianDashboard() {
         setWorkOrders(data);
         setBreakdownOrders(data.filter((wo: any) => (wo.order_type === 'breakdown' || wo.schedule_type === 'breakdown_report') && wo.status !== 'completed'));
         setPmOrders(data.filter((wo: any) => (wo.order_type === 'preventive' || wo.schedule_type !== 'breakdown_report') && wo.status !== 'completed'));
-        setHistoryOrders(data.filter((wo: any) => wo.status === 'completed'));
       }
       
       if (repRes.ok) {
@@ -391,7 +390,7 @@ export default function TechnicianDashboard() {
                 : "border-transparent text-[#737373] hover:text-[#111111] hover:border-[#111111]/30"
             }`}
           >
-            📋 All Reports ({allReports.length + historyOrders.length})
+            📋 All Reports ({allReports.length})
           </button>
         </div>
 
@@ -493,30 +492,8 @@ export default function TechnicianDashboard() {
         )}
         
         {activeTab === "reports" && (
-          (allReports.length > 0 || historyOrders.length > 0) ? (
+          allReports.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {/* COMPLETED WORK ORDERS (HISTORY) */}
-              {historyOrders.map((order) => (
-                <div key={`hist-${order.id}`} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 p-5 flex flex-col hover:bg-neutral-100 transition-colors">
-                  <div className="flex justify-between items-start mb-4">
-                    <span className="px-2.5 py-1 rounded-none text-[10px] font-serif tracking-wide uppercase border bg-[#111111]/10 text-[#111111] border-[#111111]/20">
-                      {order.schedule_type === 'breakdown_report' ? 'RESOLVED FAULT' : 'COMPLETED PM'}
-                    </span>
-                    <span className="text-[#737373] text-xs font-mono">{new Date(order.completed_at || order.created_at).toLocaleDateString()}</span>
-                  </div>
-                  
-                  <h2 className="text-lg font-serif text-[#111111] mb-1">
-                    <strong>{order.machine_formatted_id || "000"}</strong> - {order.machine_raw_name || (order as any).machine_name || "Unknown"}
-                  </h2>
-                  <p className="text-[#111111] font-mono text-xs mb-4">Resolved By: {order.technician_name || "Unknown"}</p>
-                  
-                  <div className="bg-white border border-[#111111] border/50 rounded-none p-3 mb-4 flex-grow">
-                    <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1">Description</p>
-                    <p className="text-[#111111] text-xs leading-relaxed">{order.description || "No description provided."}</p>
-                  </div>
-                </div>
-              ))}
-
               {/* UPLOADED INSPECTION REPORTS */}
               {allReports.map((report) => (
                 <div key={`rep-${report.id}`} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 p-5 flex flex-col hover:bg-neutral-100 transition-colors">
@@ -549,7 +526,7 @@ export default function TechnicianDashboard() {
             <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
               <span className="text-4xl mb-3 opacity-50">📋</span>
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Reports</h3>
-              <p className="text-[#737373] text-sm mt-2">No history or inspection reports have been found.</p>
+              <p className="text-[#737373] text-sm mt-2">No inspection reports have been found.</p>
             </div>
           )
         )}
