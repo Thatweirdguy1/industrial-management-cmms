@@ -112,15 +112,21 @@ def save_and_upload_file(file_obj, prefix="file"):
         return filename
 
 # --- TELEGRAM CONFIGURATION ---
-def send_telegram_alert(message):
+def send_telegram_alert(message, reply_to_message_id=None):
     BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
     GROUP_CHAT_ID = '-5182937655' 
     print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] 🚨 FIRING TELEGRAM ALERT...")
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    payload = {'chat_id': GROUP_CHAT_ID, 'text': message, 'parse_mode': 'Markdown'}
+    if reply_to_message_id:
+        payload['reply_to_message_id'] = reply_to_message_id
     try:
-        requests.post(url, json={'chat_id': GROUP_CHAT_ID, 'text': message, 'parse_mode': 'Markdown'})
+        res = requests.post(url, json=payload).json()
+        if res.get("ok"):
+            return res["result"]["message_id"]
     except Exception as e:
         print(f"❌ Telegram Error: {e}")
+    return None
 
 def to_utc_iso(dt):
     if not dt: return datetime.now(timezone.utc).isoformat() + 'Z'
@@ -297,7 +303,10 @@ def report_breakdown():
         f"📝 *Notes / विवरण:* {description}\n\n"
         f"👉 _Please check the dashboard to assign a technician._"
     )
-    send_telegram_alert(alert_message)
+    msg_id = send_telegram_alert(alert_message)
+    if msg_id:
+        new_order.telegram_message_id = str(msg_id)
+        db.session.commit()
     
     return jsonify({"message": "Breakdown reported successfully.", "order_id": new_order.id}), 201
 
@@ -379,7 +388,7 @@ def complete_work_order(order_id):
         f"⏱️ *Total Downtime / कुल डाउनटाइम:* {hours_taken} Hrs\n"
         f"Status is now OPERATIONAL. / मशीन अब चालू है।"
     )
-    send_telegram_alert(completion_message)
+    send_telegram_alert(completion_message, reply_to_message_id=order.telegram_message_id)
     
     return jsonify({"message": "Work order signed off successfully.", "time_taken_hours": hours_taken}), 200
 

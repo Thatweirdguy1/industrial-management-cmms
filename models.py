@@ -34,6 +34,7 @@ class WorkOrder(db.Model):
     supervisor_name = db.Column(db.String(100), nullable=True)
     technician_name = db.Column(db.String(100), nullable=True)
     operator_name = db.Column(db.String(100), nullable=True) 
+    telegram_message_id = db.Column(db.String(100), nullable=True)
     
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     completed_at = db.Column(db.DateTime, nullable=True)

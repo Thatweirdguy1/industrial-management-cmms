@@ -387,7 +387,7 @@ export default function TechnicianDashboard() {
                   </div>
                   
                   <h2 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
-                    <strong>{order.machine_formatted_id}</strong> - {order.machine_raw_name}
+                    <strong>{order.machine_formatted_id || "000"}</strong> - {order.machine_raw_name || (order as any).machine_name || "Unknown"}
                   </h2>
                   <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
                   
@@ -434,7 +434,7 @@ export default function TechnicianDashboard() {
                   </div>
                   
                   <h2 className="text-base font-medium text-white mb-1 flex items-center gap-2">
-                    <strong>{order.machine_formatted_id}</strong> - {order.machine_raw_name}
+                    <strong>{order.machine_formatted_id || "000"}</strong> - {order.machine_raw_name || (order as any).machine_name || "Unknown"}
                   </h2>
                   <p className="text-zinc-400 font-mono text-xs mb-4">{order.asset_tag}</p>
                   
@@ -514,7 +514,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-zinc-400 text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {signOffPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
                 </div>
               </div>
@@ -591,7 +591,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-zinc-400 text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setPmPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setPmPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {pmPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {pmPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to Upload Photos</span>}
                 </div>
               </div>
@@ -652,7 +652,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-zinc-400 text-xs mb-2">Fault Photos / फ़ोटो (Optional)</label>
                 <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {reportPhotoFiles.length > 0 ? <span className="text-zinc-200 text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
                 </div>
               </div>
@@ -712,7 +712,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-zinc-400 text-xs mb-2">Document / फ़ाइल</label>
                 <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" accept=".pdf,.doc,.docx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" capture="environment" accept=".pdf,.doc,.docx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {inspectionFile ? <span className="text-zinc-200 text-xs">📎 {inspectionFile.name}</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
                 </div>
               </div>
