@@ -250,10 +250,11 @@ def get_machine_reports(machine_id):
         return jsonify({"error": "Failed to fetch reports"}), 500
 
 @app.route('/api/work-orders', methods=['GET'])
-def get_pending_work_orders():
-    pending_orders = WorkOrder.query.filter(WorkOrder.status != 'completed').all()
+def get_all_work_orders():
+    # Return all work orders ordered by creation date descending
+    all_orders = WorkOrder.query.order_by(WorkOrder.created_at.desc()).limit(500).all()
     output = []
-    for order in pending_orders:
+    for order in all_orders:
         machine = Machine.query.get(order.machine_id)
         # Add a safely padded ID
         formatted_id = f"{machine.id:03d}" if machine else "000"
