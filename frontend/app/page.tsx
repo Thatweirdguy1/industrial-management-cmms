@@ -712,7 +712,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-zinc-400 text-xs mb-2">Document / फ़ाइल</label>
                 <div className="relative border border-dashed border-zinc-700 rounded-xl p-4 text-center bg-zinc-950 hover:bg-zinc-800 transition-colors">
-                  <input type="file" capture="environment" accept=".pdf,.doc,.docx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" capture="environment" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {inspectionFile ? <span className="text-zinc-200 text-xs">📎 {inspectionFile.name}</span> : <span className="text-zinc-500 text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
                 </div>
               </div>
