@@ -68,6 +68,11 @@ export default function MachineDirectory() {
   const [category, setCategory] = useState("mechanical");
   const [supervisor, setSupervisor] = useState("");
 
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [browserSupportsSpeech, setBrowserSupportsSpeech] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://168.144.81.103:5000";
   const frontendUrl = typeof window !== "undefined" ? window.location.origin : "http://168.144.81.103:3000";
 
