@@ -365,7 +365,6 @@ export default function TechnicianDashboard() {
                 </div>
               </button>
             </div>
-          </div>
         </header>
 
         {error && <div className="bg-[#111111]/10 border border-red-500/30 text-[#CC0000] text-sm p-4 rounded-none">{error}</div>}
