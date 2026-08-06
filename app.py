@@ -235,6 +235,20 @@ def get_machine_history(machine_id):
         })
     return jsonify(output), 200
 
+@app.route('/api/machines/<int:machine_id>/reports', methods=['GET'])
+def get_machine_reports(machine_id):
+    try:
+        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn.row_factory = sqlite3.Row
+        reports = conn.execute(
+            "SELECT * FROM machine_reports WHERE machine_id = ? ORDER BY created_at DESC", (machine_id,)
+        ).fetchall()
+        conn.close()
+        return jsonify([dict(r) for r in reports]), 200
+    except Exception as e:
+        print(f"❌ Error getting reports: {e}")
+        return jsonify({"error": "Failed to fetch reports"}), 500
+
 @app.route('/api/work-orders', methods=['GET'])
 def get_pending_work_orders():
     pending_orders = WorkOrder.query.filter(WorkOrder.status != 'completed').all()

@@ -104,9 +104,28 @@ export default function MachineDirectory() {
   const [pmHistory, setPmHistory] = useState<any[]>([]);
   const filteredMachines = machines;
   
-  const openMachineDetails = (machine: any) => {
+  const openMachineDetails = async (machine: any) => {
     setSelectedMachine(machine);
     setActiveView("home");
+    // Fetch reports and breakdown/pm history specific to this machine
+    try {
+      const [historyRes, reportsRes] = await Promise.all([
+        fetch(`${baseUrl}/api/machines/${machine.id}/history`),
+        fetch(`${baseUrl}/api/machines/${machine.id}/reports`)
+      ]);
+      if (historyRes.ok) {
+        const historyData = await historyRes.json();
+        // Filter history by schedule type
+        setBreakdownHistory(historyData.filter((o: any) => o.schedule_type === 'breakdown_report'));
+        setPmHistory(historyData.filter((o: any) => o.schedule_type !== 'breakdown_report'));
+      }
+      if (reportsRes.ok) {
+        const reportsData = await reportsRes.json();
+        setReports(reportsData);
+      }
+    } catch (e) {
+      console.error("Failed to load machine details", e);
+    }
   };
   const handleCloseDetails = () => {
     setSelectedMachine(null);
