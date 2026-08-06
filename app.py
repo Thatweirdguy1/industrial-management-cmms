@@ -217,9 +217,9 @@ def get_machine_history(machine_id):
                     url = s3_client.generate_presigned_url('get_object', Params={'Bucket': AWS_BUCKET_NAME, 'Key': p.storage_url}, ExpiresIn=3600)
                     photo_urls.append(url)
                 except Exception:
-                    photo_urls.append(f"http://127.0.0.1:5000/static/uploads/{p.storage_url}")
+                    photo_urls.append(f"/static/uploads/{p.storage_url}")
             else:
-                photo_urls.append(f"http://127.0.0.1:5000/static/uploads/{p.storage_url}")
+                photo_urls.append(f"/static/uploads/{p.storage_url}")
         output.append({
             "id": order.id,
             "schedule_type": order.schedule_type,
@@ -469,14 +469,12 @@ def get_spare_parts(machine_id):
         output = []
         for p in parts:
             part_dict = dict(p)
-            if part_dict.get('photo_url') and not part_dict['photo_url'].startswith('http'):
+            if part_dict.get('photo_url'):
                 if AWS_ACCESS_KEY != 'YOUR_AWS_ACCESS_KEY':
                     try:
-                        part_dict['photo_url'] = s3_client.generate_presigned_url('get_object', Params={'Bucket': AWS_BUCKET_NAME, 'Key': part_dict['photo_url']}, ExpiresIn=3600)
+                        part_dict['photo_url'] = s3_client.generate_presigned_url('get_object', Params={'Bucket': AWS_BUCKET_NAME, 'Key': part_dict['photo_url'].replace('/static/uploads/', '')}, ExpiresIn=3600)
                     except Exception:
-                        part_dict['photo_url'] = f"http://127.0.0.1:5000{part_dict['photo_url']}"
-                else:
-                    part_dict['photo_url'] = f"http://127.0.0.1:5000{part_dict['photo_url']}"
+                        pass
             output.append(part_dict)
             
         return jsonify(output), 200

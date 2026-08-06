@@ -319,12 +319,14 @@ export default function TechnicianDashboard() {
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-8 backdrop-blur-xl">
-          <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <header className="bg-[#F9F9F7] border border-[#111111] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
-              <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] tracking-tight">Dadri Plant Control</h1>
+              <h1 className="text-3xl sm:text-4xl font-semibold text-[#111111] tracking-tight">Dadri Plant Control</h1>
               <p className="text-[#737373] text-sm mt-1">दादरी प्लांट कंट्रोल</p>
             </div>
+          </div>
             
             <div className="flex flex-col sm:flex-row flex-wrap gap-3">
               <Link href="/machines" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">

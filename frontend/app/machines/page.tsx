@@ -435,12 +435,15 @@ export default function MachineDirectory() {
       <div className="max-w-6xl mx-auto space-y-6">
         
         <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div>
-            <Link href="/" className="text-[#525252] hover:text-[#111111] text-xs font-medium uppercase tracking-wider mb-4 flex items-center gap-2 transition-colors">
-              <span>←</span> Dashboard Return
-            </Link>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] tracking-tight">Asset Registry</h1>
-            <p className="text-[#737373] text-sm mt-1">मशीन डायरेक्टरी</p>
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
+            <div>
+              <Link href="/" className="text-[#525252] hover:text-[#111111] text-xs font-medium uppercase tracking-wider mb-4 flex items-center gap-2 transition-colors">
+                <span>←</span> Dashboard Return
+              </Link>
+              <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] tracking-tight">Asset Registry</h1>
+              <p className="text-[#737373] text-sm mt-1">मशीन डायरेक्टरी</p>
+            </div>
           </div>
           {!selectedMachine && (
             <div className="relative w-full md:w-80 shrink-0">
@@ -652,6 +655,18 @@ export default function MachineDirectory() {
                           <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 whitespace-pre-wrap">
                             {log.description || "No notes provided."}
                           </div>
+                          {log.photos && log.photos.length > 0 && (
+                            <div className="mt-4">
+                              <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Attached Photos</p>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {log.photos.map((photo: string, idx: number) => (
+                                  <a key={idx} href={photo.startsWith('http') ? photo : `${baseUrl}${photo}`} target="_blank" rel="noopener noreferrer">
+                                    <img src={photo.startsWith('http') ? photo : `${baseUrl}${photo}`} alt="Record" className="w-full h-24 object-cover border border-[#111111]" />
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )) : (
@@ -680,6 +695,18 @@ export default function MachineDirectory() {
                           <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4">
                             {log.description || "No notes provided."}
                           </div>
+                          {log.photos && log.photos.length > 0 && (
+                            <div className="mt-4">
+                              <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Attached Photos</p>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                {log.photos.map((photo: string, idx: number) => (
+                                  <a key={idx} href={photo.startsWith('http') ? photo : `${baseUrl}${photo}`} target="_blank" rel="noopener noreferrer">
+                                    <img src={photo.startsWith('http') ? photo : `${baseUrl}${photo}`} alt="Record" className="w-full h-24 object-cover border border-[#111111]" />
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )) : (
