@@ -446,14 +446,21 @@ def get_all_reports():
         
         # Join with machines to get machine details
         reports = conn.execute('''
-            SELECT r.*, m.machine_name, m.formatted_id
+            SELECT r.*, m.name as machine_name, m.id as m_id
             FROM machine_reports r
             LEFT JOIN machines m ON r.machine_id = m.id
             ORDER BY r.created_at DESC
         ''').fetchall()
         
         conn.close()
-        return jsonify([dict(r) for r in reports]), 200
+        
+        output = []
+        for r in reports:
+            r_dict = dict(r)
+            r_dict['formatted_id'] = f"{r_dict['m_id']:03d}" if r_dict.get('m_id') else "000"
+            output.append(r_dict)
+            
+        return jsonify(output), 200
     except Exception as e:
         print(f"❌ Error getting all reports: {e}")
         return jsonify({"error": "Failed to fetch reports"}), 500

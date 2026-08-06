@@ -734,7 +734,7 @@ export default function MachineDirectory() {
                             {report.notes || "No additional notes provided."}
                           </div>
                           {report.file_url && (
-                            <a href={report.file_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-white hard-shadow-hover/10 hover:bg-white text-black border-2 border-white hard-shadow-hover/20 text-blue-400 border border-gray-200/20 py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
+                            <a href={`${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
                               <span>📄</span> View Attached Document
                             </a>
                           )}
