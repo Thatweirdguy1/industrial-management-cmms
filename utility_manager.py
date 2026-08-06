@@ -113,6 +113,117 @@ def check_machine_maintenance(machine_id, current_hrs, last_service_date_str=Non
         conn.close()
     except Exception as e:
         print(f"Error in utility_manager: {e}")
+
+def generate_daily_report():
+    import json
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
         
+        # Get all machines
+        machines = conn.execute("SELECT * FROM machines").fetchall()
+        
+        # Mocking some current hours for demonstration, in a real scenario this would come from an external system
+        import random
+        random.seed(datetime.now().strftime("%Y-%m-%d")) # keep it deterministic per day
+        
+        report_data = []
+        
+        now = datetime.now(timezone.utc)
+        
+        for m in machines:
+            machine_id = m['id']
+            machine_name = m['name']
+            asset_tag = m['asset_tag']
+            last_maint = m['last_maintenance'] # e.g. '2026-05-15'
+            
+            # mock hours between 0 and 7000
+            current_hrs = random.randint(100, 6500)
+            
+            days_passed = None
+            if last_maint:
+                try:
+                    last_dt = datetime.fromisoformat(last_maint)
+                    # convert naive to utc
+                    last_dt = last_dt.replace(tzinfo=timezone.utc)
+                    days_passed = (now - last_dt).days
+                except Exception as e:
+                    pass
+
+            configs = conn.execute(
+                "SELECT * FROM machine_config WHERE machine_id = ?", 
+                (machine_id,)
+            ).fetchall()
+            
+            machine_alerts = []
+            
+            for config in configs:
+                service_type = config['service_type']
+                
+                hrs_alert_level = 0
+                if config['interval_hrs'] and current_hrs is not None:
+                    interval = config['interval_hrs']
+                    n1 = config['notify_1_hrs_before'] or 0
+                    n2 = config['notify_2_hrs_before'] or 0
+                    
+                    if current_hrs >= interval:
+                        hrs_alert_level = 3
+                    elif current_hrs >= (interval - n2):
+                        hrs_alert_level = 2
+                    elif current_hrs >= (interval - n1):
+                        hrs_alert_level = 1
+                
+                days_alert_level = 0
+                if config['interval_days'] and days_passed is not None:
+                    interval = config['interval_days']
+                    n1 = config['notify_1_days_before'] or 0
+                    n2 = config['notify_2_days_before'] or 0
+                    
+                    if days_passed >= interval:
+                        days_alert_level = 3
+                    elif days_passed >= (interval - n2):
+                        days_alert_level = 2
+                    elif days_passed >= (interval - n1):
+                        days_alert_level = 1
+                        
+                final_alert_level = max(hrs_alert_level, days_alert_level)
+                
+                if final_alert_level > 0:
+                    machine_alerts.append({
+                        "service_type": service_type,
+                        "alert_level": final_alert_level,
+                        "hrs_alert_level": hrs_alert_level,
+                        "days_alert_level": days_alert_level,
+                        "current_hrs": current_hrs,
+                        "days_passed": days_passed,
+                        "interval_hrs": config['interval_hrs'],
+                        "interval_days": config['interval_days']
+                    })
+                    
+            if machine_alerts:
+                report_data.append({
+                    "machine_id": machine_id,
+                    "machine_name": machine_name,
+                    "asset_tag": asset_tag,
+                    "last_maintenance": last_maint,
+                    "alerts": machine_alerts
+                })
+                
+        conn.close()
+        
+        output_path = os.path.join(BASE_DIR, 'frontend', 'public', 'utility_report.json')
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with open(output_path, 'w') as f:
+            json.dump({
+                "generated_at": now.isoformat(),
+                "reports": report_data
+            }, f, indent=2)
+            
+        print(f"Daily report generated at {output_path}")
+        
+    except Exception as e:
+        print(f"Error generating daily report: {e}")
+
 if __name__ == '__main__':
-    print("Testing utility_manager module loaded successfully.")
+    generate_daily_report()
+    print("Testing utility_manager module loaded and report generated.")

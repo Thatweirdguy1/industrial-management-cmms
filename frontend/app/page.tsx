@@ -343,6 +343,13 @@ export default function TechnicianDashboard() {
                   <div className="text-[10px] text-current opacity-70">एनालिटिक्स</div>
                 </div>
               </Link>
+              <Link href="/utility-report" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+                <span className="text-lg">⚙️</span>
+                <div className="text-left">
+                  <div className="text-sm">Utility Report</div>
+                  <div className="text-[10px] text-current opacity-70">यूटिलिटी रिपोर्ट</div>
+                </div>
+              </Link>
               <button onClick={() => setShowPMModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] border  font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🔧</span>
                 <div className="text-left">

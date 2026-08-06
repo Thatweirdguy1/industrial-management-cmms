@@ -1,0 +1,149 @@
+{
+  "generated_at": "2026-08-06T18:55:05.100555+00:00",
+  "reports": [
+    {
+      "machine_id": 1,
+      "machine_name": "OFFSET PRINTING -7 COLOUR + L",
+      "asset_tag": "PI/MC/PR/01",
+      "last_maintenance": "2026-05-13",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 0,
+          "days_alert_level": 3,
+          "current_hrs": 1963,
+          "days_passed": 85,
+          "interval_hrs": null,
+          "interval_days": 10
+        }
+      ]
+    },
+    {
+      "machine_id": 2,
+      "machine_name": "OFFSET PRINTING-6 COLOUR + L",
+      "asset_tag": "PI/MC/PR/02",
+      "last_maintenance": "2026-06-07",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 2662,
+          "days_passed": 60,
+          "interval_hrs": 500,
+          "interval_days": 180
+        }
+      ]
+    },
+    {
+      "machine_id": 3,
+      "machine_name": "OFFSET PRINTING -6 COLOUR + L",
+      "asset_tag": "PI/MC/PR/03",
+      "last_maintenance": "2026-05-11",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 2539,
+          "days_passed": 87,
+          "interval_hrs": 500,
+          "interval_days": 180
+        }
+      ]
+    },
+    {
+      "machine_id": 4,
+      "machine_name": "OFFSET PRINTING -2 COLOUR + L",
+      "asset_tag": "PI/MC/PR/04",
+      "last_maintenance": "2026-05-29",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 6043,
+          "days_passed": 69,
+          "interval_hrs": 500,
+          "interval_days": 180
+        }
+      ]
+    },
+    {
+      "machine_id": 6,
+      "machine_name": "AUTO PAPER CUTTING",
+      "asset_tag": "PI/MC/APC/01",
+      "last_maintenance": "2026-05-15",
+      "alerts": [
+        {
+          "service_type": "Half",
+          "alert_level": 1,
+          "hrs_alert_level": 1,
+          "days_alert_level": 0,
+          "current_hrs": 2570,
+          "days_passed": 83,
+          "interval_hrs": 3000,
+          "interval_days": 365
+        }
+      ]
+    },
+    {
+      "machine_id": 8,
+      "machine_name": "AUTO DIE (MASTER CARTON)",
+      "asset_tag": "PI/MC/AD/01",
+      "last_maintenance": "2026-05-26",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 2458,
+          "days_passed": 72,
+          "interval_hrs": 500,
+          "interval_days": null
+        }
+      ]
+    },
+    {
+      "machine_id": 9,
+      "machine_name": "AUTO DIE (MASTER CARTON)",
+      "asset_tag": "PIMC//AD/02",
+      "last_maintenance": "2026-05-23",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 2161,
+          "days_passed": 75,
+          "interval_hrs": 500,
+          "interval_days": null
+        }
+      ]
+    },
+    {
+      "machine_id": 10,
+      "machine_name": "MANUAL DIE PUNCHING",
+      "asset_tag": "PI/MC/MDP/01",
+      "last_maintenance": "2026-05-16",
+      "alerts": [
+        {
+          "service_type": "Standard",
+          "alert_level": 3,
+          "hrs_alert_level": 3,
+          "days_alert_level": 0,
+          "current_hrs": 1693,
+          "days_passed": 82,
+          "interval_hrs": 500,
+          "interval_days": null
+        }
+      ]
+    }
+  ]
+}
