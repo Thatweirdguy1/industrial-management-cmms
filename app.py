@@ -6,7 +6,7 @@ import boto3
 from PIL import Image
 from botocore.exceptions import NoCredentialsError
 from werkzeug.utils import secure_filename
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, send_file
 from flask_cors import CORS
 from models import db, WorkOrder, User, Machine, PhotoRecord
 from datetime import datetime, timezone, timedelta
@@ -464,6 +464,89 @@ def get_all_reports():
     except Exception as e:
         print(f"❌ Error getting all reports: {e}")
         return jsonify({"error": "Failed to fetch reports"}), 500
+
+@app.route('/api/reports/monthly-pm/download', methods=['GET'])
+def download_monthly_pm_report():
+    try:
+        import openpyxl
+    except ImportError:
+        return jsonify({"error": "openpyxl is not installed on the server. Please run 'pip install openpyxl'"}), 500
+
+    try:
+        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn.row_factory = sqlite3.Row
+        
+        now = datetime.now(timezone.utc)
+        first_day_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        query = '''
+            SELECT w.*, m.name as machine_name, m.asset_tag
+            FROM work_orders w
+            LEFT JOIN machines m ON w.machine_id = m.id
+            WHERE w.schedule_type != 'breakdown_report' 
+              AND w.status = 'completed'
+              AND w.completed_at >= ?
+            ORDER BY w.completed_at DESC
+        '''
+        records = conn.execute(query, (first_day_of_month.isoformat(),)).fetchall()
+        conn.close()
+        
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = f"PM Report - {now.strftime('%b %Y')}"
+        
+        headers = ["Machine Name", "Asset Tag", "Task Category", "Schedule Type", "Completed Date", "Technician", "Supervisor", "Service Notes"]
+        ws.append(headers)
+        
+        for r in records:
+            comp_date = r['completed_at']
+            if comp_date:
+                try:
+                    comp_date = datetime.fromisoformat(comp_date.replace('Z', '+00:00')).strftime('%Y-%m-%d %H:%M')
+                except:
+                    pass
+                    
+            ws.append([
+                r['machine_name'],
+                r['asset_tag'] or 'N/A',
+                r['task_category'],
+                r['schedule_type'],
+                comp_date,
+                r['technician_name'],
+                r['supervisor_name'],
+                r['description']
+            ])
+            
+        from openpyxl.styles import Font
+        for cell in ws[1]:
+            cell.font = Font(bold=True)
+            
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column_letter
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(str(cell.value))
+                except:
+                    pass
+            ws.column_dimensions[column].width = min((max_length + 2), 50)
+            
+        output = io.BytesIO()
+        wb.save(output)
+        output.seek(0)
+        
+        filename = f"PM_Report_{now.strftime('%Y_%m')}.xlsx"
+        
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name=filename
+        )
+    except Exception as e:
+        print(f"❌ Error generating PM report: {e}")
+        return jsonify({"error": "Failed to generate report"}), 500
 
 @app.route('/api/machines/<int:machine_id>/parts', methods=['GET'])
 def get_spare_parts(machine_id):

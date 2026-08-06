@@ -369,8 +369,19 @@ export default function TechnicianDashboard() {
 
         {error && <div className="bg-[#111111]/10 border border-red-500/30 text-[#CC0000] text-sm p-4 rounded-none">{error}</div>}
         
+        {/* Monthly Report Section */}
+        <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
+          <div>
+            <h2 className="text-xl font-semibold text-[#111111] tracking-tight">Monthly PM Report</h2>
+            <p className="text-[#737373] text-sm mt-1">Export a summary of all Preventive Maintenance completed this month</p>
+          </div>
+          <a href={`${baseUrl}/api/reports/monthly-pm/download`} download className="bg-[#111111] text-white hover:bg-white hover:text-[#111111] border-2 border-[#111111] font-medium px-6 py-3 rounded-none transition-colors whitespace-nowrap inline-flex items-center gap-2">
+            <span>📥</span> Download Excel (.xlsx)
+          </a>
+        </div>
+
         {/* Tab Controls */}
-        <div className="flex border-b border-[#111111] border overflow-x-auto mt-4 mb-6">
+        <div className="flex border-b border-[#111111] border overflow-x-auto mt-6 mb-6">
           <button 
             onClick={() => setActiveTab("breakdowns")} 
             className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}
