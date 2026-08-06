@@ -111,19 +111,19 @@ export default function MobileMachineApp() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-zinc-950 p-8 text-center text-white flex items-center justify-center">Loading / लोड हो रहा है...</div>;
-  if (error) return <div className="min-h-screen bg-zinc-950 p-8 text-center text-red-500 font-bold flex items-center justify-center">{error}</div>;
+  if (loading) return <div className="min-h-screen bg-black border-2 border-white/20 p-8 text-center text-white flex items-center justify-center">Loading / लोड हो रहा है...</div>;
+  if (error) return <div className="min-h-screen bg-black border-2 border-white/20 p-8 text-center text-red-500 font-bold flex items-center justify-center">{error}</div>;
   if (!machine) return null;
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white font-sans selection:bg-amber-500/30">
+    <div className="min-h-screen bg-black border-2 border-white/20 text-white font-sans selection:bg-purple-500/30">
       {/* HEADER WITH PADDED 3-DIGIT ID */}
-      <div className="bg-zinc-900 border-b border-zinc-800 p-6 shadow-lg sticky top-0 z-10">
+      <div className="bg-black border-2 border-white/20 shadow-brutal-white border-b border-white/20 border-2 p-6 shadow-lg sticky top-0 z-10">
         <div className="flex justify-between items-start mb-2">
-          <span className={`px-3 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-red-500/20 text-red-400 border-red-500/50 animate-pulse' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'}`}>
+          <span className={`px-3 py-1 rounded-none-none text-[10px] font-bold tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-red-500/20 text-red-400 border-red-500/50 animate-pulse' : 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50'}`}>
             {machine.status === 'breakdown' ? 'OFFLINE / बंद' : 'ONLINE / चालू'}
           </span>
-          <span className="text-zinc-500 text-xs font-mono bg-zinc-950 px-2 py-1 rounded">
+          <span className="text-zinc-500 text-xs font-mono bg-black border-2 border-white/20 px-2 py-1 rounded-none">
             ID: {String(machine.id).padStart(3, '0')}
           </span>
         </div>
@@ -141,7 +141,7 @@ export default function MobileMachineApp() {
           <div className="space-y-4 mt-4">
             <button 
               onClick={() => setActiveView("fault")}
-              className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-5 rounded-xl shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+              className="w-full bg-red-600 border-2 border-red-600 shadow-brutal-red hover:bg-red-500 text-white font-bold py-5 rounded-none-none shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
             >
               <span className="text-2xl">🚨</span>
               <span className="text-xl tracking-wide">REPORT BREAKDOWN</span>
@@ -150,7 +150,7 @@ export default function MobileMachineApp() {
 
             <button 
               onClick={() => setActiveView("pm")}
-              className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-5 rounded-xl shadow-lg border border-amber-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+              className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-5 rounded-none-none shadow-lg border border-purple-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
             >
               <span className="text-2xl">🛠️</span>
               <span className="text-xl tracking-wide">LOG SERVICE (PM)</span>
@@ -162,7 +162,7 @@ export default function MobileMachineApp() {
         {/* FAULT REPORTING FORM */}
         {activeView === "fault" && (
           <form onSubmit={handleFaultSubmit} className="space-y-6 mt-4">
-            <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800">
+            <div className="bg-black border-2 border-white/20 shadow-brutal-white p-5 rounded-none-none border border-white/20 border-2">
               <h2 className="text-red-400 font-bold mb-4 flex items-center gap-2">
                 <span className="text-xl">🚨</span> Report Breakdown
               </h2>
@@ -171,7 +171,7 @@ export default function MobileMachineApp() {
                 <div>
                   <label className="block text-zinc-400 text-sm mb-1">Category / श्रेणी</label>
                   <select 
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:border-red-500 outline-none"
+                    className="w-full bg-black border-2 border-white/20 border border-white/20 border-2 rounded-none-none p-3 text-white focus:border-red-500 outline-none"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
@@ -186,7 +186,7 @@ export default function MobileMachineApp() {
                   <textarea 
                     required
                     rows={4}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:border-red-500 outline-none"
+                    className="w-full bg-black border-2 border-white/20 border border-white/20 border-2 rounded-none-none p-3 text-white focus:border-red-500 outline-none"
                     placeholder="Describe the problem..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -199,14 +199,14 @@ export default function MobileMachineApp() {
               <button 
                 type="button" 
                 onClick={() => setActiveView("home")}
-                className="flex-1 bg-zinc-800 text-white py-4 rounded-lg font-bold"
+                className="flex-1 bg-zinc-800 text-white py-4 rounded-none-none font-bold"
               >
                 CANCEL
               </button>
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="flex-1 bg-red-600 text-white py-4 rounded-lg font-bold disabled:opacity-50"
+                className="flex-1 bg-red-600 border-2 border-red-600 shadow-brutal-red text-white py-4 rounded-none-none font-bold disabled:opacity-50"
               >
                 {isSubmitting ? "SENDING..." : "SUBMIT FAULT"}
               </button>
@@ -217,8 +217,8 @@ export default function MobileMachineApp() {
         {/* PREVENTIVE MAINTENANCE FORM */}
         {activeView === "pm" && (
           <form onSubmit={handlePMSubmit} className="space-y-6 mt-4">
-            <div className="bg-zinc-900 p-5 rounded-xl border border-zinc-800">
-              <h2 className="text-amber-400 font-bold mb-4 flex items-center gap-2">
+            <div className="bg-black border-2 border-white/20 shadow-brutal-white p-5 rounded-none-none border border-white/20 border-2">
+              <h2 className="text-purple-400 font-bold mb-4 flex items-center gap-2">
                 <span className="text-xl">🛠️</span> Log Service
               </h2>
               
@@ -226,7 +226,7 @@ export default function MobileMachineApp() {
                 <div>
                   <label className="block text-zinc-400 text-sm mb-1">Service Type / सर्विस का प्रकार</label>
                   <select 
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
+                    className="w-full bg-black border-2 border-white/20 border border-white/20 border-2 rounded-none-none p-3 text-white focus:border-purple-500 outline-none"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
@@ -241,7 +241,7 @@ export default function MobileMachineApp() {
                   <input 
                     required
                     type="text"
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
+                    className="w-full bg-black border-2 border-white/20 border border-white/20 border-2 rounded-none-none p-3 text-white focus:border-purple-500 outline-none"
                     placeholder="Enter name..."
                     value={supervisor}
                     onChange={(e) => setSupervisor(e.target.value)}
@@ -253,7 +253,7 @@ export default function MobileMachineApp() {
                   <textarea 
                     required
                     rows={3}
-                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-white focus:border-amber-500 outline-none"
+                    className="w-full bg-black border-2 border-white/20 border border-white/20 border-2 rounded-none-none p-3 text-white focus:border-purple-500 outline-none"
                     placeholder="What was done?"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -266,14 +266,14 @@ export default function MobileMachineApp() {
               <button 
                 type="button" 
                 onClick={() => setActiveView("home")}
-                className="flex-1 bg-zinc-800 text-white py-4 rounded-lg font-bold"
+                className="flex-1 bg-zinc-800 text-white py-4 rounded-none-none font-bold"
               >
                 CANCEL
               </button>
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="flex-1 bg-amber-600 text-white py-4 rounded-lg font-bold disabled:opacity-50"
+                className="flex-1 bg-purple-600 text-white py-4 rounded-none-none font-bold disabled:opacity-50"
               >
                 {isSubmitting ? "SAVING..." : "LOG SERVICE"}
               </button>
