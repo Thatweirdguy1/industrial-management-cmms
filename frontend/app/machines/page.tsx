@@ -109,9 +109,10 @@ export default function MachineDirectory() {
     setActiveView("home");
     // Fetch reports and breakdown/pm history specific to this machine
     try {
-      const [historyRes, reportsRes] = await Promise.all([
+      const [historyRes, reportsRes, partsRes] = await Promise.all([
         fetch(`${baseUrl}/api/machines/${machine.id}/history`),
-        fetch(`${baseUrl}/api/machines/${machine.id}/reports`)
+        fetch(`${baseUrl}/api/machines/${machine.id}/reports`),
+        fetch(`${baseUrl}/api/machines/${machine.id}/parts`)
       ]);
       if (historyRes.ok) {
         const historyData = await historyRes.json();
@@ -123,6 +124,10 @@ export default function MachineDirectory() {
         const reportsData = await reportsRes.json();
         setReports(reportsData);
       }
+      if (partsRes.ok) {
+        const partsData = await partsRes.json();
+        setParts(partsData);
+      }
     } catch (e) {
       console.error("Failed to load machine details", e);
     }
@@ -133,8 +138,54 @@ export default function MachineDirectory() {
   const handleResolveSubmit = (e: any) => {};
   const handleFaultSubmit = (e: any) => {};
   const handlePMSubmit = (e: any) => {};
-  const handleUpdateQuantity = (id: number, delta: number, actionType: string) => {};
-  const handleAddPart = (e: any) => {};
+  const handleUpdateQuantity = async (id: number, currentQty: number, delta: number) => {
+    const newQty = Math.max(0, currentQty + delta);
+    try {
+      const res = await fetch(`${baseUrl}/api/parts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: newQty })
+      });
+      if (res.ok) {
+        setParts(parts.map(p => p.id === id ? { ...p, quantity: newQty } : p));
+      }
+    } catch (e) { console.error(e); }
+  };
+  
+  const handleAddPart = async (e: any) => {
+    e.preventDefault();
+    if (!selectedMachine) return;
+    setIsSubmitting(true);
+    
+    const formData = new FormData();
+    formData.append("part_name", newPartName);
+    formData.append("part_number", newPartNumber);
+    formData.append("quantity", newPartQuantity.toString());
+    if (newPartPhoto) formData.append("file", newPartPhoto);
+
+    try {
+      const res = await fetch(`${baseUrl}/api/machines/${selectedMachine.id}/parts`, {
+        method: "POST",
+        body: formData
+      });
+      if (res.ok) {
+        const newPart = await res.json();
+        setParts([...parts, newPart]);
+        setShowAddPart(false);
+        setNewPartName("");
+        setNewPartNumber("");
+        setNewPartQuantity(1);
+        setNewPartPhoto(null);
+      } else {
+        alert("Failed to add part");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Error adding part");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const [isListening, setIsListening] = useState(false);
   const [listeningField, setListeningField] = useState<any>(null);
