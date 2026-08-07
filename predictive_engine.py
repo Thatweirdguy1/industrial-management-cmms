@@ -38,11 +38,11 @@ def parse_sqlite_date(date_str):
 
 def calculate_machine_risk(conn, machine):
     now = datetime.now(timezone.utc)
-    thirty_days_ago = now - timedelta(days=30)
+    ten_days_ago = now - timedelta(days=10)
     
     recent_breakdowns = conn.execute(
         "SELECT * FROM work_orders WHERE machine_id=? AND schedule_type='breakdown_report' AND created_at >= ?", 
-        (machine['id'], thirty_days_ago.isoformat())
+        (machine['id'], ten_days_ago.isoformat())
     ).fetchall()
     
     breakdown_count = len(recent_breakdowns)
@@ -70,7 +70,7 @@ def calculate_machine_risk(conn, machine):
         "machine_id": machine['id'],
         "name": machine['name'],
         "asset_tag": machine['asset_tag'],
-        "breakdown_count_30d": breakdown_count,
+        "breakdown_count_10d": breakdown_count,
         "mtbf": round(mtbf, 1),
         "risk_score": total_risk,
         "is_critical": breakdown_count >= 3
@@ -94,7 +94,7 @@ def run_predictive_analysis(db_path):
                 f"🚨 *PREDICTIVE ALERT* 🚨\n\n"
                 f"Machine: *{risk_data['name']}* ({risk_data['asset_tag']})\n"
                 f"Status: High Breakdown Frequency\n"
-                f"Failures in last 30 days: *{risk_data['breakdown_count_30d']}*\n\n"
+                f"Failures in last 10 days: *{risk_data['breakdown_count_10d']}*\n\n"
                 f"⚠️ _This machine requires a deep inspection to prevent imminent total failure._"
             )
             send_telegram_alert(msg)
