@@ -71,7 +71,7 @@ export default function TechnicianDashboard() {
   const [browserSupportsSpeech, setBrowserSupportsSpeech] = useState(false);
   
   const recognitionRef = useRef<any>(null);
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://168.144.81.103:5000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     if (typeof window !== "undefined" && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
