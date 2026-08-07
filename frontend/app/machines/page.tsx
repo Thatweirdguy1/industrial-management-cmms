@@ -275,6 +275,20 @@ export default function MachineDirectory() {
 
   useEffect(() => { fetchData(); }, []);
 
+  useEffect(() => {
+    if (machines.length > 0 && typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const machineIdStr = params.get("id");
+      if (machineIdStr) {
+        const id = parseInt(machineIdStr, 10);
+        const machine = machines.find((m) => m.id === id);
+        if (machine && !selectedMachine) {
+          openMachineDetails(machine);
+        }
+      }
+    }
+  }, [machines]);
+
   const handleReportPM = async (e: React.FormEvent) => {
     e.preventDefault();
     stopListening();
@@ -508,7 +522,7 @@ export default function MachineDirectory() {
               </div>
               <div className="bg-white p-2 rounded-none flex items-center gap-4 border border-[#111111] border/50 shrink-0">
                 <img 
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(`${frontendUrl}/m.html?id=${selectedMachine.id}`)}`} 
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(`${frontendUrl}/machines?id=${selectedMachine.id}`)}`} 
                   alt="QR Code" 
                   className="rounded-none w-[70px] h-[70px]"
                 />
