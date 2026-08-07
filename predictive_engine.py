@@ -102,3 +102,50 @@ def run_predictive_analysis(db_path):
             
     conn.close()
     return results, alerts_sent
+
+def predict_inventory_burn_rate(db_path):
+    print(f"[{datetime.now(timezone.utc)}] Running Inventory Prediction Engine...")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    
+    parts = conn.execute("SELECT * FROM spare_parts WHERE quantity > 0").fetchall()
+    now = datetime.now(timezone.utc)
+    thirty_days_ago = now - timedelta(days=30)
+    
+    results = []
+    alerts_sent = 0
+    
+    for p in parts:
+        # Sum quantity_used in the last 30 days
+        usage_data = conn.execute(
+            "SELECT SUM(quantity_used) as total_used FROM part_usage_logs WHERE part_id=? AND timestamp >= ?",
+            (p['id'], thirty_days_ago.isoformat())
+        ).fetchone()
+        
+        total_used = usage_data['total_used'] if usage_data and usage_data['total_used'] else 0
+        
+        if total_used > 0:
+            daily_burn_rate = total_used / 30.0
+            days_until_empty = p['quantity'] / daily_burn_rate
+            
+            # Alert if running out in 7 days or less
+            if days_until_empty <= 7:
+                msg = (
+                    f"⚠️ *INVENTORY ALERT* ⚠️\n\n"
+                    f"Part: *{p['part_name']}*\n"
+                    f"Current Stock: {p['quantity']}\n"
+                    f"Burn Rate: {round(daily_burn_rate, 2)} / day\n\n"
+                    f"🚨 _Based on recent repair rates, you will run out in ~{int(days_until_empty)} days. Please reorder!_"
+                )
+                send_telegram_alert(msg)
+                alerts_sent += 1
+                
+            results.append({
+                "part_name": p['part_name'],
+                "current_quantity": p['quantity'],
+                "daily_burn_rate": round(daily_burn_rate, 2),
+                "days_until_empty": round(days_until_empty, 1)
+            })
+            
+    conn.close()
+    return results, alerts_sent

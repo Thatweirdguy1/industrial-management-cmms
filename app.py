@@ -647,6 +647,22 @@ def update_spare_part(part_id):
         
     try:
         conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn.row_factory = sqlite3.Row
+        
+        # Check current quantity
+        old_part = conn.execute('SELECT quantity FROM spare_parts WHERE id = ?', (part_id,)).fetchone()
+        
+        if old_part:
+            old_quantity = old_part['quantity']
+            
+            # Log usage if quantity decreased
+            if quantity < old_quantity:
+                quantity_used = old_quantity - quantity
+                conn.execute(
+                    'INSERT INTO part_usage_logs (part_id, quantity_used) VALUES (?, ?)',
+                    (part_id, quantity_used)
+                )
+        
         conn.execute(
             'UPDATE spare_parts SET quantity = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?',
             (quantity, part_id)

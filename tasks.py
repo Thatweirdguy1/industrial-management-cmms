@@ -2,7 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timezone, timedelta
 from models import db, WorkOrder, Machine, PhotoRecord
 import os
-from predictive_engine import run_predictive_analysis
+from predictive_engine import run_predictive_analysis, predict_inventory_burn_rate
 
 def generate_monthly_maintenance():
     """Runs on the 1st of every month to generate automatic work orders."""
@@ -52,6 +52,7 @@ def run_predictive_task():
     basedir = os.path.abspath(os.path.dirname(__file__))
     db_path = os.path.join(basedir, 'maintenance.db')
     run_predictive_analysis(db_path)
+    predict_inventory_burn_rate(db_path)
 
 def start_scheduler(app):
     """Initializes and starts the background jobs."""
