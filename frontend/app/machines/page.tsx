@@ -102,7 +102,15 @@ export default function MachineDirectory() {
 
   const [breakdownHistory, setBreakdownHistory] = useState<any[]>([]);
   const [pmHistory, setPmHistory] = useState<any[]>([]);
-  const filteredMachines = machines;
+  const filteredMachines = machines.filter(m => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      m.name.toLowerCase().includes(term) ||
+      (m.asset_tag && m.asset_tag.toLowerCase().includes(term)) ||
+      m.id.toString().includes(term)
+    );
+  });
   
   const openMachineDetails = async (machine: any) => {
     setSelectedMachine(machine);
