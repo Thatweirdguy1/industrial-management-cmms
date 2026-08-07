@@ -24,7 +24,7 @@ class PDFReport(FPDF):
         self.cell(0, 10, f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}", border=False, align="C")
         self.ln(20)
 
-def generate_weekly_pdf_report(db_path):
+def generate_weekly_pdf_report(db_path, send_telegram=True):
     print("Generating Weekly PDF Report...")
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
@@ -97,11 +97,14 @@ def generate_weekly_pdf_report(db_path):
     pdf.output(filepath)
     
     # Send via Telegram
-    caption = f"📊 *Weekly Maintenance Report*\nTotal Downtime: {round(total_downtime_hours, 1)} hrs\nMTTR: {round(mttr, 1)} hrs"
-    send_telegram_document(filepath, caption)
-    
-    # Cleanup local PDF if needed, but we'll leave it in the folder for archival
-    print(f"Report generated and sent: {report_filename}")
+    if send_telegram:
+        caption = f"📊 *Weekly Maintenance Report*\nTotal Downtime: {round(total_downtime_hours, 1)} hrs\nMTTR: {round(mttr, 1)} hrs"
+        send_telegram_document(filepath, caption)
+        print(f"Report generated and sent: {report_filename}")
+    else:
+        print(f"Report generated locally: {report_filename}")
+        
+    return filepath
 
 if __name__ == "__main__":
     basedir = os.path.abspath(os.path.dirname(__file__))

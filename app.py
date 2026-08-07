@@ -12,6 +12,7 @@ from models import db, WorkOrder, User, Machine, PhotoRecord
 from datetime import datetime, timezone, timedelta
 import sqlite3
 from predictive_engine import send_telegram_alert, run_predictive_analysis
+from pdf_report_generator import generate_weekly_pdf_report
 
 try:
     from tasks import start_scheduler
@@ -141,6 +142,16 @@ def api_run_predictions():
         return jsonify({"message": f"Predictions run successfully. {alerts_sent} alerts sent.", "alerts_sent": alerts_sent}), 200
     except Exception as e:
         print(f"Predictive Engine Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/reports/weekly', methods=['GET'])
+def api_download_weekly_report():
+    try:
+        db_path = os.path.join(basedir, 'maintenance.db')
+        filepath = generate_weekly_pdf_report(db_path, send_telegram=False)
+        return send_file(filepath, as_attachment=True, download_name="weekly_maintenance_report.pdf")
+    except Exception as e:
+        print(f"Report Generation Error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route('/static/uploads/<filename>')

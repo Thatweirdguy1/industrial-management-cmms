@@ -387,6 +387,16 @@ export default function TechnicianDashboard() {
           </a>
         </div>
 
+        <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
+          <div>
+            <h2 className="text-xl font-semibold text-[#111111] tracking-tight">Weekly Executive Summary</h2>
+            <p className="text-[#737373] text-sm mt-1">Download the latest automated PDF report containing MTTR, Downtime, and Problematic Machines</p>
+          </div>
+          <a href={`${baseUrl}/api/reports/weekly`} download className="bg-[#111111] text-white hover:bg-white hover:text-[#111111] border-2 border-[#111111] font-medium px-6 py-3 rounded-none transition-colors whitespace-nowrap inline-flex items-center gap-2">
+            <span>📄</span> Download Weekly Report (PDF)
+          </a>
+        </div>
+
         {/* Tab Controls */}
         <div className="flex border-b border-[#111111] border overflow-x-auto mt-6 mb-6">
           <button 
