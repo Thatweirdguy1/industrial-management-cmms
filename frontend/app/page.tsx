@@ -77,16 +77,28 @@ export default function TechnicianDashboard() {
     if (typeof window !== "undefined" && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
       const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
+      recognitionRef.current.continuous = false; // continuous=true is broken on iOS Safari
       recognitionRef.current.interimResults = false;
-      recognitionRef.current.lang = 'hi-IN'; 
+      recognitionRef.current.lang = 'en-IN'; // Indian English handles mix of Hindi/English better
       recognitionRef.current.onresult = (event: any) => {
-        const current = event.resultIndex;
-        const newTranscript = event.results[current][0].transcript;
-        setTranscript(newTranscript);
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setTranscript(finalTranscript.trim());
+        }
       };
-      recognitionRef.current.onerror = () => setIsListening(false);
-      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+        setIsListening(false);
+      };
+      recognitionRef.current.onend = () => {
+        // Automatically stop listening state when speech ends (iOS behavior)
+        setIsListening(false);
+      };
       setBrowserSupportsSpeech(true);
     }
   }, []);
