@@ -46,6 +46,7 @@ export default function MachineDirectory() {
   const [machines, setMachines] = useState<Machine[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   
   const [activeTab, setActiveTab] = useState<"breakdowns" | "pms" | "inventory" | "reports">("breakdowns");
@@ -103,6 +104,7 @@ export default function MachineDirectory() {
   const [breakdownHistory, setBreakdownHistory] = useState<any[]>([]);
   const [pmHistory, setPmHistory] = useState<any[]>([]);
   const filteredMachines = machines.filter(m => {
+    if (statusFilter !== "all" && m.status !== statusFilter) return false;
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
@@ -468,15 +470,26 @@ export default function MachineDirectory() {
             </div>
           </div>
           {!selectedMachine && (
-            <div className="relative w-full md:w-80 shrink-0">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</span>
-              <input 
-                type="text" 
-                placeholder="Search name or asset tag..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] text-[#111111] rounded-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
-              />
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto shrink-0">
+              <select 
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full sm:w-48 bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none py-4 px-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all font-serif"
+              >
+                <option value="all">All Status</option>
+                <option value="operational">Operational</option>
+                <option value="breakdown">Offline</option>
+              </select>
+              <div className="relative w-full sm:w-80">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Search name or asset tag..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] text-[#111111] rounded-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
+                />
+              </div>
             </div>
           )}
         </header>
