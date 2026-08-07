@@ -30,13 +30,17 @@ Technicians on the floor can use the built-in speech recognition to dictate thei
 
 ```mermaid
 graph TD
+    Client[Client Browser/Mobile] --> Nginx[Nginx Reverse Proxy / SSL]
+    
     subgraph Frontend [Next.js Dashboard]
-        UI[User Interface] --> API_Calls[REST API Client]
+        Nginx -->|Port 3000| UI[User Interface]
+        UI --> API_Calls[REST API Client]
         Voice[Speech Recognition] --> UI
     end
 
     subgraph Backend [Flask Server]
-        API[API Endpoints] --> SQLite[(SQLite DB)]
+        Nginx -->|Port 5000| API[API Endpoints]
+        API --> SQLite[(SQLite DB)]
         
         subgraph Scheduled Tasks
             Predictive[Predictive Engine]
@@ -96,9 +100,9 @@ sequenceDiagram
 
 ---
 
-## 🚀 Deployment & Installation
+## 🚀 Deployment & Installation (Production)
 
-If deploying to a fresh DigitalOcean Ubuntu droplet, follow these steps:
+To deploy to a DigitalOcean Ubuntu droplet with full SSL (required for Voice-to-Text):
 
 ### 1. Clone & Setup
 ```bash
@@ -108,15 +112,9 @@ cd ~/dadri-cmms
 
 ### 2. Python Backend
 ```bash
-# It is highly recommended to use a virtual environment
 python3 -m venv venv
 source venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
-pip install fpdf2
-
-# Start with PM2
 pm2 start app.py --name dadri-backend --interpreter ./venv/bin/python
 ```
 
@@ -125,9 +123,30 @@ pm2 start app.py --name dadri-backend --interpreter ./venv/bin/python
 cd frontend
 npm install
 npm run build
-
-# Start with PM2
 pm2 start npm --name "dadri-frontend" -- start
+```
+
+### 4. Nginx & SSL (HTTPS)
+> **Note:** A domain name (e.g., DuckDNS) is required to generate an SSL certificate. The Voice-to-Text Web Speech API will **not** work on mobile devices without HTTPS.
+
+```bash
+sudo apt install -y nginx certbot python3-certbot-nginx
+
+# Create Nginx config to route / to port 3000, and /api/ to port 5000
+cat << 'EOF' > /etc/nginx/sites-available/dadri-cmms
+server {
+    listen 80;
+    server_name YOUR_DOMAIN.duckdns.org;
+
+    location /api/ { proxy_pass http://127.0.0.1:5000/api/; }
+    location /static/ { proxy_pass http://127.0.0.1:5000/static/; }
+    location / { proxy_pass http://127.0.0.1:3000; }
+}
+EOF
+
+sudo ln -s /etc/nginx/sites-available/dadri-cmms /etc/nginx/sites-enabled/
+sudo systemctl restart nginx
+sudo certbot --nginx -d YOUR_DOMAIN.duckdns.org --redirect
 ```
 
 ---
