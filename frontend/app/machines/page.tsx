@@ -482,7 +482,7 @@ export default function MachineDirectory() {
                       <p className="text-[10px] text-[#737373] uppercase tracking-widest">Next PM</p>
                       <p className="text-[#111111] text-xs">{machine.next_maintenance}</p>
                     </div>
-                    <div className="w-8 h-8 rounded-none bg-[#111111] flex items-center justify-center group-hover:bg-gray-200/20 group-hover:text-blue-400 transition-colors">
+                    <div className="w-8 h-8 rounded-none bg-[#111111] text-[#F9F9F7] flex items-center justify-center group-hover:bg-gray-200/20 group-hover:text-[#111111] transition-colors">
                       →
                     </div>
                   </div>
