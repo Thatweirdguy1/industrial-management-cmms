@@ -3,6 +3,7 @@ from datetime import datetime, timezone, timedelta
 from models import db, WorkOrder, Machine, PhotoRecord
 import os
 from predictive_engine import run_predictive_analysis, predict_inventory_burn_rate
+from pdf_report_generator import generate_weekly_pdf_report
 
 def generate_monthly_maintenance():
     """Runs on the 1st of every month to generate automatic work orders."""
@@ -54,6 +55,12 @@ def run_predictive_task():
     run_predictive_analysis(db_path)
     predict_inventory_burn_rate(db_path)
 
+def generate_weekly_report_task():
+    """Generates the weekly PDF report and sends it to Telegram."""
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(basedir, 'maintenance.db')
+    generate_weekly_pdf_report(db_path)
+
 def start_scheduler(app):
     """Initializes and starts the background jobs."""
     scheduler = BackgroundScheduler()
@@ -85,6 +92,15 @@ def start_scheduler(app):
         lambda: run_with_context(run_predictive_task),
         trigger='interval',
         hours=4
+    )
+    
+    # Schedule the weekly PDF report (every Monday at 8:00 AM)
+    scheduler.add_job(
+        lambda: run_with_context(generate_weekly_report_task),
+        trigger='cron',
+        day_of_week='mon',
+        hour=8,
+        minute=0
     )
     
     scheduler.start()

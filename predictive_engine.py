@@ -19,6 +19,27 @@ def send_telegram_alert(message, reply_to_message_id=None):
         print(f"❌ Telegram Error: {e}")
     return None
 
+def send_telegram_document(filepath, caption=None):
+    BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
+    GROUP_CHAT_ID = '-5182937655' 
+    print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] UPLOADING TELEGRAM DOCUMENT...")
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
+    
+    data = {'chat_id': GROUP_CHAT_ID}
+    if caption:
+        data['caption'] = caption
+        data['parse_mode'] = 'Markdown'
+        
+    try:
+        with open(filepath, 'rb') as f:
+            files = {'document': f}
+            res = requests.post(url, data=data, files=files).json()
+            if res.get("ok"):
+                return res["result"]["message_id"]
+    except Exception as e:
+        print(f"❌ Telegram Document Error: {e}")
+    return None
+
 def parse_sqlite_date(date_str):
     if not date_str:
         return None
