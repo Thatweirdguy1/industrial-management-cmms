@@ -521,28 +521,28 @@ export default function MachineDirectory() {
                   {selectedMachine.status === 'breakdown' ? (
                     <button 
                       onClick={() => setActiveView("resolve")}
-                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-emerald-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-emerald-600 border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
                       <span className="text-2xl">✅</span>
-                      <span className="text-xl tracking-wide">RESOLVE BREAKDOWN</span>
+                      <span className="text-xl tracking-widest">RESOLVE BREAKDOWN</span>
                       <span className="text-sm font-medium opacity-80">खराबी ठीक करें</span>
                     </button>
                   ) : (
                     <button 
                       onClick={() => setActiveView("fault")}
-                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                      className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-[#CC0000] border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
                       <span className="text-2xl">🚨</span>
-                      <span className="text-xl tracking-wide">REPORT BREAKDOWN</span>
+                      <span className="text-xl tracking-widest">REPORT BREAKDOWN</span>
                       <span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
                     </button>
                   )}
                   <button 
                     onClick={() => setActiveView("pm")}
-                    className="w-full bg-[#111111] text-[#111111] font-serif tracking-[0.1em] border-2 border-[#1E3D59] hard-shadow-hover hover:bg-amber-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-amber-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+                    className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-amber-600 border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                   >
                     <span className="text-2xl">🛠️</span>
-                    <span className="text-xl tracking-wide">LOG SERVICE (PM)</span>
+                    <span className="text-xl tracking-widest">LOG SERVICE (PM)</span>
                     <span className="text-sm font-medium opacity-80">मशीन सर्विस दर्ज करें</span>
                   </button>
                 </div>
