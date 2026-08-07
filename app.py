@@ -11,6 +11,7 @@ from flask_cors import CORS
 from models import db, WorkOrder, User, Machine, PhotoRecord
 from datetime import datetime, timezone, timedelta
 import sqlite3
+from predictive_engine import send_telegram_alert, run_predictive_analysis
 
 try:
     from tasks import start_scheduler
@@ -112,21 +113,7 @@ def save_and_upload_file(file_obj, prefix="file"):
         return filename
 
 # --- TELEGRAM CONFIGURATION ---
-def send_telegram_alert(message, reply_to_message_id=None):
-    BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
-    GROUP_CHAT_ID = '-5182937655' 
-    print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] 🚨 FIRING TELEGRAM ALERT...")
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    payload = {'chat_id': GROUP_CHAT_ID, 'text': message, 'parse_mode': 'Markdown'}
-    if reply_to_message_id:
-        payload['reply_to_message_id'] = reply_to_message_id
-    try:
-        res = requests.post(url, json=payload).json()
-        if res.get("ok"):
-            return res["result"]["message_id"]
-    except Exception as e:
-        print(f"❌ Telegram Error: {e}")
-    return None
+# Imported from predictive_engine.py
 
 def to_utc_iso(dt):
     if not dt: return datetime.now(timezone.utc).isoformat() + 'Z'
@@ -136,6 +123,26 @@ def to_utc_iso(dt):
     return iso
 
 # --- ROUTES ---
+@app.route('/api/predictive-analysis', methods=['GET'])
+def api_predictive_analysis():
+    try:
+        db_path = os.path.join(basedir, 'maintenance.db')
+        results, alerts_sent = run_predictive_analysis(db_path)
+        return jsonify({"success": True, "results": results, "alerts_sent": alerts_sent}), 200
+    except Exception as e:
+        print(f"Predictive Engine Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route('/api/run-predictions', methods=['POST'])
+def api_run_predictions():
+    try:
+        db_path = os.path.join(basedir, 'maintenance.db')
+        results, alerts_sent = run_predictive_analysis(db_path)
+        return jsonify({"message": f"Predictions run successfully. {alerts_sent} alerts sent.", "alerts_sent": alerts_sent}), 200
+    except Exception as e:
+        print(f"Predictive Engine Error: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
 @app.route('/static/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)

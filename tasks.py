@@ -2,6 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime, timezone, timedelta
 from models import db, WorkOrder, Machine, PhotoRecord
 import os
+from predictive_engine import run_predictive_analysis
 
 def generate_monthly_maintenance():
     """Runs on the 1st of every month to generate automatic work orders."""
@@ -46,6 +47,12 @@ def cleanup_old_photos():
     db.session.commit()
     print(f"Cleaned up {deleted_count} expired photo records.")
 
+def run_predictive_task():
+    """Runs the predictive engine to check for highly critical machines."""
+    basedir = os.path.abspath(os.path.dirname(__file__))
+    db_path = os.path.join(basedir, 'maintenance.db')
+    run_predictive_analysis(db_path)
+
 def start_scheduler(app):
     """Initializes and starts the background jobs."""
     scheduler = BackgroundScheduler()
@@ -70,6 +77,13 @@ def start_scheduler(app):
         trigger='cron',
         hour=2,
         minute=0
+    )
+    
+    # Schedule the predictive analysis (every 4 hours)
+    scheduler.add_job(
+        lambda: run_with_context(run_predictive_task),
+        trigger='interval',
+        hours=4
     )
     
     scheduler.start()
