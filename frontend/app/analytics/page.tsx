@@ -22,7 +22,7 @@ export default function AnalyticsDashboard() {
   const [loading, setLoading] = useState(true);
 
   // HARDCODED PRODUCTION IP
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://168.144.81.103:5000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     fetch(`${baseUrl}/api/analytics`)

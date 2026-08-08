@@ -21,7 +21,7 @@ export default function MobileMachineApp() {
   const [category, setCategory] = useState("mechanical");
   const [supervisor, setSupervisor] = useState("");
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://168.144.81.103:5000";
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "";
 
   useEffect(() => {
     const fetchMachine = async () => {
