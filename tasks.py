@@ -87,11 +87,12 @@ def start_scheduler(app):
         minute=0
     )
     
-    # Schedule the predictive analysis (every 4 hours)
+    # Schedule the predictive analysis (every 24 hours)
     scheduler.add_job(
         lambda: run_with_context(run_predictive_task),
+        id='predictive_task',
         trigger='interval',
-        hours=4
+        hours=24
     )
     
     # Schedule the weekly PDF report (every Monday at 8:00 AM)

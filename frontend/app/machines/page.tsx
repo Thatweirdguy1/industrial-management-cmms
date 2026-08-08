@@ -103,6 +103,9 @@ export default function MachineDirectory() {
 
   const [breakdownHistory, setBreakdownHistory] = useState<any[]>([]);
   const [pmHistory, setPmHistory] = useState<any[]>([]);
+  const [activeOrders, setActiveOrders] = useState<any[]>([]);
+  
+  const [resolveOrder, setResolveOrder] = useState<any>(null);
   const filteredMachines = machines.filter(m => {
     if (statusFilter !== "all" && m.status !== statusFilter) return false;
     if (!searchTerm) return true;
@@ -119,10 +122,11 @@ export default function MachineDirectory() {
     setActiveView("home");
     // Fetch reports and breakdown/pm history specific to this machine
     try {
-      const [historyRes, reportsRes, partsRes] = await Promise.all([
+      const [historyRes, reportsRes, partsRes, activeRes] = await Promise.all([
         fetch(`${baseUrl}/api/machines/${machine.id}/history`),
         fetch(`${baseUrl}/api/machines/${machine.id}/reports`),
-        fetch(`${baseUrl}/api/machines/${machine.id}/parts`)
+        fetch(`${baseUrl}/api/machines/${machine.id}/parts`),
+        fetch(`${baseUrl}/api/machines/${machine.id}/active-orders`)
       ]);
       if (historyRes.ok) {
         const historyData = await historyRes.json();
@@ -138,12 +142,17 @@ export default function MachineDirectory() {
         const partsData = await partsRes.json();
         setParts(partsData);
       }
+      if (activeRes.ok) {
+        const activeData = await activeRes.json();
+        setActiveOrders(activeData);
+      }
     } catch (e) {
       console.error("Failed to load machine details", e);
     }
   };
   const handleCloseDetails = () => {
     setSelectedMachine(null);
+    setActiveOrders([]);
   };
   const handleResolveSubmit = (e: any) => {};
   const handleFaultSubmit = (e: any) => {};
@@ -583,6 +592,22 @@ export default function MachineDirectory() {
                 </div>
               )}
 
+              {activeView === "home" && activeOrders.filter((o) => o.schedule_type === "predictive_alert").map((alertOrder) => (
+                <div key={alertOrder.id} className="mt-4 bg-emerald-50 border-2 border-emerald-500 p-4 rounded-none">
+                  <h3 className="text-emerald-900 font-bold mb-2">🚨 PREDICTIVE ALERT ACTIVE</h3>
+                  <p className="text-emerald-800 text-sm mb-4">{alertOrder.description}</p>
+                  <button 
+                    onClick={() => {
+                      setResolveOrder(alertOrder);
+                      setActiveView("resolve_predictive");
+                    }}
+                    className="w-full bg-emerald-900 text-white py-3 font-serif hover:bg-emerald-800 transition-colors"
+                  >
+                    RESOLVE PREDICTIVE ALERT
+                  </button>
+                </div>
+              ))}
+
               {activeView === "resolve" && (
                 <form onSubmit={handleResolveSubmit} className="space-y-6">
                   <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Issue</h2>
@@ -597,6 +622,60 @@ export default function MachineDirectory() {
                   <div className="flex gap-3">
                     <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
                     <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
+                  </div>
+                </form>
+              )}
+
+              {activeView === "resolve_predictive" && (
+                <form onSubmit={async (e) => {
+                  e.preventDefault();
+                  setIsSubmitting(true);
+                  try {
+                    const formData = new FormData();
+                    formData.append("supervisor", supervisor);
+                    formData.append("technician", inspectionEngineerName); 
+                    formData.append("notes", resolutionNotes);
+                    formData.append("status", "completed");
+                    reportPhotoFiles.forEach((file) => formData.append("photos", file));
+                    
+                    const res = await fetch(`${baseUrl}/api/work-orders/${resolveOrder.id}/complete`, {
+                      method: "POST",
+                      body: formData
+                    });
+                    if (res.ok) {
+                      alert("Alert resolved!");
+                      setActiveView("home");
+                      openMachineDetails(selectedMachine);
+                    }
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }} className="space-y-6">
+                  <h2 className="text-emerald-700 font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Predictive Alert</h2>
+                  <div>
+                    <label className="block text-[#525252] text-sm mb-1">Supervisor Name</label>
+                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111] outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
+                    <input type="text" required value={inspectionEngineerName} onChange={(e) => setInspectionEngineerName(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111] outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[#525252] text-sm mb-1">Resolution Notes / Description</label>
+                    <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111] outline-none"></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-[#525252] text-sm mb-1">Upload Photos</label>
+                    <div className="relative border-2 border-dashed border-[#111111] p-4 text-center bg-[#F9F9F7]">
+                      <input type="file" multiple accept="image/*" onChange={(e) => {
+                        setReportPhotoFiles(Array.from(e.target.files || []));
+                      }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                      {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#111111] text-xs">📸 Tap to Upload Photos</span>}
+                    </div>
+                  </div>
+                  <div className="flex gap-3">
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 border-2 border-[#111111] py-4 rounded-none font-serif">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-emerald-900 text-white py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
                   </div>
                 </form>
               )}

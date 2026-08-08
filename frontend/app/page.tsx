@@ -27,12 +27,13 @@ export default function TechnicianDashboard() {
   const [machines, setMachines] = useState<Machine[]>([]); 
   const [breakdownOrders, setBreakdownOrders] = useState<any[]>([]);
   const [pmOrders, setPmOrders] = useState<any[]>([]);
+  const [predictiveAlerts, setPredictiveAlerts] = useState<any[]>([]);
   const [historyOrders, setHistoryOrders] = useState<any[]>([]);
   const [allReports, setAllReports] = useState<any[]>([]);
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"breakdowns" | "pms" | "reports">("breakdowns");
+  const [activeTab, setActiveTab] = useState<"breakdowns" | "pms" | "predictive" | "reports">("breakdowns");
   
   const [selectedOrder, setSelectedOrder] = useState<WorkOrder | null>(null);
   const [supervisorName, setSupervisorName] = useState(""); 
@@ -148,7 +149,8 @@ export default function TechnicianDashboard() {
         const data = await res.json();
         setWorkOrders(data);
         setBreakdownOrders(data.filter((wo: any) => (wo.order_type === 'breakdown' || wo.schedule_type === 'breakdown_report') && wo.status !== 'completed'));
-        setPmOrders(data.filter((wo: any) => (wo.order_type === 'preventive' || wo.schedule_type !== 'breakdown_report') && wo.status !== 'completed'));
+        setPmOrders(data.filter((wo: any) => (wo.order_type === 'preventive' || (wo.schedule_type !== 'breakdown_report' && wo.schedule_type !== 'predictive_alert')) && wo.status !== 'completed'));
+        setPredictiveAlerts(data.filter((wo: any) => wo.schedule_type === 'predictive_alert' && wo.status !== 'completed'));
       }
       
       if (repRes.ok) {
@@ -423,6 +425,17 @@ export default function TechnicianDashboard() {
           >
             🛠️ Scheduled Maintenance ({pmOrders.length})
           </button>
+          <button 
+            onClick={() => setActiveTab("predictive")}
+            className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap flex items-center gap-2 ${activeTab === "predictive" ? "border-emerald-500 text-emerald-600" : "border-transparent text-[#525252] hover:text-[#111111]"}`}
+          >
+            Predictive Alerts
+            {predictiveAlerts.length > 0 && (
+              <span className="bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                {predictiveAlerts.length}
+              </span>
+            )}
+          </button>
           <button
             onClick={() => setActiveTab("reports")}
             className={`pb-4 px-2 text-sm font-medium transition-colors border-b-4 rounded-none ${
@@ -618,7 +631,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {signOffPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
                 </div>
               </div>
@@ -695,7 +708,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setPmPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" multiple accept="image/*" onChange={(e) => setPmPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {pmPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {pmPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload Photos</span>}
                 </div>
               </div>
@@ -756,7 +769,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Fault Photos / फ़ोटो (Optional)</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" capture="environment" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
                 </div>
               </div>
@@ -816,7 +829,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Document / फ़ाइल</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" capture="environment" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {inspectionFile ? <span className="text-[#111111] text-xs">📎 {inspectionFile.name}</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
                 </div>
               </div>

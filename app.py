@@ -253,6 +253,25 @@ def get_machine_history(machine_id):
         })
     return jsonify(output), 200
 
+@app.route('/api/machines/<int:machine_id>/active-orders', methods=['GET'])
+def get_machine_active_orders(machine_id):
+    active_orders = WorkOrder.query.filter(
+        WorkOrder.machine_id == machine_id,
+        WorkOrder.status != 'completed'
+    ).order_by(WorkOrder.created_at.desc()).all()
+    
+    output = []
+    for order in active_orders:
+        output.append({
+            "id": order.id,
+            "schedule_type": order.schedule_type,
+            "task_category": order.task_category,
+            "description": order.description,
+            "created_at": to_utc_iso(order.created_at),
+            "status": order.status
+        })
+    return jsonify(output), 200
+
 @app.route('/api/machines/<int:machine_id>/reports', methods=['GET'])
 def get_machine_reports(machine_id):
     try:

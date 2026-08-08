@@ -59,11 +59,11 @@ def parse_sqlite_date(date_str):
 
 def calculate_machine_risk(conn, machine):
     now = datetime.now(timezone.utc)
-    ten_days_ago = now - timedelta(days=10)
+    five_days_ago = now - timedelta(days=5)
     
     recent_breakdowns = conn.execute(
         "SELECT * FROM work_orders WHERE machine_id=? AND schedule_type='breakdown_report' AND created_at >= ?", 
-        (machine['id'], ten_days_ago.isoformat())
+        (machine['id'], five_days_ago.isoformat())
     ).fetchall()
     
     breakdown_count = len(recent_breakdowns)
@@ -91,7 +91,7 @@ def calculate_machine_risk(conn, machine):
         "machine_id": machine['id'],
         "name": machine['name'],
         "asset_tag": machine['asset_tag'],
-        "breakdown_count_10d": breakdown_count,
+        "breakdown_count_5d": breakdown_count,
         "mtbf": round(mtbf, 1),
         "risk_score": total_risk,
         "is_critical": breakdown_count >= 3
@@ -111,15 +111,30 @@ def run_predictive_analysis(db_path):
         results.append(risk_data)
         
         if risk_data['is_critical']:
-            msg = (
-                f"🚨 *PREDICTIVE ALERT* 🚨\n\n"
-                f"Machine: *{risk_data['name']}* ({risk_data['asset_tag']})\n"
-                f"Status: High Breakdown Frequency\n"
-                f"Failures in last 10 days: *{risk_data['breakdown_count_10d']}*\n\n"
-                f"⚠️ _This machine requires a deep inspection to prevent imminent total failure._"
-            )
-            send_telegram_alert(msg)
-            alerts_sent += 1
+            # Check if there is already a pending predictive alert for this machine
+            existing_alert = conn.execute(
+                "SELECT id FROM work_orders WHERE machine_id=? AND schedule_type='predictive_alert' AND status='pending'",
+                (m['id'],)
+            ).fetchone()
+
+            if not existing_alert:
+                # Insert the predictive alert into the database
+                now_iso = datetime.now(timezone.utc).isoformat()
+                conn.execute(
+                    "INSERT INTO work_orders (machine_id, schedule_type, task_category, description, status, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+                    (m['id'], 'predictive_alert', 'predictive', f"CRITICAL: Machine failed {risk_data['breakdown_count_5d']} times in the last 5 days. Deep inspection required.", 'pending', now_iso)
+                )
+                conn.commit()
+
+                msg = (
+                    f"🚨 *PREDICTIVE ALERT* 🚨\n\n"
+                    f"Machine: *{risk_data['name']}* ({risk_data['asset_tag']})\n"
+                    f"Status: High Breakdown Frequency\n"
+                    f"Failures in last 5 days: *{risk_data['breakdown_count_5d']}*\n\n"
+                    f"⚠️ _This machine requires a deep inspection to prevent imminent total failure._"
+                )
+                send_telegram_alert(msg)
+                alerts_sent += 1
             
     conn.close()
     return results, alerts_sent
