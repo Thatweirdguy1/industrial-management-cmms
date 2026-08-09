@@ -305,7 +305,6 @@ def get_active_work_orders():
             "machine_formatted_id": formatted_id,
             "asset_tag": machine.asset_tag if machine else "Unknown Tag",
             "schedule_type": order.schedule_type,
-            "order_type": order.order_type,
             "task_category": order.task_category,
             "description": order.description, 
             "created_at": to_utc_iso(order.created_at), 
