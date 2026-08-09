@@ -426,7 +426,10 @@ def log_preventive_maintenance():
             machine.status = 'operational'
             
         db.session.commit()
-        return jsonify({"message": "Preventive maintenance logged.", "order_id": order.id}), 201
+        return jsonify({"message": "Preventive maintenance logged.", "order_id": new_order.id}), 201
+    except Exception as e:
+        print(f"Error logging PM: {e}")
+        return jsonify({"error": "Failed to log preventive maintenance"}), 500
 
 @app.route('/api/work-orders/<int:order_id>/complete', methods=['POST'])
 def complete_work_order(order_id):
