@@ -1,0 +1,23 @@
+{
+  "name": "Dadri Plant Control CMMS",
+  "short_name": "CMMS",
+  "description": "Dadri Plant Control Maintenance Management System",
+  "display": "standalone",
+  "background_color": "#F9F9F7",
+  "theme_color": "#111111",
+  "orientation": "portrait",
+  "start_url": "/",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

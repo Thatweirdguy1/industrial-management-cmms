@@ -220,7 +220,11 @@ def get_machines():
 
 @app.route('/api/machines/<int:machine_id>/history', methods=['GET'])
 def get_machine_history(machine_id):
-    history = WorkOrder.query.filter_by(machine_id=machine_id, status='completed').order_by(WorkOrder.completed_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 500, type=int)
+    offset = (page - 1) * limit
+    
+    history = WorkOrder.query.filter_by(machine_id=machine_id, status='completed').order_by(WorkOrder.completed_at.desc()).offset(offset).limit(limit).all()
     output = []
     for order in history:
         hours_taken = 0
@@ -286,10 +290,37 @@ def get_machine_reports(machine_id):
         print(f"❌ Error getting reports: {e}")
         return jsonify({"error": "Failed to fetch reports"}), 500
 
+@app.route('/api/work-orders/active', methods=['GET'])
+def get_active_work_orders():
+    # Return all active work orders ordered by creation date descending
+    active_orders = WorkOrder.query.filter(WorkOrder.status != 'completed').order_by(WorkOrder.created_at.desc()).all()
+    output = []
+    for order in active_orders:
+        machine = Machine.query.get(order.machine_id)
+        formatted_id = f"{machine.id:03d}" if machine else "000"
+        
+        output.append({
+            "id": order.id,
+            "machine_raw_name": machine.name if machine else "Unknown Machine",
+            "machine_formatted_id": formatted_id,
+            "asset_tag": machine.asset_tag if machine else "Unknown Tag",
+            "schedule_type": order.schedule_type,
+            "task_category": order.task_category,
+            "description": order.description, 
+            "created_at": to_utc_iso(order.created_at), 
+            "status": order.status,
+            "machine_id": order.machine_id
+        })
+    return jsonify(output), 200
+
 @app.route('/api/work-orders', methods=['GET'])
 def get_all_work_orders():
-    # Return all work orders ordered by creation date descending
-    all_orders = WorkOrder.query.order_by(WorkOrder.created_at.desc()).limit(500).all()
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 500, type=int)
+    offset = (page - 1) * limit
+    
+    # Return all work orders ordered by creation date descending with pagination
+    all_orders = WorkOrder.query.order_by(WorkOrder.created_at.desc()).offset(offset).limit(limit).all()
     output = []
     for order in all_orders:
         machine = Machine.query.get(order.machine_id)
@@ -394,23 +425,24 @@ def log_preventive_maintenance():
             machine.status = 'operational'
             
         db.session.commit()
-        return jsonify({"message": "Preventive maintenance logged.", "order_id": new_order.id}), 201
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/work-orders/<int:order_id>/complete', methods=['POST'])
+        return jsonify({"message": "Preventive maintenance logged.", "order_i@app.route('/api/work-orders/<int:order_id>/complete', methods=['POST'])
 def complete_work_order(order_id):
     order = WorkOrder.query.get_or_404(order_id)
     if order.status == 'completed':
         return jsonify({"error": "Already completed"}), 400
         
     data = request.json or {}
-    order.supervisor_name = data.get('supervisor_name')
-    order.technician_name = data.get('technician_name')
-    order.operator_name = data.get('operator_name')
+    form_data = request.form or {}
     
-    # Append the resolution notes into the description
-    resolution_notes = data.get('resolution_notes', '')
+    supervisor = data.get('supervisor_name') or form_data.get('supervisor_name') or form_data.get('supervisor')
+    technician = data.get('technician_name') or form_data.get('technician_name') or form_data.get('technician')
+    operator = data.get('operator_name') or form_data.get('operator_name')
+    resolution_notes = data.get('resolution_notes', '') or form_data.get('notes', '')
+    
+    order.supervisor_name = supervisor
+    order.technician_name = technician
+    order.operator_name = operator
+    
     if resolution_notes:
         order.description = f"{order.description}\n\n[Resolution]: {resolution_notes}"
 
@@ -424,6 +456,36 @@ def complete_work_order(order_id):
         machine.last_maintenance = now_utc.date()
         machine.next_maintenance = now_utc.date() + timedelta(days=30)
         
+    # Process inventory deduction
+    parts_used_str = data.get('parts_used') or form_data.get('parts_used')
+    parts_used_log = []
+    low_stock_warnings = []
+    
+    if parts_used_str:
+        import json
+        try:
+            parts_used = json.loads(parts_used_str) if isinstance(parts_used_str, str) else parts_used_str
+            conn = get_db_connection()
+            for part in parts_used:
+                part_id = part.get('part_id')
+                qty = int(part.get('quantity', 0))
+                if part_id and qty > 0:
+                    # Update quantity
+                    conn.execute('UPDATE spare_parts SET quantity = quantity - ? WHERE id = ?', (qty, part_id))
+                    # Log usage
+                    conn.execute('INSERT INTO part_usage_logs (part_id, quantity_used) VALUES (?, ?)', (part_id, qty))
+                    
+                    # Check if low stock
+                    updated_part = conn.execute('SELECT part_name, quantity FROM spare_parts WHERE id = ?', (part_id,)).fetchone()
+                    if updated_part:
+                        parts_used_log.append(f"{qty}x {updated_part['part_name']}")
+                        if updated_part['quantity'] <= 0:
+                            low_stock_warnings.append(f"⚠️ LOW STOCK: {updated_part['part_name']} is now empty (0 left).")
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print("Error processing parts used:", e)
+
     created_dt = order.created_at.replace(tzinfo=None) if order.created_at else now_utc.replace(tzinfo=None)
     time_delta = now_utc.replace(tzinfo=None) - created_dt
     hours_taken = round(time_delta.total_seconds() / 3600, 2)
@@ -432,16 +494,20 @@ def complete_work_order(order_id):
     formatted_id = f"{machine.id:03d}" if machine else "000"
     tech_name = order.technician_name or "Not Specified"
     
+    parts_msg = f"\n🔧 *Parts Used:* {', '.join(parts_used_log)}" if parts_used_log else ""
+    warnings_msg = f"\n\n🚨 *INVENTORY WARNINGS:*\n" + "\n".join(low_stock_warnings) if low_stock_warnings else ""
+    
     completion_message = (
         f"✅ *MACHINE REPAIRED / मशीन की मरम्मत हो गई* ✅\n\n"
         f"⚙️ *Machine / मशीन:* *[{formatted_id}]* {machine.name if machine else 'Unknown'} ({machine.asset_tag if machine else 'N/A'})\n"
         f"👨‍🔧 *Repaired By / तकनीशियन:* {tech_name}\n"
-        f"🛠 *Fix Details / विवरण:* {resolution_notes}\n"
+        f"🛠 *Fix Details / विवरण:* {resolution_notes}{parts_msg}\n"
         f"⏱️ *Total Downtime / कुल डाउनटाइम:* {hours_taken} Hrs\n"
         f"Status is now OPERATIONAL. / मशीन अब चालू है।"
+        f"{warnings_msg}"
     )
     send_telegram_alert(completion_message, reply_to_message_id=order.telegram_message_id)
-    
+
     return jsonify({"message": "Work order signed off successfully.", "time_taken_hours": hours_taken}), 200
 
 @app.route('/api/reports', methods=['POST'])
@@ -477,6 +543,10 @@ def upload_report():
 
 @app.route('/api/reports', methods=['GET'])
 def get_all_reports():
+    page = request.args.get('page', 1, type=int)
+    limit = request.args.get('limit', 20, type=int)
+    offset = (page - 1) * limit
+    
     try:
         conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
         conn.row_factory = sqlite3.Row
@@ -487,7 +557,8 @@ def get_all_reports():
             FROM machine_reports r
             LEFT JOIN machines m ON r.machine_id = m.id
             ORDER BY r.created_at DESC
-        ''').fetchall()
+            LIMIT ? OFFSET ?
+        ''', (limit, offset)).fetchall()
         
         conn.close()
         

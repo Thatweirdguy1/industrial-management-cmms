@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
+import { compressImages } from "@/utils/imageCompression";
 
 interface WorkOrder {
   id: number;
@@ -53,6 +54,12 @@ export default function TechnicianDashboard() {
   const [pmSupervisorName, setPmSupervisorName] = useState("");
   const [pmTechnicianName, setPmTechnicianName] = useState("");
   const [pmOperatorName, setPmOperatorName] = useState("");
+
+  const [availableParts, setAvailableParts] = useState<any[]>([]);
+  const [partsUsed, setPartsUsed] = useState<{part_id: number, part_name: string, quantity: number}[]>([]);
+
+  const [reportsPage, setReportsPage] = useState(1);
+  const [hasMoreReports, setHasMoreReports] = useState(true);
   
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportMachineId, setReportMachineId] = useState(""); 
@@ -140,8 +147,8 @@ export default function TechnicianDashboard() {
   const fetchData = async () => {
     try {
       const [res, repRes, machinesRes] = await Promise.all([
-        fetch(`${baseUrl}/api/work-orders`),
-        fetch(`${baseUrl}/api/reports`),
+        fetch(`${baseUrl}/api/work-orders/active`),
+        fetch(`${baseUrl}/api/reports?page=1&limit=20`),
         fetch(`${baseUrl}/api/machines`)
       ]);
       
@@ -156,6 +163,8 @@ export default function TechnicianDashboard() {
       if (repRes.ok) {
         const reportsData = await repRes.json();
         setAllReports(reportsData);
+        if (reportsData.length < 20) setHasMoreReports(false);
+        setReportsPage(1);
       }
       
       if (machinesRes.ok) {
@@ -171,6 +180,21 @@ export default function TechnicianDashboard() {
       setError("Could not reach the server.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMoreReports = async () => {
+    try {
+      const nextPage = reportsPage + 1;
+      const res = await fetch(`${baseUrl}/api/reports?page=${nextPage}&limit=20`);
+      if (res.ok) {
+        const newData = await res.json();
+        if (newData.length < 20) setHasMoreReports(false);
+        setAllReports((prev) => [...prev, ...newData]);
+        setReportsPage(nextPage);
+      }
+    } catch (e) {
+      console.error("Failed to load more reports", e);
     }
   };
 
@@ -218,6 +242,19 @@ export default function TechnicianDashboard() {
     }
   };
 
+  const handleOpenSignOff = async (order: any) => {
+    setSelectedOrder(order);
+    setPartsUsed([]);
+    try {
+      const res = await fetch(`${baseUrl}/api/machines/${order.machine_id}/parts`);
+      if (res.ok) {
+        setAvailableParts(await res.json());
+      }
+    } catch (e) {
+      console.error("Failed to load parts");
+    }
+  };
+
   const handleCompleteTask = async () => {
     if (!selectedOrder) return;
     setIsSubmitting(true);
@@ -229,7 +266,8 @@ export default function TechnicianDashboard() {
           supervisor_name: supervisorName, 
           technician_name: technicianName, 
           operator_name: operatorName,
-          resolution_notes: resolutionNotes 
+          resolution_notes: resolutionNotes,
+          parts_used: partsUsed
         })
       });
       if (!res.ok) throw new Error("Failed");
@@ -247,6 +285,7 @@ export default function TechnicianDashboard() {
       setOperatorName("");
       setResolutionNotes("");
       setSignOffPhotoFiles([]);
+      setPartsUsed([]);
       fetchData(); 
     } catch (err) {
       alert("Error submitting task.");
@@ -483,7 +522,7 @@ export default function TechnicianDashboard() {
                     </div>
                   </div>
                   
-                  <button onClick={() => setSelectedOrder(order)} className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-3 rounded-none transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
+                  <button onClick={() => handleOpenSignOff(order)} className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-3 rounded-none transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
                     Resolve Issue
                   </button>
                 </div>
@@ -530,7 +569,7 @@ export default function TechnicianDashboard() {
                     </div>
                   </div>
                   
-                  <button onClick={() => setSelectedOrder(order)} className="w-full bg-white text-black font-medium py-3 rounded-none transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
+                  <button onClick={() => handleOpenSignOff(order)} className="w-full bg-white text-black font-medium py-3 rounded-none transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
                     Open Task / कार्य खोलें
                   </button>
                 </div>
@@ -580,9 +619,17 @@ export default function TechnicianDashboard() {
             <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
               <span className="text-4xl mb-3 opacity-50">📋</span>
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Reports</h3>
-              <p className="text-[#737373] text-sm mt-2">No inspection reports have been found.</p>
+              <p className="text-[#737373] text-sm mt-2">No completed inspection reports found.</p>
             </div>
           )
+        )}
+        
+        {activeTab === "reports" && hasMoreReports && allReports.length > 0 && (
+          <div className="mt-8 flex justify-center">
+            <button onClick={loadMoreReports} className="bg-white border-2 border-[#111111] text-[#111111] px-6 py-3 font-serif hover:bg-[#111111] hover:text-white transition-colors hard-shadow-hover text-sm tracking-widest uppercase font-bold">
+              Load More Reports
+            </button>
+          </div>
         )}
       </div>
 
@@ -628,16 +675,52 @@ export default function TechnicianDashboard() {
                 </div>
               </div>
 
+              {/* Spare Parts Section */}
+              <div className="border border-[#111111] p-4 bg-white shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+                <label className="block text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2">🔧 Spare Parts Used (Optional)</label>
+                
+                {partsUsed.map((p, i) => (
+                  <div key={i} className="flex gap-2 mb-2 items-center">
+                    <span className="flex-1 text-xs font-mono bg-zinc-50 border border-[#111111] p-2 truncate">{p.part_name}</span>
+                    <span className="text-xs font-mono bg-zinc-50 border border-[#111111] p-2 w-16 text-center">x{p.quantity}</span>
+                    <button type="button" onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm">✕</button>
+                  </div>
+                ))}
+
+                <div className="flex gap-2 mt-3">
+                  <select id="part-select" className="flex-1 bg-white border-2 border-[#111111] p-2 text-xs font-mono outline-none">
+                    <option value="">-- Select Part --</option>
+                    {availableParts.map(ap => (
+                      <option key={ap.id} value={ap.id}>{ap.part_name} (Avail: {ap.quantity})</option>
+                    ))}
+                  </select>
+                  <input type="number" id="part-qty" min="1" defaultValue="1" className="w-16 bg-white border-2 border-[#111111] p-2 text-xs font-mono outline-none text-center" />
+                  <button type="button" onClick={() => {
+                    const sel = document.getElementById('part-select') as HTMLSelectElement;
+                    const qty = document.getElementById('part-qty') as HTMLInputElement;
+                    if (sel.value && qty.value) {
+                      const partName = sel.options[sel.selectedIndex].text.split(' (')[0];
+                      setPartsUsed([...partsUsed, { part_id: parseInt(sel.value), quantity: parseInt(qty.value), part_name: partName }]);
+                      sel.value = "";
+                      qty.value = "1";
+                    }
+                  }} className="bg-[#111111] text-[#F9F9F7] px-3 text-xs font-bold font-serif hover:bg-zinc-800 border-2 border-[#111111]">ADD</button>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setSignOffPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" multiple accept="image/*" onChange={async (e) => {
+                    const files = Array.from(e.target.files || []);
+                    setSignOffPhotoFiles(await compressImages(files));
+                  }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {signOffPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
                 </div>
               </div>
               
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); stopListening(); setResolutionNotes(""); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); stopListening(); setResolutionNotes(""); setPartsUsed([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className={`flex-1 text-[#111111] rounded-none p-3.5 text-sm font-medium transition-colors disabled:opacity-50 ${selectedOrder.schedule_type === 'breakdown_report' ? 'bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500' : 'bg-white text-black border-2 border-white hard-shadow-hover hover:bg-gray-200'}`}>
                   {selectedOrder.schedule_type === 'breakdown_report' ? 'Resolve Issue' : 'Complete Task'}
                 </button>
@@ -708,7 +791,10 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
                 <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setPmPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  <input type="file" multiple accept="image/*" onChange={async (e) => {
+                    const files = Array.from(e.target.files || []);
+                    setPmPhotoFiles(await compressImages(files));
+                  }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {pmPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {pmPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload Photos</span>}
                 </div>
               </div>

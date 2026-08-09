@@ -1,5 +1,8 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { compressImages } from "@/utils/imageCompression";
+import { useRef } from "react";
 import Link from "next/link";
 
 interface Machine {
@@ -57,6 +60,8 @@ export default function MachineDirectory() {
   const [reports, setReports] = useState<MachineReport[]>([]); 
   const [isPanelLoading, setIsPanelLoading] = useState(false);
   
+  const [partsUsed, setPartsUsed] = useState<{part_id: number, part_name: string, quantity: number}[]>([]);
+  
   const [showAddPart, setShowAddPart] = useState(false);
   const [newPartName, setNewPartName] = useState("");
   const [newPartNumber, setNewPartNumber] = useState("");
@@ -103,7 +108,8 @@ export default function MachineDirectory() {
 
   const [breakdownHistory, setBreakdownHistory] = useState<any[]>([]);
   const [pmHistory, setPmHistory] = useState<any[]>([]);
-  const [activeOrders, setActiveOrders] = useState<any[]>([]);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
   
   const [resolveOrder, setResolveOrder] = useState<any>(null);
   const filteredMachines = machines.filter(m => {
@@ -133,6 +139,8 @@ export default function MachineDirectory() {
         // Filter history by schedule type
         setBreakdownHistory(historyData.filter((o: any) => o.schedule_type === 'breakdown_report'));
         setPmHistory(historyData.filter((o: any) => o.schedule_type !== 'breakdown_report'));
+        setHistoryPage(1);
+        setHasMoreHistory(historyData.length === 20); // assuming limit=20
       }
       if (reportsRes.ok) {
         const reportsData = await reportsRes.json();
@@ -150,11 +158,59 @@ export default function MachineDirectory() {
       console.error("Failed to load machine details", e);
     }
   };
+  const loadMoreHistory = async () => {
+    if (!selectedMachine) return;
+    try {
+      const nextPage = historyPage + 1;
+      const res = await fetch(`${baseUrl}/api/machines/${selectedMachine.id}/history?page=${nextPage}&limit=20`);
+      if (res.ok) {
+        const historyData = await res.json();
+        if (historyData.length < 20) setHasMoreHistory(false);
+        setHistoryPage(nextPage);
+        setBreakdownHistory((prev: any) => [...prev, ...historyData.filter((o: any) => o.schedule_type === 'breakdown_report')]);
+        setPmHistory((prev: any) => [...prev, ...historyData.filter((o: any) => o.schedule_type !== 'breakdown_report')]);
+      }
+    } catch (e) {
+      console.error("Failed to load more history");
+    }
+  };
+
   const handleCloseDetails = () => {
     setSelectedMachine(null);
     setActiveOrders([]);
   };
-  const handleResolveSubmit = (e: any) => {};
+  const handleResolveSubmit = async (e: any) => {
+    e.preventDefault();
+    if (!selectedMachine) return;
+    const breakdownOrder = activeOrders.find(o => o.order_type === 'breakdown' && o.status !== 'completed');
+    if (!breakdownOrder) {
+      alert("No active breakdown found to resolve.");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    try {
+      const res = await fetch(`${baseUrl}/api/work-orders/${breakdownOrder.id}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          supervisor_name: supervisor, 
+          resolution_notes: resolutionNotes,
+          parts_used: partsUsed
+        })
+      });
+      if (!res.ok) throw new Error("Failed");
+      
+      alert("✅ Breakdown resolved successfully!");
+      setActiveView("home");
+      setPartsUsed([]);
+      openMachineDetails(selectedMachine);
+    } catch (err) {
+      alert("Error resolving breakdown.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const handleFaultSubmit = (e: any) => {};
   const handlePMSubmit = (e: any) => {};
   const handleUpdateQuantity = async (id: number, currentQty: number, delta: number) => {
@@ -619,8 +675,41 @@ export default function MachineDirectory() {
                     <label className="block text-[#525252] text-sm mb-1">Resolution Notes</label>
                     <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" placeholder="How did you fix it?"></textarea>
                   </div>
+
+                  {/* Spare Parts Section */}
+                  <div className="border border-[#111111] p-4 bg-white shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
+                    <label className="block text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2">🔧 Spare Parts Used (Optional)</label>
+                    
+                    {partsUsed.map((p, i) => (
+                      <div key={i} className="flex gap-2 mb-2 items-center">
+                        <span className="flex-1 text-xs font-mono bg-zinc-50 border border-[#111111] p-2 truncate">{p.part_name}</span>
+                        <span className="text-xs font-mono bg-zinc-50 border border-[#111111] p-2 w-16 text-center">x{p.quantity}</span>
+                        <button type="button" onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm">✕</button>
+                      </div>
+                    ))}
+
+                    <div className="flex gap-2 mt-3">
+                      <select id="part-select-res" className="flex-1 bg-white border-2 border-[#111111] p-2 text-xs font-mono outline-none">
+                        <option value="">-- Select Part --</option>
+                        {parts.map(ap => (
+                          <option key={ap.id} value={ap.id}>{ap.part_name} (Avail: {ap.quantity})</option>
+                        ))}
+                      </select>
+                      <input type="number" id="part-qty-res" min="1" defaultValue="1" className="w-16 bg-white border-2 border-[#111111] p-2 text-xs font-mono outline-none text-center" />
+                      <button type="button" onClick={() => {
+                        const sel = document.getElementById('part-select-res') as HTMLSelectElement;
+                        const qty = document.getElementById('part-qty-res') as HTMLInputElement;
+                        if (sel.value && qty.value) {
+                          const partName = sel.options[sel.selectedIndex].text.split(' (')[0];
+                          setPartsUsed([...partsUsed, { part_id: parseInt(sel.value), quantity: parseInt(qty.value), part_name: partName }]);
+                          sel.value = "";
+                          qty.value = "1";
+                        }
+                      }} className="bg-[#111111] text-white px-3 text-xs font-bold font-serif hover:bg-zinc-800 border-2 border-[#111111]">ADD</button>
+                    </div>
+                  </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
+                    <button type="button" onClick={() => { setActiveView("home"); setPartsUsed([]); }} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
                     <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
                   </div>
                 </form>
@@ -636,6 +725,7 @@ export default function MachineDirectory() {
                     formData.append("technician", inspectionEngineerName); 
                     formData.append("notes", resolutionNotes);
                     formData.append("status", "completed");
+                    formData.append("parts_used", JSON.stringify(partsUsed));
                     reportPhotoFiles.forEach((file) => formData.append("photos", file));
                     
                     const res = await fetch(`${baseUrl}/api/work-orders/${resolveOrder.id}/complete`, {
@@ -667,8 +757,9 @@ export default function MachineDirectory() {
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Upload Photos</label>
                     <div className="relative border-2 border-dashed border-[#111111] p-4 text-center bg-[#F9F9F7]">
-                      <input type="file" multiple accept="image/*" onChange={(e) => {
-                        setReportPhotoFiles(Array.from(e.target.files || []));
+                      <input type="file" multiple accept="image/*" onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+                        setReportPhotoFiles(await compressImages(files));
                       }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                       {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#111111] text-xs">📸 Tap to Upload Photos</span>}
                     </div>

@@ -26,6 +26,7 @@ const fontMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Prem PM software",
   description: "Dadri Plant Control CMMS",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
