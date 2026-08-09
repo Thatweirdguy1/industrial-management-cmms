@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lora, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import GeofenceWrapper from "@/components/GeofenceWrapper";
 
 const fontPlayfair = Playfair_Display({
   variable: "--font-playfair",
@@ -37,7 +38,9 @@ export default function RootLayout({
       lang="en"
       className={`${fontPlayfair.variable} ${fontLora.variable} ${fontInter.variable} ${fontMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <GeofenceWrapper>{children}</GeofenceWrapper>
+      </body>
     </html>
   );
 }
