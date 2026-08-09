@@ -583,6 +583,54 @@ export default function TechnicianDashboard() {
             </div>
           )
         )}
+
+        {activeTab === "predictive" && (
+          predictiveAlerts.length > 0 ? (
+            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {predictiveAlerts.map((order) => (
+                <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border p-5 flex flex-col hard-shadow-hover transition-all">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="px-2.5 py-1 rounded-none text-[10px] font-serif tracking-wide uppercase border bg-emerald-50 text-emerald-700 border-emerald-200">
+                      PREDICTIVE ALERT
+                    </span>
+                    <span className="text-[#737373] text-xs font-mono">#{order.id}</span>
+                  </div>
+                  
+                  <h2 className="text-lg font-serif text-[#111111] mb-1">
+                    {order.machine_raw_name || 'Unknown Machine'}
+                  </h2>
+                  <p className="text-xs text-[#525252] font-mono mb-4 bg-zinc-100 p-2 border border-[#111111] inline-block">Asset: {order.asset_tag || 'N/A'}</p>
+                  
+                  <div className="bg-emerald-50/50 border border-emerald-200 p-3 mb-5 flex-grow border-l-4 border-l-emerald-500">
+                    <p className="text-sm font-medium text-emerald-900 line-clamp-3">
+                      {order.description}
+                    </p>
+                  </div>
+                  
+                  <div className="mb-5 flex items-center gap-2">
+                    <div className="w-1 h-8 rounded-none bg-emerald-500"></div>
+                    <div>
+                      <p className="text-[10px] text-[#737373] uppercase tracking-widest">Alert Time / अलर्ट समय</p>
+                      <p className="text-[#111111] text-xs">
+                        {new Date(order.created_at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <button onClick={() => handleOpenSignOff(order)} className="w-full bg-white border-2 border-[#111111] text-[#111111] font-bold py-3 rounded-none transition-transform hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(16,185,129,1)] hover:border-emerald-500 mt-auto text-sm uppercase tracking-widest">
+                    Resolve Alert
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
+              <span className="text-4xl mb-3 opacity-50">🟢</span>
+              <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Predictive Alerts</h3>
+              <p className="text-[#737373] text-sm mt-2">All machines are operating within normal parameters.</p>
+            </div>
+          )
+        )}
         
         {activeTab === "reports" && (
           allReports.length > 0 ? (
