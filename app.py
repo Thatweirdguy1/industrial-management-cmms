@@ -426,7 +426,9 @@ def log_preventive_maintenance():
             machine.status = 'operational'
             
         db.session.commit()
-        return jsonify({"message": "Preventive maintenance logged.", "order_i@app.route('/api/work-orders/<int:order_id>/complete', methods=['POST'])
+        return jsonify({"message": "Preventive maintenance logged.", "order_id": order.id}), 201
+
+@app.route('/api/work-orders/<int:order_id>/complete', methods=['POST'])
 def complete_work_order(order_id):
     order = WorkOrder.query.get_or_404(order_id)
     if order.status == 'completed':
