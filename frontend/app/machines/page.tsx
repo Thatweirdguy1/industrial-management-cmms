@@ -111,6 +111,7 @@ export default function MachineDirectory() {
   const [historyPage, setHistoryPage] = useState(1);
   const [hasMoreHistory, setHasMoreHistory] = useState(true);
   
+  const [activeOrders, setActiveOrders] = useState<any[]>([]);
   const [resolveOrder, setResolveOrder] = useState<any>(null);
   const filteredMachines = machines.filter(m => {
     if (statusFilter !== "all" && m.status !== statusFilter) return false;
