@@ -4,8 +4,8 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 def send_telegram_alert(message, reply_to_message_id=None):
-    BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
-    GROUP_CHAT_ID = '-5182937655' 
+    BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+    GROUP_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '-5182937655')
     print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] 🚨 FIRING TELEGRAM ALERT...")
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {'chat_id': GROUP_CHAT_ID, 'text': message, 'parse_mode': 'Markdown'}
@@ -20,8 +20,8 @@ def send_telegram_alert(message, reply_to_message_id=None):
     return None
 
 def send_telegram_document(filepath, caption=None):
-    BOT_TOKEN = '8809133258:AAGMvbwWEp_T0TVYLezec4KM5d6X_R-Ty04'
-    GROUP_CHAT_ID = '-5182937655' 
+    BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+    GROUP_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '-5182937655')
     print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] UPLOADING TELEGRAM DOCUMENT...")
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
     
