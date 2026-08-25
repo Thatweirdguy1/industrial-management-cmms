@@ -372,7 +372,7 @@ export default function TechnicianDashboard() {
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#F9F9F7] border border-[#111111] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header className="bg-[#F9F9F7] border-[#111111] border-2 hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
@@ -403,7 +403,7 @@ export default function TechnicianDashboard() {
                   <div className="text-[10px] text-current opacity-70">यूटिलिटी रिपोर्ट</div>
                 </div>
               </Link>
-              <button onClick={() => setShowPMModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] border  font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowPMModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">🔧</span>
                 <div className="text-left">
                   <div className="text-sm">Log PM</div>
@@ -492,7 +492,7 @@ export default function TechnicianDashboard() {
           breakdownOrders.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {breakdownOrders.map((order) => (
-                <div key={order.id} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 border border-black rounded-none p-5 flex flex-col hover:bg-neutral-100 transition-colors relative overflow-hidden">
+                <div key={order.id} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 rounded-none p-5 flex flex-col hover:bg-neutral-100 transition-colors relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-red-500 animate-pulse"></div>
                   
                   <div className="flex justify-between items-start mb-4">
@@ -507,7 +507,7 @@ export default function TechnicianDashboard() {
                   </h2>
                   <p className="text-[#525252] font-mono text-xs mb-4">{order.asset_tag}</p>
                   
-                  <div className="bg-[#F9F9F7] border-2 border-[#111111]/50 rounded-none p-3 mb-4 border border-[#111111] border/50 flex-grow">
+                  <div className="bg-[#F9F9F7] border-2 border-[#111111]/50 rounded-none p-3 mb-4 border-[#111111] flex-grow">
                     <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1">Issue Reported</p>
                     <p className="text-[#111111] text-xs leading-relaxed">{order.description}</p>
                   </div>
@@ -522,14 +522,14 @@ export default function TechnicianDashboard() {
                     </div>
                   </div>
                   
-                  <button onClick={() => handleOpenSignOff(order)} className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-3 rounded-none transition-transform hover:scale-[1.02] active:scale-[0.98] mt-auto text-sm">
+                  <button onClick={() => handleOpenSignOff(order)} className="w-full btn-primary py-3 active:scale-[0.98] mt-auto text-sm">
                     Resolve Issue
                   </button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="border border-dashed border-[#111111] border p-12 rounded-none text-center bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover/20 flex flex-col items-center justify-center">
+            <div className="border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] border-2 hard-shadow-hover/20 flex flex-col items-center justify-center">
               <span className="text-4xl mb-3 opacity-50">✨</span>
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Active Breakdowns</h3>
               <p className="text-[#737373] text-sm mt-2">All machines are operational.</p>
@@ -541,9 +541,9 @@ export default function TechnicianDashboard() {
           pmOrders.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {pmOrders.map((order) => (
-                <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover/60 transition-colors">
+                <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] transition-colors">
                   <div className="flex justify-between items-start mb-4">
-                    <span className="px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase border bg-[#111111]/20 border-2 border-purple-500 text-[#CC0000] ">
+                    <span className="px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase bg-[#111111]/20 border-2 border-purple-500 text-[#CC0000]">
                       Routine / नियमित
                     </span>
                     <span className="text-[#737373] text-xs font-mono">#{order.id}</span>
@@ -554,7 +554,7 @@ export default function TechnicianDashboard() {
                   </h2>
                   <p className="text-[#525252] font-mono text-xs mb-4">{order.asset_tag}</p>
                   
-                  <div className="bg-[#F9F9F7] border-2 border-[#111111]/50 rounded-none p-3 mb-4 border border-[#111111] border/50 flex-grow">
+                  <div className="bg-[#F9F9F7] border-2 border-[#111111]/50 rounded-none p-3 mb-4 border-[#111111] flex-grow">
                     <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1">Notes / विवरण</p>
                     <p className="text-[#111111] text-xs leading-relaxed">{order.description}</p>
                   </div>
@@ -576,7 +576,7 @@ export default function TechnicianDashboard() {
               ))}
             </div>
           ) : (
-            <div className="border border-dashed border-[#111111] border p-12 rounded-none text-center bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover/20 flex flex-col items-center justify-center">
+            <div className="border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] border-2 hard-shadow-hover/20 flex flex-col items-center justify-center">
               <span className="text-4xl mb-3 opacity-50">✨</span>
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Scheduled Tasks</h3>
               <p className="text-[#737373] text-sm mt-2">No pending maintenance required.</p>
@@ -588,7 +588,7 @@ export default function TechnicianDashboard() {
           predictiveAlerts.length > 0 ? (
             <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {predictiveAlerts.map((order) => (
-                <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border p-5 flex flex-col hard-shadow-hover transition-all">
+                <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] p-5 flex flex-col hard-shadow-hover transition-all">
                   <div className="flex justify-between items-start mb-4">
                     <span className="px-2.5 py-1 rounded-none text-[10px] font-serif tracking-wide uppercase border bg-emerald-50 text-emerald-700 border-emerald-200">
                       PREDICTIVE ALERT
@@ -650,7 +650,7 @@ export default function TechnicianDashboard() {
                   </h2>
                   <p className="text-[#111111] font-mono text-xs mb-4">Uploaded By: {report.engineer_name || "Unknown"} ({report.engineer_type || "N/A"})</p>
                   
-                  <div className="bg-white border border-[#111111] border/50 rounded-none p-3 mb-4 flex-grow">
+                  <div className="bg-white border border-[#111111] rounded-none p-3 mb-4 flex-grow">
                     <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-1">Notes</p>
                     <p className="text-[#111111] text-xs leading-relaxed">{report.notes || "No notes provided."}</p>
                   </div>
@@ -684,7 +684,7 @@ export default function TechnicianDashboard() {
       {/* SIGN OFF / RESOLVE MODAL */}
       {selectedOrder && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             <h3 className="text-lg font-medium text-[#111111] mb-2">Sign Off / साइन ऑफ</h3>
             <p className="text-[#525252] text-xs mb-6 font-mono bg-[#F9F9F7] border-2 border-[#111111] p-2 rounded-none inline-block">Task #{selectedOrder.id}</p>
             
@@ -692,17 +692,17 @@ export default function TechnicianDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Sup / सुपरवाइजर</label>
-                  <input type="text" required value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
+                  <input type="text" required value={supervisorName} onChange={(e) => setSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
                 </div>
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Tech / तकनीशियन (Optional)</label>
-                  <input type="text" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
+                  <input type="text" value={technicianName} onChange={(e) => setTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
                 </div>
               </div>
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Operator / ऑपरेटर (Optional)</label>
-                <input type="text" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
+                <input type="text" value={operatorName} onChange={(e) => setOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
               </div>
 
               <div>
@@ -712,7 +712,7 @@ export default function TechnicianDashboard() {
                     rows={2} 
                     value={resolutionNotes} 
                     onChange={(e) => setResolutionNotes(e.target.value)} 
-                    className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 resize-none text-sm" 
+                    className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 resize-none text-sm" 
                     placeholder="Describe how the issue was fixed..."
                   />
                   {browserSupportsSpeech && (
@@ -758,7 +758,7 @@ export default function TechnicianDashboard() {
 
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
-                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
                     setSignOffPhotoFiles(await compressImages(files));
@@ -768,7 +768,7 @@ export default function TechnicianDashboard() {
               </div>
               
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); stopListening(); setResolutionNotes(""); setPartsUsed([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setSelectedOrder(null); setSignOffPhotoFiles([]); stopListening(); setResolutionNotes(""); setPartsUsed([]); }} className="flex-1 btn-secondary p-3.5 text-sm font-medium">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className={`flex-1 text-[#111111] rounded-none p-3.5 text-sm font-medium transition-colors disabled:opacity-50 ${selectedOrder.schedule_type === 'breakdown_report' ? 'bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500' : 'bg-white text-black border-2 border-white hard-shadow-hover hover:bg-gray-200'}`}>
                   {selectedOrder.schedule_type === 'breakdown_report' ? 'Resolve Issue' : 'Complete Task'}
                 </button>
@@ -781,12 +781,12 @@ export default function TechnicianDashboard() {
       {/* PM MODAL */}
       {showPMModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             <h3 className="text-lg font-medium text-[#111111] mb-6">🔧 Log Preventive Maintenance</h3>
             <form onSubmit={handleReportPM} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
-                <select value={pmMachineId} onChange={(e) => setPmMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm appearance-none">
+                <select value={pmMachineId} onChange={(e) => setPmMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
                       {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
@@ -814,7 +814,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Details / विवरण</label>
                 <div className="flex gap-2">
-                  <textarea required rows={2} value={pmDescription} onChange={(e) => setPmDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 resize-none text-sm" placeholder="Enter service details..."/>
+                  <textarea required rows={2} value={pmDescription} onChange={(e) => setPmDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 resize-none text-sm" placeholder="Enter service details..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('pm')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'pm' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
                       <span className="text-xl">🎤</span>
@@ -825,20 +825,20 @@ export default function TechnicianDashboard() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Sup / सुपरवाइजर</label>
-                  <input type="text" required value={pmSupervisorName} onChange={(e) => setPmSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
+                  <input type="text" required value={pmSupervisorName} onChange={(e) => setPmSupervisorName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
                 </div>
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Tech / तकनीशियन (Optional)</label>
-                  <input type="text" value={pmTechnicianName} onChange={(e) => setPmTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
+                  <input type="text" value={pmTechnicianName} onChange={(e) => setPmTechnicianName(e.target.value)} placeholder="Name / नाम" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
                 </div>
               </div>
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Operator / ऑपरेटर (Optional)</label>
-                <input type="text" value={pmOperatorName} onChange={(e) => setPmOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
+                <input type="text" value={pmOperatorName} onChange={(e) => setPmOperatorName(e.target.value)} placeholder="Type name / नाम दर्ज करें" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm" />
               </div>
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
-                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
                     setPmPhotoFiles(await compressImages(files));
@@ -847,7 +847,7 @@ export default function TechnicianDashboard() {
                 </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setShowPMModal(false); stopListening(); setPmPhotoFiles([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setShowPMModal(false); stopListening(); setPmPhotoFiles([]); }} className="flex-1 btn-secondary p-3.5 text-sm font-medium">Cancel</button>
                 <button type="submit" disabled={isSubmitting} className="flex-1 bg-amber-500 text-zinc-950 rounded-none p-3.5 text-sm font-medium hover:bg-amber-400 transition-colors disabled:opacity-50">Submit PM</button>
               </div>
             </form>
@@ -858,12 +858,12 @@ export default function TechnicianDashboard() {
       {/* REPORT FAULT MODAL */}
       {showReportModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             <h3 className="text-lg font-medium text-[#111111] mb-6">🚨 Report Fault / खराबी दर्ज करें</h3>
             <form onSubmit={handleReportBreakdown} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
-                <select value={reportMachineId} onChange={(e) => setReportMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 text-sm appearance-none">
+                <select value={reportMachineId} onChange={(e) => setReportMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
                       {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
@@ -891,7 +891,7 @@ export default function TechnicianDashboard() {
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Details / विवरण</label>
                 <div className="flex gap-2">
-                  <textarea required rows={3} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 resize-none text-sm" placeholder="Describe the fault clearly..."/>
+                  <textarea required rows={3} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 resize-none text-sm" placeholder="Describe the fault clearly..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('report')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'report' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
                       <span className="text-xl">🎤</span>
@@ -902,14 +902,14 @@ export default function TechnicianDashboard() {
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Fault Photos / फ़ोटो (Optional)</label>
-                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="hidden" />
                   {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
                 </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setShowReportModal(false); stopListening(); setReportPhotoFiles([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-red-500 transition-colors disabled:opacity-50">Alert Team</button>
+                <button type="button" onClick={() => { setShowReportModal(false); stopListening(); setReportPhotoFiles([]); }} className="flex-1 btn-secondary p-3.5 text-sm font-medium">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 btn-danger p-3.5 text-sm font-medium disabled:opacity-50">Alert Team</button>
               </div>
             </form>
           </div>
@@ -919,12 +919,12 @@ export default function TechnicianDashboard() {
       {/* INSPECTION REPORT MODAL */}
       {showInspectionModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             <h3 className="text-lg font-medium text-[#111111] mb-6">📋 Upload Inspection Report</h3>
             <form onSubmit={handleUploadInspection} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
-                <select value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm appearance-none">
+                <select value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
                       {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
@@ -945,13 +945,13 @@ export default function TechnicianDashboard() {
                     <span className="text-[10px] sm:text-xs font-medium uppercase">External Vendor</span>
                   </label>
                 </div>
-                <input type="text" required value={inspectionEngineerName} onChange={(e) => setInspectionEngineerName(e.target.value)} placeholder="Engineer/Company Name *" className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
+                <input type="text" required value={inspectionEngineerName} onChange={(e) => setInspectionEngineerName(e.target.value)} placeholder="Engineer/Company Name *" className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm" />
               </div>
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Notes / विवरण (Optional)</label>
                 <div className="flex gap-2">
-                  <textarea rows={2} value={inspectionNotes} onChange={(e) => setInspectionNotes(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 resize-none text-sm" placeholder="Additional details..."/>
+                  <textarea rows={2} value={inspectionNotes} onChange={(e) => setInspectionNotes(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 resize-none text-sm" placeholder="Additional details..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('inspection')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'inspection' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
                       <span className="text-xl">🎤</span>
@@ -962,15 +962,15 @@ export default function TechnicianDashboard() {
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Document / फ़ाइल</label>
-                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="hidden" />
                   {inspectionFile ? <span className="text-[#111111] text-xs">📎 {inspectionFile.name}</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
                 </label>
               </div>
               
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => { setShowInspectionModal(false); stopListening(); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 bg-white text-black border-2 border-white hard-shadow-hover text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-gray-200 transition-colors disabled:opacity-50">Upload Report</button>
+                <button type="button" onClick={() => { setShowInspectionModal(false); stopListening(); }} className="flex-1 btn-secondary p-3.5 text-sm font-medium">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 btn-primary p-3.5 text-sm font-medium disabled:opacity-50">Upload Report</button>
               </div>
             </form>
           </div>

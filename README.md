@@ -9,7 +9,7 @@ A next-generation, AI-assisted Computerized Maintenance Management System (CMMS)
 ## ✨ Core Features
 
 ### 🧠 1. Predictive Maintenance Engine
-Monitors machine health in real-time. If a machine breaks down **3 or more times within a 10-day rolling window**, the engine automatically flags the machine as `CRITICAL` and dispatches an emergency Telegram alert to the engineering team.
+Monitors machine health in real-time. If a machine breaks down **3 or more times within a 5-day rolling window**, the engine automatically flags the machine as `CRITICAL` and dispatches an emergency Telegram alert to the engineering team.
 
 ### 📦 2. Smart Inventory & Burn Rate API
 Tracks the consumption of spare parts on the factory floor. The engine calculates the **Daily Burn Rate** based on the last 30 days of usage. If any spare part is predicted to hit zero inventory in **7 days or less**, it automatically triggers a reorder alert via Telegram.
@@ -75,7 +75,7 @@ sequenceDiagram
     participant TG as Telegram Group
 
     Tech->>DB: Logs Part Usage (e.g., 2 Bearings used)
-    loop Every 4 Hours
+    loop Every 24 Hours
         Engine->>DB: Fetch last 30 days of usage
         Engine->>Engine: Calculate Daily Burn Rate
         Engine->>Engine: Divide Current Stock by Burn Rate
@@ -118,7 +118,24 @@ pip install -r requirements.txt
 pm2 start app.py --name dadri-backend --interpreter ./venv/bin/python
 ```
 
-### 3. Next.js Frontend
+### 3. Configuration (secrets)
+All credentials are read from the environment — nothing is hardcoded. Copy the
+template and fill it in; `.env` is gitignored and must never be committed.
+
+```bash
+cp .env.example .env
+nano .env                      # TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, QR_BASE_URL
+set -a && . ./.env && set +a   # export before starting the backend
+```
+
+| Variable | Required | Effect if unset |
+| :--- | :--- | :--- |
+| `TELEGRAM_BOT_TOKEN` | Yes | All Telegram alerts are skipped and logged to stdout instead. |
+| `TELEGRAM_CHAT_ID` | Yes | Same as above. Numeric group id, keep the leading `-`. |
+| `QR_BASE_URL` | For QR printing | `generate_qrs.py` falls back to `localhost` and prints unusable stickers. |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | No | Photos are stored locally under `static/uploads/` instead of S3. |
+
+### 4. Next.js Frontend
 ```bash
 cd frontend
 npm install
@@ -126,7 +143,7 @@ npm run build
 pm2 start npm --name "dadri-frontend" -- start
 ```
 
-### 4. Nginx & SSL (HTTPS)
+### 5. Nginx & SSL (HTTPS)
 > **Note:** A domain name (e.g., DuckDNS) is required to generate an SSL certificate. The Voice-to-Text Web Speech API will **not** work on mobile devices without HTTPS.
 
 ```bash
@@ -148,6 +165,24 @@ sudo ln -s /etc/nginx/sites-available/dadri-cmms /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 sudo certbot --nginx -d YOUR_DOMAIN.duckdns.org --redirect
 ```
+
+### 6. Machine QR Stickers
+Each machine gets a sticker that opens its mobile report page directly. Generate
+these **after** SSL is live, so the codes carry the HTTPS domain — the Web Speech
+API dictation will not run from a plain `http://` origin.
+
+```bash
+QR_BASE_URL=https://YOUR_DOMAIN.duckdns.org python generate_qrs.py
+```
+
+Writes two sets, one file per machine, named `ID<id>_<asset_tag>.png`:
+
+*   `qr_codes/` — bare QR codes at full resolution.
+*   `labeled_qrs/` — print-ready stickers with the machine name and `ID | Tag` caption.
+
+Codes encode `<QR_BASE_URL>/m?id=<machine_id>`, where the id comes from the
+`machines` table. **Re-run this whenever machines are re-seeded** — the ids shift
+and previously printed stickers will then open the wrong machine.
 
 ---
 

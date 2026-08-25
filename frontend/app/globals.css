@@ -91,3 +91,61 @@ h1, h2, h3, h4, h5, h6, .font-serif, .font-display {
     border-right: none;
   }
 }
+
+/* Buttons
+   The newsprint palette has exactly three button styles. They live here rather than
+   as inline utilities because spelling the ink/paper pairing out at every call site
+   is what produced the black-on-black buttons these replace: a find-and-replace
+   appended `text-[#111111]` onto elements that were already `bg-[#111111]`, and
+   arbitrary Tailwind colour utilities have equal specificity, so which one wins
+   depends on stylesheet order rather than on the order written in className. */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  font-family: var(--font-playfair), serif;
+  letter-spacing: 0.1em;
+  border: 2px solid var(--color-news-ink);
+  transition: all 150ms ease-out;
+  cursor: pointer;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled,
+.btn-danger:disabled {
+  cursor: not-allowed;
+}
+
+/* Ink on paper - the default action. */
+.btn-primary {
+  background: var(--color-news-ink);
+  color: var(--color-news-bg);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-news-bg);
+  color: var(--color-news-ink);
+  box-shadow: 4px 4px 0px 0px var(--color-news-ink);
+  transform: translate(-2px, -2px);
+}
+
+/* Outlined - cancel and other secondary actions. */
+.btn-secondary {
+  background: var(--color-news-bg);
+  color: var(--color-news-ink);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--color-news-ink);
+  color: var(--color-news-bg);
+}
+
+/* Breakdown reporting and team alerts only. */
+.btn-danger {
+  background: var(--color-news-red);
+  color: var(--color-news-bg);
+  border-color: var(--color-news-red);
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--color-news-bg);
+  color: var(--color-news-red);
+  box-shadow: 4px 4px 0px 0px var(--color-news-red);
+  transform: translate(-2px, -2px);
+}

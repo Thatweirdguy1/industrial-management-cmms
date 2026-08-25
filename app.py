@@ -1,5 +1,6 @@
 import os
 import io
+import json
 import uuid
 import requests
 import boto3
@@ -20,9 +21,10 @@ except ImportError:
     def start_scheduler(app): pass
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+DB_PATH = os.path.join(basedir, 'maintenance.db')
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'maintenance.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DB_PATH
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 UPLOAD_FOLDER = os.path.join(basedir, 'static', 'uploads')
@@ -31,18 +33,75 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 db.init_app(app)
 
-# --- AWS S3 CONFIGURATION ---
-AWS_ACCESS_KEY = 'YOUR_AWS_ACCESS_KEY'
-AWS_SECRET_KEY = 'YOUR_AWS_SECRET_KEY'
-AWS_BUCKET_NAME = 'dadri-plant-maintenance'
-AWS_REGION = 'ap-south-1' 
+def get_db_connection():
+    """Raw SQLite connection for the tables SQLAlchemy doesn't map
+    (spare_parts, part_usage_logs, machine_reports, machine_config).
+
+    timeout is not the default 5s because the APScheduler jobs write to the same
+    file as live requests; without it a sweep landing mid-request raises
+    "database is locked" instead of waiting its turn.
+    """
+    conn = sqlite3.connect(DB_PATH, timeout=15)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def ensure_inventory_schema():
+    """Create the inventory tables if this DB copy is missing them.
+
+    The schema grew through one-off scripts (add_parts_table.py, update_parts_db.py,
+    upgrade_inventory_db.py), so a fresh or partially migrated maintenance.db can be
+    missing spare_parts entirely - which took down every /parts endpoint.
+    """
+    conn = get_db_connection()
+    try:
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS spare_parts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                machine_id INTEGER NOT NULL,
+                part_name TEXT NOT NULL,
+                part_number TEXT,
+                quantity INTEGER DEFAULT 0,
+                photo_url TEXT,
+                last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (machine_id) REFERENCES machines (id)
+            )
+        ''')
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS part_usage_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                part_id INTEGER NOT NULL,
+                quantity_used INTEGER NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (part_id) REFERENCES spare_parts (id)
+            )
+        ''')
+        # photo_url was bolted on later by update_parts_db.py; back-fill older copies.
+        columns = [row['name'] for row in conn.execute('PRAGMA table_info(spare_parts)')]
+        if 'photo_url' not in columns:
+            conn.execute('ALTER TABLE spare_parts ADD COLUMN photo_url TEXT')
+        conn.commit()
+    finally:
+        conn.close()
+
+ensure_inventory_schema()
+
+# --- AWS S3 CONFIGURATION (optional - set the env vars to enable) ---
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY_ID', '')
+AWS_SECRET_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
+AWS_BUCKET_NAME = os.environ.get('AWS_BUCKET_NAME', 'dadri-plant-maintenance')
+AWS_REGION = os.environ.get('AWS_REGION', 'ap-south-1')
+
+S3_ENABLED = bool(AWS_ACCESS_KEY and AWS_SECRET_KEY and AWS_BUCKET_NAME)
 
 s3_client = boto3.client(
     's3',
     aws_access_key_id=AWS_ACCESS_KEY,
     aws_secret_access_key=AWS_SECRET_KEY,
     region_name=AWS_REGION
-)
+) if S3_ENABLED else None
+
+if not S3_ENABLED:
+    print("[config] S3 not configured (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY unset) - photos stay in static/uploads/")
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'heic', 'heif', 'webp'}
 
@@ -89,7 +148,7 @@ def save_and_upload_file(file_obj, prefix="file"):
         filename = f"{prefix}_{timestamp}_{unique_id}.jpg"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        if AWS_ACCESS_KEY != 'YOUR_AWS_ACCESS_KEY':
+        if S3_ENABLED:
             try:
                 s3_client.upload_fileobj(img_io, AWS_BUCKET_NAME, filename, ExtraArgs={'ContentType': 'image/jpeg'})
                 return filename
@@ -103,7 +162,7 @@ def save_and_upload_file(file_obj, prefix="file"):
         filename = f"{prefix}_{timestamp}_{unique_id}.{ext}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         
-        if AWS_ACCESS_KEY != 'YOUR_AWS_ACCESS_KEY':
+        if S3_ENABLED:
             try:
                 s3_client.upload_fileobj(file_obj, AWS_BUCKET_NAME, filename)
                 return filename
@@ -127,8 +186,7 @@ def to_utc_iso(dt):
 @app.route('/api/predictive-analysis', methods=['GET'])
 def api_predictive_analysis():
     try:
-        db_path = os.path.join(basedir, 'maintenance.db')
-        results, alerts_sent = run_predictive_analysis(db_path)
+        results, alerts_sent = run_predictive_analysis(DB_PATH)
         return jsonify({"success": True, "results": results, "alerts_sent": alerts_sent}), 200
     except Exception as e:
         print(f"Predictive Engine Error: {e}")
@@ -137,8 +195,7 @@ def api_predictive_analysis():
 @app.route('/api/run-predictions', methods=['POST'])
 def api_run_predictions():
     try:
-        db_path = os.path.join(basedir, 'maintenance.db')
-        results, alerts_sent = run_predictive_analysis(db_path)
+        results, alerts_sent = run_predictive_analysis(DB_PATH)
         return jsonify({"message": f"Predictions run successfully. {alerts_sent} alerts sent.", "alerts_sent": alerts_sent}), 200
     except Exception as e:
         print(f"Predictive Engine Error: {e}")
@@ -147,8 +204,7 @@ def api_run_predictions():
 @app.route('/api/reports/weekly', methods=['GET'])
 def api_download_weekly_report():
     try:
-        db_path = os.path.join(basedir, 'maintenance.db')
-        filepath = generate_weekly_pdf_report(db_path, send_telegram=False)
+        filepath = generate_weekly_pdf_report(DB_PATH, send_telegram=False)
         return send_file(filepath, as_attachment=True, download_name="weekly_maintenance_report.pdf")
     except Exception as e:
         print(f"Report Generation Error: {e}")
@@ -161,8 +217,7 @@ def uploaded_file(filename):
 @app.route('/api/machines', methods=['GET'])
 def get_machines():
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         machines = conn.execute("SELECT * FROM machines").fetchall()
         
         output = []
@@ -234,7 +289,7 @@ def get_machine_history(machine_id):
             
         photo_urls = []
         for p in order.photos:
-            if AWS_ACCESS_KEY != 'YOUR_AWS_ACCESS_KEY':
+            if S3_ENABLED:
                 try:
                     url = s3_client.generate_presigned_url('get_object', Params={'Bucket': AWS_BUCKET_NAME, 'Key': p.storage_url}, ExpiresIn=3600)
                     photo_urls.append(url)
@@ -279,8 +334,7 @@ def get_machine_active_orders(machine_id):
 @app.route('/api/machines/<int:machine_id>/reports', methods=['GET'])
 def get_machine_reports(machine_id):
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         reports = conn.execute(
             "SELECT * FROM machine_reports WHERE machine_id = ? ORDER BY created_at DESC", (machine_id,)
         ).fetchall()
@@ -460,58 +514,87 @@ def complete_work_order(order_id):
         machine.status = 'operational'
         machine.last_maintenance = now_utc.date()
         machine.next_maintenance = now_utc.date() + timedelta(days=30)
-        
+
+    created_dt = order.created_at.replace(tzinfo=None) if order.created_at else now_utc.replace(tzinfo=None)
+    time_delta = now_utc.replace(tzinfo=None) - created_dt
+    hours_taken = round(time_delta.total_seconds() / 3600, 2)
+
+    # Snapshot what the Telegram message needs, then commit and stop touching the ORM.
+    # The parts deduction below writes through a second, raw sqlite3 connection, and
+    # SQLite permits one writer per file: leaving this session's UPDATE uncommitted
+    # holds a RESERVED lock, so the raw write fails with "database is locked" and the
+    # deduction is silently rolled back. Reading an ORM attribute after the commit
+    # would open a fresh read transaction and lock it again - hence plain locals.
+    formatted_id = f"{machine.id:03d}" if machine else "000"
+    machine_name = machine.name if machine else 'Unknown'
+    machine_tag = machine.asset_tag if machine else 'N/A'
+    tech_name = order.technician_name or "Not Specified"
+    telegram_thread_id = order.telegram_message_id
+    db.session.commit()
+
     # Process inventory deduction
     parts_used_str = data.get('parts_used') or form_data.get('parts_used')
     parts_used_log = []
     low_stock_warnings = []
-    
+
     if parts_used_str:
-        import json
+        conn = None
         try:
             parts_used = json.loads(parts_used_str) if isinstance(parts_used_str, str) else parts_used_str
             conn = get_db_connection()
             for part in parts_used:
                 part_id = part.get('part_id')
-                qty = int(part.get('quantity', 0))
-                if part_id and qty > 0:
-                    # Update quantity
-                    conn.execute('UPDATE spare_parts SET quantity = quantity - ? WHERE id = ?', (qty, part_id))
-                    # Log usage
-                    conn.execute('INSERT INTO part_usage_logs (part_id, quantity_used) VALUES (?, ?)', (part_id, qty))
-                    
-                    # Check if low stock
-                    updated_part = conn.execute('SELECT part_name, quantity FROM spare_parts WHERE id = ?', (part_id,)).fetchone()
-                    if updated_part:
-                        parts_used_log.append(f"{qty}x {updated_part['part_name']}")
-                        if updated_part['quantity'] <= 0:
-                            low_stock_warnings.append(f"⚠️ LOW STOCK: {updated_part['part_name']} is now empty (0 left).")
-            conn.commit()
-            conn.close()
-        except Exception as e:
-            print("Error processing parts used:", e)
+                try:
+                    qty = int(part.get('quantity', 0))
+                except (TypeError, ValueError):
+                    continue
+                if not part_id or qty <= 0:
+                    continue
 
-    created_dt = order.created_at.replace(tzinfo=None) if order.created_at else now_utc.replace(tzinfo=None)
-    time_delta = now_utc.replace(tzinfo=None) - created_dt
-    hours_taken = round(time_delta.total_seconds() / 3600, 2)
-    db.session.commit()
-    
-    formatted_id = f"{machine.id:03d}" if machine else "000"
-    tech_name = order.technician_name or "Not Specified"
-    
+                current = conn.execute('SELECT part_name, quantity FROM spare_parts WHERE id = ?', (part_id,)).fetchone()
+                if not current:
+                    print(f"[parts] Skipping unknown part_id {part_id} on work order {order_id}")
+                    continue
+
+                # Never let stock go negative - deduct at most what is on hand.
+                deducted = min(qty, current['quantity'])
+                remaining = current['quantity'] - deducted
+
+                conn.execute(
+                    'UPDATE spare_parts SET quantity = ?, last_updated = CURRENT_TIMESTAMP WHERE id = ?',
+                    (remaining, part_id)
+                )
+                conn.execute('INSERT INTO part_usage_logs (part_id, quantity_used) VALUES (?, ?)', (part_id, deducted))
+
+                parts_used_log.append(f"{deducted}x {current['part_name']}")
+                if deducted < qty:
+                    low_stock_warnings.append(
+                        f"⚠️ SHORTFALL: {current['part_name']} - {qty} requested but only {deducted} were in stock."
+                    )
+                if remaining <= 0:
+                    low_stock_warnings.append(f"⚠️ LOW STOCK: {current['part_name']} is now empty (0 left).")
+            conn.commit()
+        except Exception as e:
+            if conn:
+                conn.rollback()
+            print(f"[parts] Error processing parts used on work order {order_id}: {e}")
+        finally:
+            if conn:
+                conn.close()
+
     parts_msg = f"\n🔧 *Parts Used:* {', '.join(parts_used_log)}" if parts_used_log else ""
     warnings_msg = f"\n\n🚨 *INVENTORY WARNINGS:*\n" + "\n".join(low_stock_warnings) if low_stock_warnings else ""
-    
+
     completion_message = (
         f"✅ *MACHINE REPAIRED / मशीन की मरम्मत हो गई* ✅\n\n"
-        f"⚙️ *Machine / मशीन:* *[{formatted_id}]* {machine.name if machine else 'Unknown'} ({machine.asset_tag if machine else 'N/A'})\n"
+        f"⚙️ *Machine / मशीन:* *[{formatted_id}]* {machine_name} ({machine_tag})\n"
         f"👨‍🔧 *Repaired By / तकनीशियन:* {tech_name}\n"
         f"🛠 *Fix Details / विवरण:* {resolution_notes}{parts_msg}\n"
         f"⏱️ *Total Downtime / कुल डाउनटाइम:* {hours_taken} Hrs\n"
         f"Status is now OPERATIONAL. / मशीन अब चालू है।"
         f"{warnings_msg}"
     )
-    send_telegram_alert(completion_message, reply_to_message_id=order.telegram_message_id)
+    send_telegram_alert(completion_message, reply_to_message_id=telegram_thread_id)
 
     return jsonify({"message": "Work order signed off successfully.", "time_taken_hours": hours_taken}), 200
 
@@ -533,7 +616,7 @@ def upload_report():
         if saved_filename:
             file_url = f"/static/uploads/{saved_filename}"
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn = get_db_connection()
         conn.execute(
             '''INSERT INTO machine_reports (machine_id, engineer_type, engineer_name, notes, file_url)
                VALUES (?, ?, ?, ?, ?)''',
@@ -553,8 +636,7 @@ def get_all_reports():
     offset = (page - 1) * limit
     
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         
         # Join with machines to get machine details
         reports = conn.execute('''
@@ -586,8 +668,7 @@ def download_monthly_pm_report():
         return jsonify({"error": "openpyxl is not installed on the server. Please run 'pip install openpyxl'"}), 500
 
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         
         query = '''
             SELECT w.*, m.name as machine_name, m.asset_tag
@@ -691,8 +772,7 @@ def download_monthly_pm_report():
 @app.route('/api/machines/<int:machine_id>/parts', methods=['GET'])
 def get_spare_parts(machine_id):
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         parts = conn.execute('SELECT * FROM spare_parts WHERE machine_id = ? ORDER BY part_name ASC', (machine_id,)).fetchall()
         conn.close()
         
@@ -700,7 +780,7 @@ def get_spare_parts(machine_id):
         for p in parts:
             part_dict = dict(p)
             if part_dict.get('photo_url'):
-                if AWS_ACCESS_KEY != 'YOUR_AWS_ACCESS_KEY':
+                if S3_ENABLED:
                     try:
                         part_dict['photo_url'] = s3_client.generate_presigned_url('get_object', Params={'Bucket': AWS_BUCKET_NAME, 'Key': part_dict['photo_url'].replace('/static/uploads/', '')}, ExpiresIn=3600)
                     except Exception:
@@ -730,7 +810,7 @@ def add_spare_part(machine_id):
             photo_url = f"/static/uploads/{saved_filename}"
             
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
+        conn = get_db_connection()
         conn.execute(
             '''INSERT INTO spare_parts (machine_id, part_name, part_number, quantity, photo_url)
                VALUES (?, ?, ?, ?, ?)''',
@@ -752,8 +832,7 @@ def update_spare_part(part_id):
         return jsonify({'error': 'Quantity is required'}), 400
         
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         
         # Check current quantity
         old_part = conn.execute('SELECT quantity FROM spare_parts WHERE id = ?', (part_id,)).fetchone()
@@ -783,8 +862,7 @@ def update_spare_part(part_id):
 @app.route('/api/analytics', methods=['GET'])
 def get_analytics():
     try:
-        conn = sqlite3.connect(os.path.join(basedir, 'maintenance.db'))
-        conn.row_factory = sqlite3.Row
+        conn = get_db_connection()
         
         all_orders = conn.execute("SELECT * FROM work_orders WHERE status='completed'").fetchall()
         machines = conn.execute("SELECT id, name FROM machines").fetchall()

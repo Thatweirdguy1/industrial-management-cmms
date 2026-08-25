@@ -524,7 +524,7 @@ export default function MachineDirectory() {
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
@@ -553,7 +553,7 @@ export default function MachineDirectory() {
                   placeholder="Search name or asset tag..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] text-[#111111] rounded-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
+                  className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none py-4 pl-12 pr-4 outline-none focus:ring-2 focus:ring-gray-200/50 transition-all placeholder:text-zinc-600"
                 />
               </div>
             </div>
@@ -567,7 +567,7 @@ export default function MachineDirectory() {
                 <div 
                   key={machine.id} 
                   onClick={() => openMachineDetails(machine)}
-                  className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover hover:border-[#111111] transition-all cursor-pointer group"
+                  className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] hover:border-[#111111] transition-all cursor-pointer group"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <span className={`px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-[#111111]/10 text-[#CC0000] border-[#111111]/20 animate-pulse' : 'bg-[#111111]/10 text-[#CC0000] border-[#111111]/20'}`}>
@@ -575,10 +575,10 @@ export default function MachineDirectory() {
                     </span>
                     <span className="text-[#737373] text-xs font-mono">{machine.asset_tag}</span>
                   </div>
-                  <h2 className="text-lg font-serif text-[#111111] font-serif mb-4 flex items-center gap-2">
+                  <h2 className="text-lg font-serif text-[#111111] mb-4 flex items-center gap-2">
                     <strong>{String(machine.id).padStart(3, '0')}</strong> - {machine.name}
                   </h2>
-                  <div className="mt-auto pt-4 border-t border-[#111111] border/50 flex justify-between items-center">
+                  <div className="mt-auto pt-4 border-t border-[#111111] flex justify-between items-center">
                     <div>
                       <p className="text-[10px] text-[#737373] uppercase tracking-widest">Next PM</p>
                       <p className="text-[#111111] text-xs">{machine.next_maintenance}</p>
@@ -607,7 +607,7 @@ export default function MachineDirectory() {
                   <span className="text-[#737373] font-mono text-sm ml-2">{selectedMachine.asset_tag}</span>
                 </h2>
               </div>
-              <div className="bg-white p-2 rounded-none flex items-center gap-4 border border-[#111111] border/50 shrink-0">
+              <div className="bg-white p-2 rounded-none flex items-center gap-4 border border-[#111111] shrink-0">
                 <img 
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=70x70&data=${encodeURIComponent(`${frontendUrl}/machines?id=${selectedMachine.id}`)}`} 
                   alt="QR Code" 
@@ -616,7 +616,7 @@ export default function MachineDirectory() {
               </div>
             </div>
 
-            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-6">
+            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-6">
               {activeView === "home" && (
                 <div className="space-y-4">
                   {selectedMachine.status === 'breakdown' ? (
@@ -670,11 +670,11 @@ export default function MachineDirectory() {
                   <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Issue</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
-                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" />
+                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" />
                   </div>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Resolution Notes</label>
-                    <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" placeholder="How did you fix it?"></textarea>
+                    <textarea required rows={4} value={resolutionNotes} onChange={(e) => setResolutionNotes(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" placeholder="How did you fix it?"></textarea>
                   </div>
 
                   {/* Spare Parts Section */}
@@ -710,8 +710,8 @@ export default function MachineDirectory() {
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => { setActiveView("home"); setPartsUsed([]); }} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
+                    <button type="button" onClick={() => { setActiveView("home"); setPartsUsed([]); }} className="flex-1 btn-secondary py-4">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 btn-primary py-4 disabled:opacity-50">{isSubmitting ? "SAVING..." : "COMPLETE"}</button>
                   </div>
                 </form>
               )}
@@ -777,7 +777,7 @@ export default function MachineDirectory() {
                   <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🚨 Report Breakdown</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Category</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none">
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-red-500 outline-none">
                       <option value="mechanical">Mechanical</option>
                       <option value="electrical">Electrical</option>
                       <option value="other">Other</option>
@@ -785,11 +785,11 @@ export default function MachineDirectory() {
                   </div>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Issue Details</label>
-                    <textarea required rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none" placeholder="Describe the problem..."></textarea>
+                    <textarea required rows={4} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-red-500 outline-none" placeholder="Describe the problem..."></textarea>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SENDING..." : "SUBMIT FAULT"}</button>
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 btn-secondary py-4">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 btn-danger py-4 disabled:opacity-50">{isSubmitting ? "SENDING..." : "SUBMIT FAULT"}</button>
                   </div>
                 </form>
               )}
@@ -799,7 +799,7 @@ export default function MachineDirectory() {
                   <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🛠️ Log Service</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Service Type</label>
-                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none">
+                    <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none">
                       <option value="mechanical">Mechanical</option>
                       <option value="electrical">Electrical</option>
                       <option value="cleaning">Cleaning</option>
@@ -807,15 +807,15 @@ export default function MachineDirectory() {
                   </div>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
-                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" />
+                    <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" />
                   </div>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Service Notes</label>
-                    <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" placeholder="What was done?"></textarea>
+                    <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none" placeholder="What was done?"></textarea>
                   </div>
                   <div className="flex gap-3">
-                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif">CANCEL</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#111111] font-serif tracking-[0.1em] border-2 border-[#1E3D59] hard-shadow-hover text-[#111111] py-4 rounded-none font-serif disabled:opacity-50">{isSubmitting ? "SAVING..." : "LOG SERVICE"}</button>
+                    <button type="button" onClick={() => setActiveView("home")} className="flex-1 btn-secondary py-4">CANCEL</button>
+                    <button type="submit" disabled={isSubmitting} className="flex-1 btn-primary py-4 disabled:opacity-50">{isSubmitting ? "SAVING..." : "LOG SERVICE"}</button>
                   </div>
                 </form>
               )}
@@ -844,7 +844,7 @@ export default function MachineDirectory() {
                 {activeTab === "breakdowns" && (
                   <div className="space-y-4">
                     {breakdownHistory.length > 0 ? breakdownHistory.map((log) => (
-                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
                           <span className="inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#111111]/10 text-[#CC0000]">
                             BREAKDOWN
@@ -858,7 +858,7 @@ export default function MachineDirectory() {
                           <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Technician</p>
                           <p className="text-[#111111] font-serif font-medium mb-4">{log.technician}</p>
                           <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Report & Resolution Notes</p>
-                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 whitespace-pre-wrap">
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 whitespace-pre-wrap">
                             {log.description || "No notes provided."}
                           </div>
                           {log.photos && log.photos.length > 0 && (
@@ -876,7 +876,7 @@ export default function MachineDirectory() {
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No breakdown history found.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] rounded-none text-[#737373] text-sm">No breakdown history found.</div>
                     )}
                   </div>
                 )}
@@ -884,7 +884,7 @@ export default function MachineDirectory() {
                 {activeTab === "pms" && (
                   <div className="space-y-4">
                     {pmHistory.length > 0 ? pmHistory.map((log) => (
-                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={log.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
                           <span className="inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 bg-[#111111]/20 border-2 border-purple-500 text-[#CC0000]">
                             PREVENTIVE
@@ -898,7 +898,7 @@ export default function MachineDirectory() {
                           <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Technician</p>
                           <p className="text-[#111111] font-serif font-medium mb-4">{log.technician}</p>
                           <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Service Notes</p>
-                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4">
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4">
                             {log.description || "No notes provided."}
                           </div>
                           {log.photos && log.photos.length > 0 && (
@@ -916,7 +916,7 @@ export default function MachineDirectory() {
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No scheduled maintenance records found.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] rounded-none text-[#737373] text-sm">No scheduled maintenance records found.</div>
                     )}
                   </div>
                 )}
@@ -924,7 +924,7 @@ export default function MachineDirectory() {
                 {activeTab === "reports" && (
                   <div className="space-y-4">
                     {reports.length > 0 ? reports.map((report) => (
-                      <div key={report.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
+                      <div key={report.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-6 flex flex-col sm:flex-row gap-6">
                         <div className="sm:w-1/4 shrink-0">
                           <span className={`inline-block px-2.5 py-1 rounded-none text-[10px] font-medium tracking-wide uppercase mb-3 ${report.engineer_type === 'internal' ? 'bg-gray-200/10 text-blue-400 border border-gray-200/20' : 'bg-[#111111]/20 text-[#CC0000] border border-purple-500/20'}`}>
                             {report.engineer_type} Engineer
@@ -936,7 +936,7 @@ export default function MachineDirectory() {
                         </div>
                         <div className="flex-grow border-t sm:border-t-0 sm:border-l border-[#111111] border pt-4 sm:pt-0 sm:pl-6 flex flex-col">
                           <p className="text-[#525252] text-[10px] uppercase tracking-wider mb-2">Inspection Notes</p>
-                          <div className="bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border/50 rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 flex-grow">
+                          <div className="bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-4 text-sm text-[#111111] leading-relaxed mb-4 flex-grow">
                             {report.notes || "No additional notes provided."}
                           </div>
                           {report.file_url && (
@@ -947,7 +947,7 @@ export default function MachineDirectory() {
                         </div>
                       </div>
                     )) : (
-                      <div className="text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">No inspection reports uploaded.</div>
+                      <div className="text-center py-12 border border-dashed border-[#111111] rounded-none text-[#737373] text-sm">No inspection reports uploaded.</div>
                     )}
                   </div>
                 )}
@@ -956,15 +956,15 @@ export default function MachineDirectory() {
                   <div>
                     <div className="flex justify-between items-center mb-6">
                       <p className="text-[#525252] text-sm">Live spare parts inventory</p>
-                      <button onClick={() => setShowAddPart(true)} className="bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest hover:bg-emerald-500 text-[#111111] font-medium px-4 py-2 rounded-none text-sm transition-colors">
+                      <button onClick={() => setShowAddPart(true)} className="btn-primary px-4 py-2 text-sm font-medium">
                         + Add Part
                       </button>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
                       {Array.isArray(parts) && parts.length > 0 ? (
                         parts.map((part) => (
-                          <div key={part.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border rounded-none p-4 flex gap-4 items-center hover:border-[#111111] transition-colors">
-                            <div className="h-20 w-20 shrink-0 bg-[#F9F9F7] border-2 border-[#111111] rounded-none overflow-hidden border border-[#111111] border/50 flex items-center justify-center relative">
+                          <div key={part.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-4 flex gap-4 items-center hover:border-[#111111] transition-colors">
+                            <div className="h-20 w-20 shrink-0 bg-[#F9F9F7] border-2 border-[#111111] rounded-none overflow-hidden flex items-center justify-center relative">
                               {part.photo_url ? (
                                 <img src={part.photo_url} alt={part.part_name} className="absolute inset-0 w-full h-full object-cover" />
                               ) : (
@@ -983,7 +983,7 @@ export default function MachineDirectory() {
                           </div>
                         ))
                       ) : (
-                        <div className="col-span-full text-center py-12 border border-dashed border-[#111111] border rounded-none text-[#737373] text-sm">
+                        <div className="col-span-full text-center py-12 border border-dashed border-[#111111] rounded-none text-[#737373] text-sm">
                           Inventory is empty.
                         </div>
                       )}
@@ -999,26 +999,26 @@ export default function MachineDirectory() {
       {/* ADD PART MODAL */}
       {showAddPart && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
-          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border border-[#111111] border sm:rounded-none rounded-none-t-3xl p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
+          <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
             <h3 className="text-lg font-medium text-[#111111] mb-6">📦 Register New Spare Part</h3>
             <form onSubmit={handleAddPart} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Part Name</label>
-                <input type="text" required value={newPartName} onChange={(e) => setNewPartName(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
+                <input type="text" required value={newPartName} onChange={(e) => setNewPartName(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Part No.</label>
-                  <input type="text" value={newPartNumber} onChange={(e) => setNewPartNumber(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-mono" />
+                  <input type="text" value={newPartNumber} onChange={(e) => setNewPartNumber(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm font-mono" />
                 </div>
                 <div>
                   <label className="block text-[#525252] text-xs mb-2">Stock</label>
-                  <input type="number" required min="0" value={newPartQuantity} onChange={(e) => setNewPartQuantity(parseInt(e.target.value) || 0)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
+                  <input type="number" required min="0" value={newPartQuantity} onChange={(e) => setNewPartQuantity(parseInt(e.target.value) || 0)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-emerald-500/50 text-sm" />
                 </div>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
-                <button type="button" onClick={() => setShowAddPart(false)} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700">Cancel</button>
-                <button type="submit" disabled={isSubmitting} className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-widest text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-emerald-50 disabled:opacity-50">Save Part</button>
+                <button type="button" onClick={() => setShowAddPart(false)} className="flex-1 btn-secondary p-3.5 text-sm font-medium">Cancel</button>
+                <button type="submit" disabled={isSubmitting} className="flex-1 btn-primary p-3.5 text-sm font-medium disabled:opacity-50">Save Part</button>
               </div>
             </form>
           </div>

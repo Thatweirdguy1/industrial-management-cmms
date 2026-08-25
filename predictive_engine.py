@@ -3,41 +3,59 @@ import sqlite3
 import requests
 from datetime import datetime, timezone, timedelta
 
+def get_telegram_config():
+    """Read the bot credentials from the environment.
+
+    Returns (None, None) when either is unset so callers can no-op instead of
+    POSTing to https://api.telegram.org/bot/sendMessage with an empty token.
+    """
+    bot_token = os.environ.get('TELEGRAM_BOT_TOKEN', '').strip()
+    chat_id = os.environ.get('TELEGRAM_CHAT_ID', '').strip()
+    if not bot_token or not chat_id:
+        return None, None
+    return bot_token, chat_id
+
 def send_telegram_alert(message, reply_to_message_id=None):
-    BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-    GROUP_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '-5182937655')
-    print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] 🚨 FIRING TELEGRAM ALERT...")
+    BOT_TOKEN, GROUP_CHAT_ID = get_telegram_config()
+    if not BOT_TOKEN:
+        print("[telegram] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set - alert not sent")
+        return None
+    print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] FIRING TELEGRAM ALERT...")
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = {'chat_id': GROUP_CHAT_ID, 'text': message, 'parse_mode': 'Markdown'}
     if reply_to_message_id:
         payload['reply_to_message_id'] = reply_to_message_id
     try:
-        res = requests.post(url, json=payload).json()
+        res = requests.post(url, json=payload, timeout=15).json()
         if res.get("ok"):
             return res["result"]["message_id"]
+        print(f"[telegram] API rejected the message: {res.get('description')}")
     except Exception as e:
-        print(f"❌ Telegram Error: {e}")
+        print(f"[telegram] Error: {e}")
     return None
 
 def send_telegram_document(filepath, caption=None):
-    BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-    GROUP_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID', '-5182937655')
+    BOT_TOKEN, GROUP_CHAT_ID = get_telegram_config()
+    if not BOT_TOKEN:
+        print("[telegram] TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set - document not sent")
+        return None
     print(f"\n[{datetime.now(timezone.utc).strftime('%H:%M:%S')}] UPLOADING TELEGRAM DOCUMENT...")
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendDocument"
-    
+
     data = {'chat_id': GROUP_CHAT_ID}
     if caption:
         data['caption'] = caption
         data['parse_mode'] = 'Markdown'
-        
+
     try:
         with open(filepath, 'rb') as f:
             files = {'document': f}
-            res = requests.post(url, data=data, files=files).json()
+            res = requests.post(url, data=data, files=files, timeout=60).json()
             if res.get("ok"):
                 return res["result"]["message_id"]
+            print(f"[telegram] API rejected the document: {res.get('description')}")
     except Exception as e:
-        print(f"❌ Telegram Document Error: {e}")
+        print(f"[telegram] Document error: {e}")
     return None
 
 def parse_sqlite_date(date_str):

@@ -118,7 +118,7 @@ export default function MobileMachineApp() {
   return (
     <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-sans selection:bg-purple-500/30">
       {/* HEADER WITH PADDED 3-DIGIT ID */}
-      <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border-b border-[#111111] border p-6 shadow-lg sticky top-0 z-10">
+      <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover border-b p-6 shadow-lg sticky top-0 z-10">
         <div className="flex justify-between items-start mb-2">
           <span className={`px-3 py-1 rounded-none text-[10px] font-serif tracking-wide uppercase border ${machine.status === 'breakdown' ? 'bg-red-500/20 text-[#CC0000] border-red-500/50 animate-pulse' : 'bg-emerald-500/20 text-[#CC0000] border-emerald-500/50'}`}>
             {machine.status === 'breakdown' ? 'OFFLINE / बंद' : 'ONLINE / चालू'}
@@ -139,18 +139,18 @@ export default function MobileMachineApp() {
       <div className="p-6">
         {activeView === "home" && (
           <div className="space-y-4 mt-4">
-            <button 
+            <button
               onClick={() => setActiveView("fault")}
-              className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover hover:bg-red-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-red-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+              className="w-full btn-danger py-5 active:scale-95 flex flex-col items-center justify-center gap-2"
             >
               <span className="text-2xl">🚨</span>
               <span className="text-xl tracking-wide">REPORT BREAKDOWN</span>
               <span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveView("pm")}
-              className="w-full bg-[#111111] text-[#111111] font-serif tracking-[0.1em] hover:bg-purple-500 text-[#111111] font-serif py-5 rounded-none shadow-lg border border-purple-500 transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
+              className="w-full btn-primary py-5 active:scale-95 flex flex-col items-center justify-center gap-2"
             >
               <span className="text-2xl">🛠️</span>
               <span className="text-xl tracking-wide">LOG SERVICE (PM)</span>
@@ -162,7 +162,7 @@ export default function MobileMachineApp() {
         {/* FAULT REPORTING FORM */}
         {activeView === "fault" && (
           <form onSubmit={handleFaultSubmit} className="space-y-6 mt-4">
-            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 rounded-none border border-[#111111] border">
+            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 rounded-none">
               <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2">
                 <span className="text-xl">🚨</span> Report Breakdown
               </h2>
@@ -171,7 +171,7 @@ export default function MobileMachineApp() {
                 <div>
                   <label className="block text-[#525252] text-sm mb-1">Category / श्रेणी</label>
                   <select 
-                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none"
+                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-red-500 outline-none"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
@@ -186,7 +186,7 @@ export default function MobileMachineApp() {
                   <textarea 
                     required
                     rows={4}
-                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-red-500 outline-none"
+                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-red-500 outline-none"
                     placeholder="Describe the problem..."
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -196,17 +196,17 @@ export default function MobileMachineApp() {
             </div>
 
             <div className="flex gap-3">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setActiveView("home")}
-                className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif"
+                className="flex-1 btn-secondary py-4"
               >
                 CANCEL
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-[#111111] text-[#F9F9F7] hover:bg-white hover:text-[#111111] hover:border-[#111111] border border-transparent font-serif tracking-[0.1em] border-2 border-[#111111] hard-shadow-hover text-[#111111] py-4 rounded-none font-serif disabled:opacity-50"
+                className="flex-1 btn-danger py-4 disabled:opacity-50"
               >
                 {isSubmitting ? "SENDING..." : "SUBMIT FAULT"}
               </button>
@@ -217,7 +217,7 @@ export default function MobileMachineApp() {
         {/* PREVENTIVE MAINTENANCE FORM */}
         {activeView === "pm" && (
           <form onSubmit={handlePMSubmit} className="space-y-6 mt-4">
-            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 rounded-none border border-[#111111] border">
+            <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 rounded-none">
               <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2">
                 <span className="text-xl">🛠️</span> Log Service
               </h2>
@@ -226,7 +226,7 @@ export default function MobileMachineApp() {
                 <div>
                   <label className="block text-[#525252] text-sm mb-1">Service Type / सर्विस का प्रकार</label>
                   <select 
-                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
+                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                   >
@@ -241,7 +241,7 @@ export default function MobileMachineApp() {
                   <input 
                     required
                     type="text"
-                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
+                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
                     placeholder="Enter name..."
                     value={supervisor}
                     onChange={(e) => setSupervisor(e.target.value)}
@@ -253,7 +253,7 @@ export default function MobileMachineApp() {
                   <textarea 
                     required
                     rows={3}
-                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] border border-[#111111] border rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
+                    className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-purple-500 outline-none"
                     placeholder="What was done?"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
@@ -263,17 +263,17 @@ export default function MobileMachineApp() {
             </div>
 
             <div className="flex gap-3">
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => setActiveView("home")}
-                className="flex-1 bg-[#111111] text-[#111111] py-4 rounded-none font-serif"
+                className="flex-1 btn-secondary py-4"
               >
                 CANCEL
               </button>
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 disabled={isSubmitting}
-                className="flex-1 bg-[#111111] text-[#111111] font-serif tracking-[0.1em] text-[#111111] py-4 rounded-none font-serif disabled:opacity-50"
+                className="flex-1 btn-primary py-4 disabled:opacity-50"
               >
                 {isSubmitting ? "SAVING..." : "LOG SERVICE"}
               </button>
