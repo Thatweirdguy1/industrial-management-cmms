@@ -758,13 +758,13 @@ export default function TechnicianDashboard() {
 
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
-                <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
+                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
                     setSignOffPhotoFiles(await compressImages(files));
-                  }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  }} className="hidden" />
                   {signOffPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
-                </div>
+                </label>
               </div>
               
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
@@ -838,13 +838,13 @@ export default function TechnicianDashboard() {
               </div>
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Evidence / सबूत (Optional)</label>
-                <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
+                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
                     setPmPhotoFiles(await compressImages(files));
-                  }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  }} className="hidden" />
                   {pmPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {pmPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload Photos</span>}
-                </div>
+                </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
                 <button type="button" onClick={() => { setShowPMModal(false); stopListening(); setPmPhotoFiles([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
@@ -902,10 +902,10 @@ export default function TechnicianDashboard() {
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Fault Photos / फ़ोटो (Optional)</label>
-                <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                  <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="hidden" />
                   {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
-                </div>
+                </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
                 <button type="button" onClick={() => { setShowReportModal(false); stopListening(); setReportPhotoFiles([]); }} className="flex-1 bg-[#111111] text-[#111111] rounded-none p-3.5 text-sm font-medium hover:bg-zinc-700 transition-colors">Cancel</button>
@@ -962,10 +962,10 @@ export default function TechnicianDashboard() {
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Document / फ़ाइल</label>
-                <div className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors">
-                  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                <label className="relative border border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 border-[#111111] hover:bg-[#111111] transition-colors block cursor-pointer">
+                  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="hidden" />
                   {inspectionFile ? <span className="text-[#111111] text-xs">📎 {inspectionFile.name}</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
-                </div>
+                </label>
               </div>
               
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">

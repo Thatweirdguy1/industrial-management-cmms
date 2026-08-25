@@ -757,13 +757,13 @@ export default function MachineDirectory() {
                   </div>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Upload Photos</label>
-                    <div className="relative border-2 border-dashed border-[#111111] p-4 text-center bg-[#F9F9F7]">
+                    <label className="relative border-2 border-dashed border-[#111111] p-4 text-center bg-[#F9F9F7] block cursor-pointer">
                       <input type="file" multiple accept="image/*" onChange={async (e) => {
                         const files = Array.from(e.target.files || []);
                         setReportPhotoFiles(await compressImages(files));
-                      }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                      }} className="hidden" />
                       {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#111111] text-xs">📸 Tap to Upload Photos</span>}
-                    </div>
+                    </label>
                   </div>
                   <div className="flex gap-3">
                     <button type="button" onClick={() => setActiveView("home")} className="flex-1 border-2 border-[#111111] py-4 rounded-none font-serif">CANCEL</button>
