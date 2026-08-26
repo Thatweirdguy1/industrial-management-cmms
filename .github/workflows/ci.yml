@@ -40,3 +40,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+
+# Workflow intentionally touched to validate the current main branch after lint fixes.
