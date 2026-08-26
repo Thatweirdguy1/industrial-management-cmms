@@ -32,6 +32,7 @@ maintenance.db
 static/uploads/
 machine_reports/
 labeled_qrs/
+qr_codes/
 *.xlsx
 *.xls
 *.csv
