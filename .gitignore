@@ -48,3 +48,19 @@ qr_codes/
 Thumbs.db
 .vscode/
 .idea/
+
+# Ruflo local secrets and runtime data
+.env.local
+.env.*.local
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
+.claude-flow/metrics/
+.claude-flow/security/
+.claude-flow/memory-package.json
+.swarm/schema.sql
+.swarm/memory.db
+.claude/statusline.sh
+.claude/statusline.mjs
+.claude/helpers/worker-manager.sh
+.claude/settings.local.json
