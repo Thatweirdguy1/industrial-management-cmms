@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "postbuild": "cp -r public/* out/ 2>/dev/null || true",
+    "postbuild": "node scripts/copy-public.mjs",
     "start": "next start -H 0.0.0.0 -p 3000",
     "lint": "eslint"
   },

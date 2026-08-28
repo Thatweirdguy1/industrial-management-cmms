@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-// @ts-ignore
+// @ts-expect-error next-pwa does not publish types compatible with Next 16.
 import withPWAInit from "next-pwa";
 
 const withPWA = withPWAInit({

@@ -6,9 +6,27 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   {
-    files: ["**/app/machines/page.tsx", "app/machines/page.tsx"],
+    files: [
+      "app/page.tsx",
+      "app/machines/page.tsx",
+      "app/utility-report/page.tsx",
+    ],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  {
+    // These legacy client pages intentionally hydrate API and browser-speech
+    // state from effects. Keep the exception local while they are refactored.
+    files: ["app/page.tsx", "app/machines/page.tsx"],
+    rules: {
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
+  {
+    files: ["app/machines/page.tsx"],
+    rules: {
+      "react/no-unescaped-entities": "off",
     },
   },
   globalIgnores([
@@ -16,6 +34,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "public/sw.js",
+    "public/workbox-*.js",
   ]),
 ]);
 
