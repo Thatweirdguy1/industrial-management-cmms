@@ -1,193 +1,141 @@
-# 🏭 Dadri Plant Control (CMMS)
+# Industrial Maintenance CMMS
 
-![Dadri Plant Control](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge) ![Version](https://img.shields.io/badge/Version-2.0-blue?style=for-the-badge) ![Tech Stack](https://img.shields.io/badge/Tech_Stack-Next.js_|_Flask_|_SQLite-black?style=for-the-badge)
+A full-stack Computerized Maintenance Management System (CMMS) for QR-driven equipment maintenance, breakdown reporting, preventive-maintenance scheduling, inventory forecasting, technician workflows, and automated management reporting.
 
-A next-generation, AI-assisted Computerized Maintenance Management System (CMMS) built specifically for the **Prem Industries - Dadri Plant**. This software tracks breakdowns, schedules preventive maintenance, predicts spare parts depletion, and generates automated executive reports.
+> Portfolio-safe public version: production credentials, operational reports, generated QR assets, databases, and uploaded maintenance files are intentionally excluded from source control.
 
----
+## Highlights
 
-## ✨ Core Features
+- QR-based machine lookup and maintenance workflows
+- Breakdown reporting with photo/document uploads
+- Preventive-maintenance work orders and scheduling
+- Machine risk scoring based on maintenance history
+- Spare-parts burn-rate forecasting and low-stock alerts
+- Weekly PDF executive reports
+- Telegram alert integration using environment-based credentials
+- Hindi/English voice-assisted service notes in the web UI
+- Optional S3-backed file storage with local fallback
+- Responsive Next.js dashboard backed by a Flask API
 
-### 🧠 1. Predictive Maintenance Engine
-Monitors machine health in real-time. If a machine breaks down **3 or more times within a 5-day rolling window**, the engine automatically flags the machine as `CRITICAL` and dispatches an emergency Telegram alert to the engineering team.
-
-### 📦 2. Smart Inventory & Burn Rate API
-Tracks the consumption of spare parts on the factory floor. The engine calculates the **Daily Burn Rate** based on the last 30 days of usage. If any spare part is predicted to hit zero inventory in **7 days or less**, it automatically triggers a reorder alert via Telegram.
-
-### 📊 3. Automated Executive Reporting
-Every Monday at 8:00 AM, a background cron job compiles the plant's health metrics:
-*   **Total Plant Downtime** (Hours)
-*   **Mean Time To Repair (MTTR)**
-*   **Top 5 Problematic Machines**
-It generates a clean, high-contrast PDF report and uploads it directly to the management Telegram group. The reports are also downloadable from the main dashboard.
-
-### 🗣️ 4. Voice-to-Text Integration
-Technicians on the floor can use the built-in speech recognition to dictate their service notes and resolution reports hands-free (Supports Hindi & English).
-
----
-
-## 🏗️ System Architecture
+## Architecture
 
 ```mermaid
 graph TD
-    Client[Client Browser/Mobile] --> Nginx[Nginx Reverse Proxy / SSL]
-    
-    subgraph Frontend [Next.js Dashboard]
-        Nginx -->|Port 3000| UI[User Interface]
-        UI --> API_Calls[REST API Client]
-        Voice[Speech Recognition] --> UI
-    end
-
-    subgraph Backend [Flask Server]
-        Nginx -->|Port 5000| API[API Endpoints]
-        API --> SQLite[(SQLite DB)]
-        
-        subgraph Scheduled Tasks
-            Predictive[Predictive Engine]
-            Inventory[Burn Rate Calculator]
-            PDF[PDF Report Generator]
-        end
-        
-        Predictive --> SQLite
-        Inventory --> SQLite
-        PDF --> SQLite
-    end
-
-    subgraph External
-        Telegram[Telegram Bot API]
-    end
-
-    API_Calls <--> API
-    Predictive --> Telegram
-    Inventory --> Telegram
-    PDF --> Telegram
+    Browser[Desktop / Mobile Browser] --> Nginx[Nginx + HTTPS]
+    Nginx --> Next[Next.js Frontend]
+    Nginx --> Flask[Flask REST API]
+    Next --> Flask
+    Flask --> SQLite[(SQLite)]
+    Flask --> S3[(Optional S3 Storage)]
+    Flask --> Telegram[Telegram Bot API]
+    Scheduler[APScheduler] --> Flask
+    Scheduler --> Telegram
 ```
 
----
+## Tech Stack
 
-## 📈 Inventory Prediction Logic
+| Layer | Technology |
+| --- | --- |
+| Frontend | Next.js, React, TypeScript, Tailwind CSS, Recharts |
+| Backend | Python, Flask, Flask-SQLAlchemy |
+| Database | SQLite |
+| Scheduling | APScheduler |
+| Reporting | fpdf2, openpyxl |
+| File handling | Pillow, optional AWS S3/boto3 |
+| Notifications | Telegram Bot API |
+| Deployment | Nginx, PM2, HTTPS |
 
-```mermaid
-sequenceDiagram
-    participant Tech as Technician
-    participant DB as Database
-    participant Engine as Predictive Engine
-    participant TG as Telegram Group
+## Predictive Logic
 
-    Tech->>DB: Logs Part Usage (e.g., 2 Bearings used)
-    loop Every 24 Hours
-        Engine->>DB: Fetch last 30 days of usage
-        Engine->>Engine: Calculate Daily Burn Rate
-        Engine->>Engine: Divide Current Stock by Burn Rate
-        alt Days Until Empty <= 7
-            Engine->>TG: 🚨 Send Reorder Warning!
-        end
-    end
-```
+The current predictive engine flags a machine as critical when it records **3 or more breakdowns within a 5-day window**. This is a rule-based risk signal rather than an ML failure-probability model.
 
----
+Inventory forecasting uses the previous 30 days of recorded part consumption to estimate a daily burn rate. Parts projected to run out within 7 days can trigger an alert.
 
-## 🛠️ Technology Stack
+## Local Setup
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend** | `Next.js`, `React`, `Tailwind CSS` | High-performance, SSR-capable React framework styled with a raw, high-contrast "Newsprint" aesthetic. |
-| **Backend** | `Python 3.12`, `Flask` | Lightweight, robust API server handling data routing and business logic. |
-| **Database** | `SQLite3` | Self-contained, serverless SQL database perfect for low-latency read/writes. |
-| **Task Scheduler**| `APScheduler` | In-memory cron-job runner executing Python functions on exact intervals. |
-| **PDF Generation**| `fpdf2` | Pure Python library used to draw and compile the weekly executive summaries. |
-| **Deployment** | `DigitalOcean`, `Nginx`, `PM2` | Hosted on a dedicated Ubuntu Droplet, managed by PM2 process manager and reverse-proxied via Nginx. |
+### Backend
 
----
-
-## 🚀 Deployment & Installation (Production)
-
-To deploy to a DigitalOcean Ubuntu droplet with full SSL (required for Voice-to-Text):
-
-### 1. Clone & Setup
 ```bash
-git clone https://github.com/Thatweirdguy1/premindustries1.git ~/dadri-cmms
-cd ~/dadri-cmms
+git clone https://github.com/Thatweirdguy1/premindustries1.git
+cd premindustries1
+python -m venv .venv
 ```
 
-### 2. Python Backend
+Activate the virtual environment, then:
+
 ```bash
-python3 -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
-pm2 start app.py --name dadri-backend --interpreter ./venv/bin/python
-```
-
-### 3. Configuration (secrets)
-All credentials are read from the environment — nothing is hardcoded. Copy the
-template and fill it in; `.env` is gitignored and must never be committed.
-
-```bash
 cp .env.example .env
-nano .env                      # TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, QR_BASE_URL
-set -a && . ./.env && set +a   # export before starting the backend
+python init_db.py
+python app.py
 ```
 
-| Variable | Required | Effect if unset |
-| :--- | :--- | :--- |
-| `TELEGRAM_BOT_TOKEN` | Yes | All Telegram alerts are skipped and logged to stdout instead. |
-| `TELEGRAM_CHAT_ID` | Yes | Same as above. Numeric group id, keep the leading `-`. |
-| `QR_BASE_URL` | For QR printing | `generate_qrs.py` falls back to `localhost` and prints unusable stickers. |
-| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | No | Photos are stored locally under `static/uploads/` instead of S3. |
+The API runs on `http://127.0.0.1:5000` by default.
 
-### 4. Next.js Frontend
+### Frontend
+
 ```bash
 cd frontend
-npm install
-npm run build
-pm2 start npm --name "dadri-frontend" -- start
+npm ci
+npm run dev
 ```
 
-### 5. Nginx & SSL (HTTPS)
-> **Note:** A domain name (e.g., DuckDNS) is required to generate an SSL certificate. The Voice-to-Text Web Speech API will **not** work on mobile devices without HTTPS.
+The frontend runs on `http://localhost:3000` by default.
+
+## Configuration
+
+Copy `.env.example` to `.env` and configure only the integrations you need.
+
+```env
+CMMS_ALLOWED_ORIGINS=http://localhost:3000
+TELEGRAM_BOT_TOKEN=
+TELEGRAM_CHAT_ID=
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_BUCKET_NAME=
+AWS_REGION=ap-south-1
+```
+
+Secrets must never be committed. Telegram and AWS integrations remain disabled when their required environment variables are absent.
+
+## Repository Hygiene
+
+The repository deliberately ignores:
+
+- `.env` and private keys
+- SQLite databases
+- uploaded maintenance files
+- generated PDFs and spreadsheets
+- generated QR-code directories
+- build output and dependencies
+- logs and temporary files
+
+Operational or personally identifiable factory data should remain outside the public repository.
+
+## API Health Check
 
 ```bash
-sudo apt install -y nginx certbot python3-certbot-nginx
-
-# Create Nginx config to route / to port 3000, and /api/ to port 5000
-cat << 'EOF' > /etc/nginx/sites-available/dadri-cmms
-server {
-    listen 80;
-    server_name YOUR_DOMAIN.duckdns.org;
-
-    location /api/ { proxy_pass http://127.0.0.1:5000/api/; }
-    location /static/ { proxy_pass http://127.0.0.1:5000/static/; }
-    location / { proxy_pass http://127.0.0.1:3000; }
-}
-EOF
-
-sudo ln -s /etc/nginx/sites-available/dadri-cmms /etc/nginx/sites-enabled/
-sudo systemctl restart nginx
-sudo certbot --nginx -d YOUR_DOMAIN.duckdns.org --redirect
+curl http://127.0.0.1:5000/api/health
 ```
 
-### 6. Machine QR Stickers
-Each machine gets a sticker that opens its mobile report page directly. Generate
-these **after** SSL is live, so the codes carry the HTTPS domain — the Web Speech
-API dictation will not run from a plain `http://` origin.
+Expected response:
 
-```bash
-QR_BASE_URL=https://YOUR_DOMAIN.duckdns.org python generate_qrs.py
+```json
+{"status":"ok"}
 ```
 
-Writes two sets, one file per machine, named `ID<id>_<asset_tag>.png`:
+## Deployment Notes
 
-*   `qr_codes/` — bare QR codes at full resolution.
-*   `labeled_qrs/` — print-ready stickers with the machine name and `ID | Tag` caption.
+A typical deployment places Nginx in front of the Next.js frontend and Flask backend and terminates HTTPS at Nginx. Production configuration should use explicit CORS origins, environment-injected secrets, restricted host/firewall rules, and a production process manager.
 
-Codes encode `<QR_BASE_URL>/m?id=<machine_id>`, where the id comes from the
-`machines` table. **Re-run this whenever machines are re-seeded** — the ids shift
-and previously printed stickers will then open the wrong machine.
+The repository intentionally does not contain production IP addresses, credentials, internal reports, user-uploaded maintenance data, or deployment secrets.
 
----
+## Security
 
-## 📝 Maintenance & Updates
+If a credential has ever been committed to Git history, removing it in a later commit is **not sufficient**. Revoke/rotate the credential first, then purge the historical blob separately if required.
 
-This README serves as the source of truth for the project's architecture and capabilities. **It must be updated immediately upon the completion of any new feature or architectural change.** 
+For deployment, also consider authentication/authorization, CSRF protection where applicable, API rate limiting, upload-size limits, malware/content scanning for uploaded documents, database backups, and centralized logging.
 
-> *Property of Prem Industries - Dadri Plant. Unauthorized distribution is prohibited.*
+## Project Context
+
+This project demonstrates practical full-stack engineering around an industrial maintenance workflow: application architecture, mobile usability, QR-driven navigation, persistence, background jobs, reporting, notifications, deployment configuration, and iterative production debugging.

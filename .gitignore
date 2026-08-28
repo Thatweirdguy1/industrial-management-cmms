@@ -1,20 +1,50 @@
-# Python & Backend
+# Secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python / backend
 __pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
 venv/
 env/
-.env
 
-# Next.js / Node Frontend
+# Next.js / Node frontend
 frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
+node_modules/
 
-# Database & Uploads (Crucial for Factory Security)
+# Databases and runtime state
+*.db
+*.sqlite
+*.sqlite3
 maintenance.db
+
+# Operational / factory-generated data
 static/uploads/
 machine_reports/
+labeled_qrs/
+qr_codes/
+*.xlsx
+*.xls
+*.csv
+*.pdf
 
-# OS Generated Files
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+
+# OS / editor files
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
