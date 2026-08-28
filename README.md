@@ -139,3 +139,21 @@ For deployment, also consider authentication/authorization, CSRF protection wher
 ## Project Context
 
 This project demonstrates practical full-stack engineering around an industrial maintenance workflow: application architecture, mobile usability, QR-driven navigation, persistence, background jobs, reporting, notifications, deployment configuration, and iterative production debugging.
+
+### ⚖️ Licensing & Commercial Disclaimer
+
+This software is published under the **PolyForm Noncommercial License 1.0.0**. 
+
+### 🚫 Commercial Use Restriction
+
+* **Permitted:** Personal use, educational projects, research, evaluation, and testing.
+* **Prohibited:** Any commercial, production, or corporate operational use by third parties. You may **not** use this software to manage external commercial facilities, run business maintenance operations, or generate revenue without explicit permission.
+
+### 💼 Commercial Licensing Requests
+
+If your organization or business wishes to use this CMMS software for commercial operations, production environments, or internal facility management, you must obtain a separate commercial license. 
+
+For inquiries, commercial licensing agreements, or custom deployment requests, please contact: 
+
+* **Company:** Prem Industries India Limited
+* **Platform:** [Prem Industries Dadri CMMS](https://prem-dadri-cmms.duckdns.org)
