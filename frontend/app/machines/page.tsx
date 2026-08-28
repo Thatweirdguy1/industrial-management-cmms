@@ -53,7 +53,7 @@ export default function MachineDirectory() {
   const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
   
   const [activeTab, setActiveTab] = useState<"breakdowns" | "pms" | "inventory" | "reports">("breakdowns");
-  const [activeView, setActiveView] = useState<"home" | "fault" | "pm" | "resolve">("home");
+  const [activeView, setActiveView] = useState<"home" | "fault" | "pm" | "resolve" | "resolve_predictive">("home");
   
   const [history, setHistory] = useState<HistoryLog[]>([]);
   const [parts, setParts] = useState<SparePart[]>([]);
