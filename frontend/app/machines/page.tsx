@@ -486,7 +486,10 @@ export default function MachineDirectory() {
     try {
       if (!inspectionMachineId || inspectionMachineId === "undefined" || inspectionMachineId === "") {
         alert("⚠️ Please select a valid machine from the dropdown first!");
-        setIsSubmitting(false);
+        return;
+      }
+      if (inspectionFile && inspectionFile.size > 25 * 1024 * 1024) {
+        alert("The selected file is larger than the 25 MB upload limit.");
         return;
       }
       const formData = new FormData();
@@ -501,7 +504,10 @@ export default function MachineDirectory() {
         body: formData
       });
       
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.error || `Upload failed (${res.status})`);
+      }
       
       setShowInspectionModal(false);
       setInspectionEngineerName("");
@@ -509,7 +515,7 @@ export default function MachineDirectory() {
       setInspectionFile(null);
       alert("📋 Inspection Report Uploaded Successfully!");
     } catch (err) {
-      alert("Error uploading report.");
+      alert(err instanceof Error ? err.message : "Error uploading report.");
     } finally {
       setIsSubmitting(false);
     }
@@ -940,7 +946,7 @@ export default function MachineDirectory() {
                             {report.notes || "No additional notes provided."}
                           </div>
                           {report.file_url && (
-                            <a href={`${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
+                            <a href={report.file_url.startsWith('http') ? report.file_url : `${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
                               <span>📄</span> View Attached Document
                             </a>
                           )}

@@ -336,7 +336,10 @@ export default function TechnicianDashboard() {
     try {
       if (!inspectionMachineId || inspectionMachineId === "undefined" || inspectionMachineId === "") {
         alert("⚠️ Please select a valid machine from the dropdown first!");
-        setIsSubmitting(false);
+        return;
+      }
+      if (inspectionFile && inspectionFile.size > 25 * 1024 * 1024) {
+        alert("The selected file is larger than the 25 MB upload limit.");
         return;
       }
       const formData = new FormData();
@@ -351,7 +354,10 @@ export default function TechnicianDashboard() {
         body: formData
       });
       
-      if (!res.ok) throw new Error("Failed");
+      if (!res.ok) {
+        const payload = await res.json().catch(() => ({}));
+        throw new Error(payload.error || `Upload failed (${res.status})`);
+      }
       
       setShowInspectionModal(false);
       setInspectionEngineerName("");
@@ -360,7 +366,7 @@ export default function TechnicianDashboard() {
       alert("📋 Inspection Report Uploaded Successfully!");
       fetchData();
     } catch (err) {
-      alert("Error uploading report.");
+      alert(err instanceof Error ? err.message : "Error uploading report.");
     } finally {
       setIsSubmitting(false);
     }
@@ -410,7 +416,7 @@ export default function TechnicianDashboard() {
                   <div className="text-[10px] text-current opacity-70">पीएम दर्ज करें</div>
                 </div>
               </button>
-              <button onClick={() => setShowInspectionModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => { setInspectionMachineId((current) => current || String(machines[0]?.id ?? "")); setShowInspectionModal(true); }} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
                 <span className="text-lg">📋</span>
                 <div className="text-left">
                   <div className="text-sm">Upload Report</div>
@@ -656,7 +662,7 @@ export default function TechnicianDashboard() {
                   </div>
                   
                   {report.file_url && (
-                    <a href={`${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="w-full text-center bg-white border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] text-sm py-2 px-4 transition-colors font-medium">
+                    <a href={report.file_url.startsWith('http') ? report.file_url : `${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="w-full text-center bg-white border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] text-sm py-2 px-4 transition-colors font-medium">
                       View File
                     </a>
                   )}
@@ -924,7 +930,8 @@ export default function TechnicianDashboard() {
             <form onSubmit={handleUploadInspection} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
-                <select value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm appearance-none">
+                <select required value={inspectionMachineId} onChange={(e) => setInspectionMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 text-sm appearance-none">
+                  <option value="" disabled>Select a machine</option>
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
                       {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
@@ -962,8 +969,8 @@ export default function TechnicianDashboard() {
               
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Document / फ़ाइल</label>
-                <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
-                  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,image/*" onChange={(e) => setInspectionFile(e.target.files ? e.target.files[0] : null)} className="hidden" />
+                <label className="relative overflow-hidden border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
+                  <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.heic,.heif,image/*" onChange={(e) => setInspectionFile(e.target.files?.[0] ?? null)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
                   {inspectionFile ? <span className="text-[#111111] text-xs">📎 {inspectionFile.name}</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
                 </label>
               </div>
