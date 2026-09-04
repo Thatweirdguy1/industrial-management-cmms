@@ -116,6 +116,36 @@ thead { background: rgba(4,10,23,.56) !important; }
 tbody tr { transition: background-color 160ms ease, box-shadow 160ms ease; }
 tbody tr:hover { background: rgba(14,165,233,.07) !important; box-shadow: inset 3px 0 var(--cyan-strong); }
 
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(22px) scale(.992); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      animation: reveal-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+  }
+}
+.tab-count {
+  display: inline-flex;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding-inline: .4rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(137,206,255,.08);
+  color: currentColor;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: .625rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .skeleton-shell { min-height: 100dvh; padding: max(1rem, env(safe-area-inset-top)) .75rem max(1rem, env(safe-area-inset-bottom)); color: var(--ink); }
 .skeleton-frame { width: min(72rem, 100%); margin: 0 auto; display: grid; gap: .75rem; }
 .skeleton-bar, .skeleton-card, .skeleton-line { position: relative; overflow: hidden; border: 1px solid var(--line); background: rgba(18,31,53,.72); border-radius: var(--radius-panel); }
@@ -142,6 +172,7 @@ tbody tr:hover { background: rgba(14,165,233,.07) !important; box-shadow: inset 
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   header, .hard-shadow-hover, main > div > div[class*="border"] { background-color: #0b1528 !important; }

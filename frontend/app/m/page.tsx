@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import LoadingScreen from "../components/LoadingScreen";
+import AppIcon from "../components/AppIcon";
 
 interface Machine {
   id: number;
@@ -98,7 +99,7 @@ export default function MobileMachineApp() {
 
   return (
     <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-sans selection:bg-purple-500/30">
-      <div className="bg-[#F9F9F7] border-2 border-[#111111] p-6 shadow-lg sticky top-0 z-10">
+      <div data-reveal className="bg-[#F9F9F7] border-2 border-[#111111] p-6 shadow-lg sticky top-0 z-10">
         <div className="flex justify-between items-start mb-2">
           <span className={`px-3 py-1 text-[10px] font-serif tracking-wide uppercase border ${machine.status === "breakdown" ? "bg-red-500/20 text-[#CC0000] border-red-500/50 animate-pulse" : "bg-emerald-500/20 text-[#CC0000] border-emerald-500/50"}`}>
             {machine.status === "breakdown" ? "OFFLINE / बंद" : "ONLINE / चालू"}
@@ -111,20 +112,20 @@ export default function MobileMachineApp() {
 
       <div className="p-6">
         {activeView === "home" && (
-          <div className="space-y-4 mt-4">
+          <div data-reveal className="space-y-4 mt-4">
             <button onClick={() => setActiveView("fault")} title="Report an active machine breakdown" className="w-full btn-danger py-5 transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
-              <span className="text-2xl">🚨</span><span className="text-xl tracking-wide">REPORT BREAKDOWN</span><span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
+              <AppIcon name="warning" size={28} /><span className="text-xl tracking-wide">REPORT BREAKDOWN</span><span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
             </button>
             <button onClick={() => setActiveView("pm")} title="Log preventive maintenance for this machine" className="w-full btn-primary py-5 transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
-              <span className="text-2xl">🛠️</span><span className="text-xl tracking-wide">LOG SERVICE (PM)</span><span className="text-sm font-medium opacity-80">मशीन सर्विस दर्ज करें</span>
+              <AppIcon name="toolbox" size={28} /><span className="text-xl tracking-wide">LOG SERVICE (PM)</span><span className="text-sm font-medium opacity-80">मशीन सर्विस दर्ज करें</span>
             </button>
           </div>
         )}
 
         {activeView === "fault" && (
-          <form onSubmit={handleFaultSubmit} className="space-y-6 mt-4">
+          <form data-reveal onSubmit={handleFaultSubmit} className="space-y-6 mt-4">
             <div className="bg-[#F9F9F7] border-2 border-[#111111] p-5">
-              <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2"><span className="text-xl">🚨</span> Report Breakdown</h2>
+              <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2"><AppIcon name="warning" /> Report Breakdown</h2>
               <div className="space-y-4">
                 <div><label className="block text-[#525252] text-sm mb-1">Category / श्रेणी</label><select className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111]" value={category} onChange={(e) => setCategory(e.target.value)}><option value="mechanical">Mechanical (मैकेनिकल)</option><option value="electrical">Electrical (इलेक्ट्रिकल)</option><option value="other">Other (अन्य)</option></select></div>
                 <div><label className="block text-[#525252] text-sm mb-1">Issue Details / विवरण</label><textarea required rows={4} className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111]" placeholder="Describe the problem..." value={description} onChange={(e) => setDescription(e.target.value)} /></div>
@@ -135,9 +136,9 @@ export default function MobileMachineApp() {
         )}
 
         {activeView === "pm" && (
-          <form onSubmit={handlePMSubmit} className="space-y-6 mt-4">
+          <form data-reveal onSubmit={handlePMSubmit} className="space-y-6 mt-4">
             <div className="bg-[#F9F9F7] border-2 border-[#111111] p-5">
-              <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2"><span className="text-xl">🛠️</span> Log Service</h2>
+              <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2"><AppIcon name="toolbox" /> Log Service</h2>
               <div className="space-y-4">
                 <div><label className="block text-[#525252] text-sm mb-1">Service Type / सर्विस का प्रकार</label><select className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111]" value={category} onChange={(e) => setCategory(e.target.value)}><option value="mechanical">Mechanical (मैकेनिकल)</option><option value="electrical">Electrical (इलेक्ट्रिकल)</option><option value="cleaning">Cleaning/Oiling (सफाई / तेल)</option></select></div>
                 <div><label className="block text-[#525252] text-sm mb-1">Technician Name / तकनीशियन का नाम</label><input required type="text" className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111]" placeholder="Enter name..." value={supervisor} onChange={(e) => setSupervisor(e.target.value)} /></div>

@@ -5,6 +5,7 @@ import { compressImages } from "@/utils/imageCompression";
 import { useRef } from "react";
 import Link from "next/link";
 import LoadingScreen from "../components/LoadingScreen";
+import AppIcon from "../components/AppIcon";
 
 interface Machine {
   id: number;
@@ -203,7 +204,7 @@ export default function MachineDirectory() {
       });
       if (!res.ok) throw new Error("Failed");
       
-      alert("✅ Breakdown resolved successfully!");
+      alert("Breakdown resolved successfully.");
       setActiveView("home");
       setPartsUsed([]);
       openMachineDetails(selectedMachine);
@@ -372,7 +373,7 @@ export default function MachineDirectory() {
     setIsSubmitting(true);
     try {
       if (!pmMachineId || pmMachineId === "undefined" || pmMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         setIsSubmitting(false);
         return;
       }
@@ -400,7 +401,7 @@ export default function MachineDirectory() {
       setPmOperatorName("");
       setPmPhotoFiles([]);
       fetchData();
-      alert("✅ PM Logged Successfully");
+      alert("PM logged successfully.");
     } catch (err) {
       alert("Error logging PM.");
     } finally {
@@ -430,7 +431,7 @@ export default function MachineDirectory() {
         await fetch(`${baseUrl}/api/work-orders/${selectedOrder.id}/photos`, { method: "POST", body: formData });
       }
       
-      alert("✅ Work order signed off successfully!");
+      alert("Work order signed off successfully.");
       setSelectedOrder(null); 
       setSupervisorName("");
       setTechnicianName("");
@@ -451,7 +452,7 @@ export default function MachineDirectory() {
     setIsSubmitting(true);
     try {
       if (!reportMachineId || reportMachineId === "undefined" || reportMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         setIsSubmitting(false);
         return;
       }
@@ -472,7 +473,7 @@ export default function MachineDirectory() {
       setReportDescription("");
       setReportPhotoFiles([]);
       fetchData(); 
-      alert("🚨 Breakdown reported!");
+      alert("Breakdown reported.");
     } catch (err) {
       alert("Error reporting breakdown.");
     } finally {
@@ -486,7 +487,7 @@ export default function MachineDirectory() {
     setIsSubmitting(true);
     try {
       if (!inspectionMachineId || inspectionMachineId === "undefined" || inspectionMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         return;
       }
       if (inspectionFile && inspectionFile.size > 25 * 1024 * 1024) {
@@ -514,7 +515,7 @@ export default function MachineDirectory() {
       setInspectionEngineerName("");
       setInspectionNotes("");
       setInspectionFile(null);
-      alert("📋 Inspection Report Uploaded Successfully!");
+      alert("Inspection report uploaded successfully.");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error uploading report.");
     } finally {
@@ -531,7 +532,7 @@ export default function MachineDirectory() {
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header data-reveal className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
@@ -554,7 +555,7 @@ export default function MachineDirectory() {
                 <option value="breakdown">Offline</option>
               </select>
               <div className="relative w-full sm:w-80">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl opacity-50">🔍</span>
+                <AppIcon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-60" />
                 <input 
                   type="text" 
                   placeholder="Search name or asset tag..." 
@@ -568,7 +569,7 @@ export default function MachineDirectory() {
         </header>
 
         {!selectedMachine ? (
-          <div className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          <div data-reveal className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {filteredMachines.length > 0 ? (
               filteredMachines.map((machine) => (
                 <div 
@@ -603,7 +604,7 @@ export default function MachineDirectory() {
             )}
           </div>
         ) : (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div data-reveal className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex items-center gap-4">
                 <button onClick={handleCloseDetails} className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-4 py-2.5 rounded-none transition-all text-sm flex items-center gap-2">
@@ -631,7 +632,7 @@ export default function MachineDirectory() {
                       onClick={() => setActiveView("resolve")}
                       className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-emerald-600 border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
-                      <span className="text-2xl">✅</span>
+                      <AppIcon name="check" size={26} />
                       <span className="text-xl tracking-widest">RESOLVE BREAKDOWN</span>
                       <span className="text-sm font-medium opacity-80">खराबी ठीक करें</span>
                     </button>
@@ -640,7 +641,7 @@ export default function MachineDirectory() {
                       onClick={() => setActiveView("fault")}
                       className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-[#CC0000] border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                     >
-                      <span className="text-2xl">🚨</span>
+                      <AppIcon name="warning" size={26} />
                       <span className="text-xl tracking-widest">REPORT BREAKDOWN</span>
                       <span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
                     </button>
@@ -649,7 +650,7 @@ export default function MachineDirectory() {
                     onClick={() => setActiveView("pm")}
                     className="w-full bg-[#111111] text-[#F9F9F7] hover:bg-amber-600 border-2 border-[#111111] hard-shadow-hover font-serif py-5 rounded-none transition-all active:scale-95 flex flex-col items-center justify-center gap-2"
                   >
-                    <span className="text-2xl">🛠️</span>
+                    <AppIcon name="toolbox" size={26} />
                     <span className="text-xl tracking-widest">LOG SERVICE (PM)</span>
                     <span className="text-sm font-medium opacity-80">मशीन सर्विस दर्ज करें</span>
                   </button>
@@ -658,7 +659,7 @@ export default function MachineDirectory() {
 
               {activeView === "home" && activeOrders.filter((o) => o.schedule_type === "predictive_alert").map((alertOrder) => (
                 <div key={alertOrder.id} className="mt-4 bg-emerald-50 border-2 border-emerald-500 p-4 rounded-none">
-                  <h3 className="text-emerald-900 font-bold mb-2">🚨 PREDICTIVE ALERT ACTIVE</h3>
+                  <h3 className="text-emerald-900 font-bold mb-2 flex items-center gap-2"><AppIcon name="pulse" size={20} /> PREDICTIVE ALERT ACTIVE</h3>
                   <p className="text-emerald-800 text-sm mb-4">{alertOrder.description}</p>
                   <button 
                     onClick={() => {
@@ -674,7 +675,7 @@ export default function MachineDirectory() {
 
               {activeView === "resolve" && (
                 <form onSubmit={handleResolveSubmit} className="space-y-6">
-                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Issue</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl"><AppIcon name="check" /> Resolve Issue</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Technician Name</label>
                     <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-emerald-500 outline-none" />
@@ -686,13 +687,13 @@ export default function MachineDirectory() {
 
                   {/* Spare Parts Section */}
                   <div className="border border-[#111111] p-4 bg-white shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
-                    <label className="block text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2">🔧 Spare Parts Used (Optional)</label>
+                    <label className="flex items-center gap-2 text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2"><AppIcon name="wrench" size={18} /> Spare Parts Used (Optional)</label>
                     
                     {partsUsed.map((p, i) => (
                       <div key={i} className="flex gap-2 mb-2 items-center">
                         <span className="flex-1 text-xs font-mono bg-zinc-50 border border-[#111111] p-2 truncate">{p.part_name}</span>
                         <span className="text-xs font-mono bg-zinc-50 border border-[#111111] p-2 w-16 text-center">x{p.quantity}</span>
-                        <button type="button" onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm">✕</button>
+                        <button type="button" aria-label={`Remove ${p.part_name}`} title={`Remove ${p.part_name}`} onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm"><AppIcon name="close" size={18} /></button>
                       </div>
                     ))}
 
@@ -749,7 +750,7 @@ export default function MachineDirectory() {
                     setIsSubmitting(false);
                   }
                 }} className="space-y-6">
-                  <h2 className="text-emerald-700 font-serif mb-4 flex items-center gap-2 text-xl">✅ Resolve Predictive Alert</h2>
+                  <h2 className="text-emerald-700 font-serif mb-4 flex items-center gap-2 text-xl"><AppIcon name="check" /> Resolve Predictive Alert</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Supervisor Name</label>
                     <input type="text" required value={supervisor} onChange={(e) => setSupervisor(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] p-3 text-[#111111] outline-none" />
@@ -769,7 +770,7 @@ export default function MachineDirectory() {
                         const files = Array.from(e.target.files || []);
                         setReportPhotoFiles(await compressImages(files));
                       }} className="hidden" />
-                      {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#111111] text-xs">📸 Tap to Upload Photos</span>}
+                      <span className="inline-flex items-center gap-2 text-[#111111] text-xs"><AppIcon name="camera" size={18} />{reportPhotoFiles.length > 0 ? `${reportPhotoFiles.length} photo(s) selected` : "Tap to Upload Photos"}</span>
                     </label>
                   </div>
                   <div className="flex gap-3">
@@ -781,7 +782,7 @@ export default function MachineDirectory() {
 
               {activeView === "fault" && (
                 <form onSubmit={handleFaultSubmit} className="space-y-6">
-                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🚨 Report Breakdown</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl"><AppIcon name="warning" /> Report Breakdown</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Category</label>
                     <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-red-500 outline-none">
@@ -803,7 +804,7 @@ export default function MachineDirectory() {
 
               {activeView === "pm" && (
                 <form onSubmit={handlePMSubmit} className="space-y-6">
-                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl">🛠️ Log Service</h2>
+                  <h2 className="text-[#CC0000] font-serif mb-4 flex items-center gap-2 text-xl"><AppIcon name="toolbox" /> Log Service</h2>
                   <div>
                     <label className="block text-[#525252] text-sm mb-1">Service Type</label>
                     <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] rounded-none p-3 text-[#111111] focus:border-amber-500 outline-none">
@@ -828,18 +829,18 @@ export default function MachineDirectory() {
               )}
             </div>
 
-            <div className="flex border-b border-[#111111] border overflow-x-auto mt-8">
+            <div data-reveal className="flex border-b border-[#111111] border overflow-x-auto mt-8">
               <button onClick={() => setActiveTab("breakdowns")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
-                🚨 Breakdowns
+                <span className="inline-flex items-center gap-2"><AppIcon name="warning" size={18} /> Breakdowns</span>
               </button>
               <button onClick={() => setActiveTab("pms")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "pms" ? "border-amber-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
-                🛠️ PM Logs
+                <span className="inline-flex items-center gap-2"><AppIcon name="toolbox" size={18} /> PM Logs</span>
               </button>
               <button onClick={() => setActiveTab("reports")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "reports" ? "border-gray-200 text-blue-400" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
-                📋 Reports
+                <span className="inline-flex items-center gap-2"><AppIcon name="clipboard" size={18} /> Reports</span>
               </button>
               <button onClick={() => setActiveTab("inventory")} className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "inventory" ? "border-emerald-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}>
-                📦 Parts
+                <span className="inline-flex items-center gap-2"><AppIcon name="package" size={18} /> Parts</span>
               </button>
             </div>
 
@@ -948,7 +949,7 @@ export default function MachineDirectory() {
                           </div>
                           {report.file_url && (
                             <a href={report.file_url.startsWith('http') ? report.file_url : `${baseUrl}${report.file_url}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 bg-white text-black border-2 border-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] py-3 px-4 rounded-none text-sm font-medium transition-colors w-full sm:w-max">
-                              <span>📄</span> View Attached Document
+                              <AppIcon name="file" size={18} /> View Attached Document
                             </a>
                           )}
                         </div>
@@ -975,7 +976,7 @@ export default function MachineDirectory() {
                               {part.photo_url ? (
                                 <img src={part.photo_url} alt={part.part_name} className="absolute inset-0 w-full h-full object-cover" />
                               ) : (
-                                <span className="text-2xl opacity-20">⚙️</span>
+                                <AppIcon name="gear" size={26} className="opacity-30" />
                               )}
                             </div>
                             <div className="flex-grow min-w-0">
@@ -1007,7 +1008,7 @@ export default function MachineDirectory() {
       {showAddPart && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
           <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-[#111111] mb-6">📦 Register New Spare Part</h3>
+            <h3 className="text-lg font-medium text-[#111111] mb-6 flex items-center gap-2"><AppIcon name="package" /> Register New Spare Part</h3>
             <form onSubmit={handleAddPart} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Part Name</label>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import ExperienceLayer from "./components/ExperienceLayer";
 
 
 const fontDisplay = Plus_Jakarta_Sans({
@@ -36,7 +37,7 @@ export default function RootLayout({
       className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        {children}
+        <ExperienceLayer>{children}</ExperienceLayer>
       </body>
     </html>
   );

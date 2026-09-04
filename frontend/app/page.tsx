@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { compressImages } from "@/utils/imageCompression";
 import LoadingScreen from "./components/LoadingScreen";
+import AppIcon from "./components/AppIcon";
 
 interface WorkOrder {
   id: number;
@@ -207,7 +208,7 @@ export default function TechnicianDashboard() {
     setIsSubmitting(true);
     try {
       if (!pmMachineId || pmMachineId === "undefined" || pmMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         setIsSubmitting(false);
         return;
       }
@@ -235,7 +236,7 @@ export default function TechnicianDashboard() {
       setPmOperatorName("");
       setPmPhotoFiles([]);
       fetchData();
-      alert("✅ PM Logged Successfully");
+      alert("PM logged successfully.");
     } catch (err) {
       alert("Error logging PM.");
     } finally {
@@ -279,7 +280,7 @@ export default function TechnicianDashboard() {
         await fetch(`${baseUrl}/api/work-orders/${selectedOrder.id}/photos`, { method: "POST", body: formData });
       }
       
-      alert("✅ Work order signed off successfully!");
+      alert("Work order signed off successfully.");
       setSelectedOrder(null); 
       setSupervisorName("");
       setTechnicianName("");
@@ -301,7 +302,7 @@ export default function TechnicianDashboard() {
     setIsSubmitting(true);
     try {
       if (!reportMachineId || reportMachineId === "undefined" || reportMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         setIsSubmitting(false);
         return;
       }
@@ -322,7 +323,7 @@ export default function TechnicianDashboard() {
       setReportDescription("");
       setReportPhotoFiles([]);
       fetchData(); 
-      alert("🚨 Breakdown reported!");
+      alert("Breakdown reported.");
     } catch (err) {
       alert("Error reporting breakdown.");
     } finally {
@@ -336,7 +337,7 @@ export default function TechnicianDashboard() {
     setIsSubmitting(true);
     try {
       if (!inspectionMachineId || inspectionMachineId === "undefined" || inspectionMachineId === "") {
-        alert("⚠️ Please select a valid machine from the dropdown first!");
+        alert("Please select a valid machine from the dropdown first.");
         return;
       }
       if (inspectionFile && inspectionFile.size > 25 * 1024 * 1024) {
@@ -364,7 +365,7 @@ export default function TechnicianDashboard() {
       setInspectionEngineerName("");
       setInspectionNotes("");
       setInspectionFile(null);
-      alert("📋 Inspection Report Uploaded Successfully!");
+      alert("Inspection report uploaded successfully.");
       fetchData();
     } catch (err) {
       alert(err instanceof Error ? err.message : "Error uploading report.");
@@ -379,7 +380,7 @@ export default function TechnicianDashboard() {
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
       <div className="max-w-6xl mx-auto space-y-6">
         
-        <header className="bg-[#F9F9F7] border-[#111111] border-2 hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header data-reveal className="bg-[#F9F9F7] border-[#111111] border-2 hard-shadow-hover rounded-none p-5 sm:p-8 backdrop-blur-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
             <div>
@@ -390,42 +391,42 @@ export default function TechnicianDashboard() {
             
             <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 w-full md:w-auto">
               <Link href="/machines" title="Open the complete machine registry" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">🗄️</span>
+                <AppIcon name="archive" />
                 <div className="text-left">
                   <div className="text-sm">View Registry</div>
                   <div className="text-[10px] text-current opacity-70">रजिस्ट्री देखें</div>
                 </div>
               </Link>
               <Link href="/analytics" title="View plant reliability and downtime analytics" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">📊</span>
+                <AppIcon name="chart" />
                 <div className="text-left">
                   <div className="text-sm">Plant Analytics</div>
                   <div className="text-[10px] text-current opacity-70">एनालिटिक्स</div>
                 </div>
               </Link>
               <Link href="/utility-report" title="Review the latest utility maintenance report" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">⚙️</span>
+                <AppIcon name="gauge" />
                 <div className="text-left">
                   <div className="text-sm">Utility Report</div>
                   <div className="text-[10px] text-current opacity-70">यूटिलिटी रिपोर्ट</div>
                 </div>
               </Link>
               <button onClick={() => setShowPMModal(true)} title="Record completed preventive maintenance" className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">🔧</span>
+                <AppIcon name="wrench" />
                 <div className="text-left">
                   <div className="text-sm">Log PM</div>
                   <div className="text-[10px] text-current opacity-70">पीएम दर्ज करें</div>
                 </div>
               </button>
               <button onClick={() => { setInspectionMachineId((current) => current || String(machines[0]?.id ?? "")); setShowInspectionModal(true); }} title="Attach an engineer inspection report" className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">📋</span>
+                <AppIcon name="clipboard" />
                 <div className="text-left">
                   <div className="text-sm">Upload Report</div>
                   <div className="text-[10px] text-current opacity-70">रिपोर्ट अपलोड करें</div>
                 </div>
               </button>
               <button onClick={() => setShowReportModal(true)} title="Alert the maintenance team about a machine fault" className="bg-white border-2 border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
-                <span className="text-lg">🚨</span>
+                <AppIcon name="warning" />
                 <div className="text-left">
                   <div className="text-sm">Report Fault</div>
                   <div className="text-[10px] text-current opacity-70">खराबी दर्ज करें</div>
@@ -437,39 +438,39 @@ export default function TechnicianDashboard() {
         {error && <div className="bg-[#111111]/10 border border-red-500/30 text-[#CC0000] text-sm p-4 rounded-none">{error}</div>}
         
         {/* Historical Report Section */}
-        <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
+        <div data-reveal className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
           <div>
             <h2 className="text-xl font-semibold text-[#111111] tracking-tight">Historical PM Reports</h2>
             <p className="text-[#737373] text-sm mt-1">Export a complete history of all Preventive Maintenance, organized by month</p>
           </div>
           <a href={`${baseUrl}/api/reports/monthly-pm/download`} download className="bg-[#111111] text-white hover:bg-white hover:text-[#111111] border-2 border-[#111111] font-medium px-6 py-3 rounded-none transition-colors whitespace-nowrap inline-flex items-center gap-2">
-            <span>📥</span> Download All PM Reports (.xlsx)
+            <AppIcon name="download" /> Download All PM Reports (.xlsx)
           </a>
         </div>
 
-        <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
+        <div data-reveal className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover p-5 sm:p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-6">
           <div>
             <h2 className="text-xl font-semibold text-[#111111] tracking-tight">Weekly Executive Summary</h2>
             <p className="text-[#737373] text-sm mt-1">Download the latest automated PDF report containing MTTR, Downtime, and Problematic Machines</p>
           </div>
           <a href={`${baseUrl}/api/reports/weekly`} download className="bg-[#111111] text-white hover:bg-white hover:text-[#111111] border-2 border-[#111111] font-medium px-6 py-3 rounded-none transition-colors whitespace-nowrap inline-flex items-center gap-2">
-            <span>📄</span> Download Weekly Report (PDF)
+            <AppIcon name="fileDownload" /> Download Weekly Report (PDF)
           </a>
         </div>
 
         {/* Tab Controls */}
-        <div className="flex border-b border-[#111111] border overflow-x-auto mt-6 mb-6">
+        <div data-reveal className="flex items-stretch border-b border-[#111111] border overflow-x-auto mt-6 mb-6">
           <button 
             onClick={() => setActiveTab("breakdowns")} 
             className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "breakdowns" ? "border-red-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}
           >
-            🚨 Active Breakdowns ({breakdownOrders.length})
+            <span className="inline-flex items-center gap-2"><AppIcon name="warning" size={18} /> Active Breakdowns <span className="tab-count">{breakdownOrders.length}</span></span>
           </button>
           <button 
             onClick={() => setActiveTab("pms")} 
             className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap ${activeTab === "pms" ? "border-amber-500 text-[#CC0000]" : "border-transparent text-[#525252] hover:text-[#111111]"}`}
           >
-            🛠️ Scheduled Maintenance ({pmOrders.length})
+            <span className="inline-flex items-center gap-2"><AppIcon name="toolbox" size={18} /> Scheduled Maintenance <span className="tab-count">{pmOrders.length}</span></span>
           </button>
           <button 
             onClick={() => setActiveTab("predictive")}
@@ -484,20 +485,22 @@ export default function TechnicianDashboard() {
           </button>
           <button
             onClick={() => setActiveTab("reports")}
-            className={`pb-4 px-2 text-sm font-medium transition-colors border-b-4 rounded-none ${
+            className={`px-6 py-4 text-sm font-medium transition-colors border-b-2 whitespace-nowrap flex items-center gap-2 rounded-none ${
               activeTab === "reports"
                 ? "border-b-2 border-[#111111] text-[#111111]"
                 : "border-transparent text-[#737373] hover:text-[#111111] hover:border-[#111111]/30"
             }`}
           >
-            📋 All Reports ({allReports.length})
+            <AppIcon name="clipboard" size={18} />
+            <span>All Reports</span>
+            <span className="tab-count">{allReports.length}</span>
           </button>
         </div>
 
         {/* Tab Content */}
         {activeTab === "breakdowns" && (
           breakdownOrders.length > 0 ? (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div data-reveal className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {breakdownOrders.map((order) => (
                 <div key={order.id} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 rounded-none p-5 flex flex-col hover:bg-neutral-100 transition-colors relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-red-500 animate-pulse"></div>
@@ -537,7 +540,7 @@ export default function TechnicianDashboard() {
             </div>
           ) : (
             <div className="border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] border-2 hard-shadow-hover/20 flex flex-col items-center justify-center">
-              <span className="text-4xl mb-3 opacity-50">✨</span>
+              <AppIcon name="check" size={36} className="mb-3 opacity-60" />
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Active Breakdowns</h3>
               <p className="text-[#737373] text-sm mt-2">All machines are operational.</p>
             </div>
@@ -546,7 +549,7 @@ export default function TechnicianDashboard() {
 
         {activeTab === "pms" && (
           pmOrders.length > 0 ? (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div data-reveal className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {pmOrders.map((order) => (
                 <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 flex flex-col hover:bg-[#F9F9F7] transition-colors">
                   <div className="flex justify-between items-start mb-4">
@@ -584,7 +587,7 @@ export default function TechnicianDashboard() {
             </div>
           ) : (
             <div className="border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] border-2 hard-shadow-hover/20 flex flex-col items-center justify-center">
-              <span className="text-4xl mb-3 opacity-50">✨</span>
+              <AppIcon name="check" size={36} className="mb-3 opacity-60" />
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Scheduled Tasks</h3>
               <p className="text-[#737373] text-sm mt-2">No pending maintenance required.</p>
             </div>
@@ -593,7 +596,7 @@ export default function TechnicianDashboard() {
 
         {activeTab === "predictive" && (
           predictiveAlerts.length > 0 ? (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div data-reveal className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {predictiveAlerts.map((order) => (
                 <div key={order.id} className="bg-[#F9F9F7] border-2 border-[#111111] p-5 flex flex-col hard-shadow-hover transition-all">
                   <div className="flex justify-between items-start mb-4">
@@ -632,7 +635,7 @@ export default function TechnicianDashboard() {
             </div>
           ) : (
             <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
-              <span className="text-4xl mb-3 opacity-50">🟢</span>
+              <AppIcon name="pulse" size={36} className="mb-3 opacity-60" />
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Predictive Alerts</h3>
               <p className="text-[#737373] text-sm mt-2">All machines are operating within normal parameters.</p>
             </div>
@@ -641,7 +644,7 @@ export default function TechnicianDashboard() {
         
         {activeTab === "reports" && (
           allReports.length > 0 ? (
-            <div className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div data-reveal className="grid gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {/* UPLOADED INSPECTION REPORTS */}
               {allReports.map((report) => (
                 <div key={`rep-${report.id}`} className="bg-[#F9F9F7] hard-shadow-hover border-black border-2 p-5 flex flex-col hover:bg-neutral-100 transition-colors">
@@ -672,7 +675,7 @@ export default function TechnicianDashboard() {
             </div>
           ) : (
             <div className="border border-dashed border-[#111111] p-12 rounded-none text-center bg-[#F9F9F7] flex flex-col items-center justify-center">
-              <span className="text-4xl mb-3 opacity-50">📋</span>
+              <AppIcon name="clipboard" size={36} className="mb-3 opacity-60" />
               <h3 className="text-lg font-medium text-[#525252] tracking-tight">No Reports</h3>
               <p className="text-[#737373] text-sm mt-2">No completed inspection reports found.</p>
             </div>
@@ -724,7 +727,7 @@ export default function TechnicianDashboard() {
                   />
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('resolve')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'resolve' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
-                      <span className="text-xl">🎤</span>
+                      <AppIcon name="microphone" />
                     </button>
                   )}
                 </div>
@@ -732,13 +735,13 @@ export default function TechnicianDashboard() {
 
               {/* Spare Parts Section */}
               <div className="border border-[#111111] p-4 bg-white shadow-[2px_2px_0px_0px_rgba(17,17,17,1)]">
-                <label className="block text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2">🔧 Spare Parts Used (Optional)</label>
+                <label className="flex items-center gap-2 text-[#111111] font-serif font-bold text-sm mb-3 border-b-2 border-[#111111] pb-2"><AppIcon name="wrench" size={18} /> Spare Parts Used (Optional)</label>
                 
                 {partsUsed.map((p, i) => (
                   <div key={i} className="flex gap-2 mb-2 items-center">
                     <span className="flex-1 text-xs font-mono bg-zinc-50 border border-[#111111] p-2 truncate">{p.part_name}</span>
                     <span className="text-xs font-mono bg-zinc-50 border border-[#111111] p-2 w-16 text-center">x{p.quantity}</span>
-                    <button type="button" onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm">✕</button>
+                    <button type="button" aria-label={`Remove ${p.part_name}`} title={`Remove ${p.part_name}`} onClick={() => setPartsUsed(partsUsed.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700 p-2 font-bold text-sm"><AppIcon name="close" size={18} /></button>
                   </div>
                 ))}
 
@@ -770,7 +773,7 @@ export default function TechnicianDashboard() {
                     const files = Array.from(e.target.files || []);
                     setSignOffPhotoFiles(await compressImages(files));
                   }} className="hidden" />
-                  {signOffPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {signOffPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload</span>}
+                  <span className={`inline-flex items-center gap-2 text-xs ${signOffPhotoFiles.length > 0 ? "text-[#111111]" : "text-[#737373] uppercase tracking-wide"}`}><AppIcon name="camera" size={18} />{signOffPhotoFiles.length > 0 ? `${signOffPhotoFiles.length} photo(s) selected` : "Tap to Upload"}</span>
                 </label>
               </div>
               
@@ -789,14 +792,14 @@ export default function TechnicianDashboard() {
       {showPMModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
           <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-[#111111] mb-6">🔧 Log Preventive Maintenance</h3>
+            <h3 className="text-lg font-medium text-[#111111] mb-6 flex items-center gap-2"><AppIcon name="wrench" /> Log Preventive Maintenance</h3>
             <form onSubmit={handleReportPM} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
                 <select value={pmMachineId} onChange={(e) => setPmMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name}{m.risk_score && m.risk_score > 75 ? ' (High risk)' : ''}
                     </option>
                   ))}
                 </select>
@@ -824,7 +827,7 @@ export default function TechnicianDashboard() {
                   <textarea required rows={2} value={pmDescription} onChange={(e) => setPmDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-amber-500/50 resize-none text-sm" placeholder="Enter service details..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('pm')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'pm' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
-                      <span className="text-xl">🎤</span>
+                      <AppIcon name="microphone" />
                     </button>
                   )}
                 </div>
@@ -850,7 +853,7 @@ export default function TechnicianDashboard() {
                     const files = Array.from(e.target.files || []);
                     setPmPhotoFiles(await compressImages(files));
                   }} className="hidden" />
-                  {pmPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {pmPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to Upload Photos</span>}
+                  <span className={`inline-flex items-center gap-2 text-xs ${pmPhotoFiles.length > 0 ? "text-[#111111]" : "text-[#737373] uppercase tracking-wide"}`}><AppIcon name="camera" size={18} />{pmPhotoFiles.length > 0 ? `${pmPhotoFiles.length} photo(s) selected` : "Tap to Upload Photos"}</span>
                 </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
@@ -866,14 +869,14 @@ export default function TechnicianDashboard() {
       {showReportModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
           <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-[#111111] mb-6">🚨 Report Fault / खराबी दर्ज करें</h3>
+            <h3 className="text-lg font-medium text-[#111111] mb-6 flex items-center gap-2"><AppIcon name="warning" /> Report Fault / खराबी दर्ज करें</h3>
             <form onSubmit={handleReportBreakdown} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
                 <select value={reportMachineId} onChange={(e) => setReportMachineId(e.target.value)} className="w-full bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 text-sm appearance-none">
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name}{m.risk_score && m.risk_score > 75 ? ' (High risk)' : ''}
                     </option>
                   ))}
                 </select>
@@ -901,7 +904,7 @@ export default function TechnicianDashboard() {
                   <textarea required rows={3} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-red-500/50 resize-none text-sm" placeholder="Describe the fault clearly..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('report')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'report' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
-                      <span className="text-xl">🎤</span>
+                      <AppIcon name="microphone" />
                     </button>
                   )}
                 </div>
@@ -911,7 +914,7 @@ export default function TechnicianDashboard() {
                 <label className="block text-[#525252] text-xs mb-2">Fault Photos / फ़ोटो (Optional)</label>
                 <label className="relative border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" multiple accept="image/*" onChange={(e) => setReportPhotoFiles(Array.from(e.target.files || []))} className="hidden" />
-                  {reportPhotoFiles.length > 0 ? <span className="text-[#111111] text-xs">📸 {reportPhotoFiles.length} photo(s) selected</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📷 Tap to attach Photos</span>}
+                  <span className={`inline-flex items-center gap-2 text-xs ${reportPhotoFiles.length > 0 ? "text-[#111111]" : "text-[#737373] uppercase tracking-wide"}`}><AppIcon name="camera" size={18} />{reportPhotoFiles.length > 0 ? `${reportPhotoFiles.length} photo(s) selected` : "Tap to attach Photos"}</span>
                 </label>
               </div>
               <div className="flex gap-3 pt-2 pb-4 sm:pb-0">
@@ -927,7 +930,7 @@ export default function TechnicianDashboard() {
       {showInspectionModal && (
         <div className="fixed inset-0 bg-[#F9F9F7]/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 z-50">
           <div className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover sm:rounded-none p-6 sm:p-8 w-full max-w-md animate-in slide-in-from-bottom-4 sm:zoom-in-95 duration-200">
-            <h3 className="text-lg font-medium text-[#111111] mb-6">📋 Upload Inspection Report</h3>
+            <h3 className="text-lg font-medium text-[#111111] mb-6 flex items-center gap-2"><AppIcon name="clipboard" /> Upload Inspection Report</h3>
             <form onSubmit={handleUploadInspection} className="space-y-5">
               <div>
                 <label className="block text-[#525252] text-xs mb-2">Machine / मशीन</label>
@@ -935,7 +938,7 @@ export default function TechnicianDashboard() {
                   <option value="" disabled>Select a machine</option>
                   {machines.map((m) => (
                     <option key={m.id} value={m.id}>
-                      {String(m.id).padStart(3, '0')} - {m.name} {m.risk_score && m.risk_score > 75 ? ' ⚠️' : ''}
+                      {String(m.id).padStart(3, '0')} - {m.name}{m.risk_score && m.risk_score > 75 ? ' (High risk)' : ''}
                     </option>
                   ))}
                 </select>
@@ -962,7 +965,7 @@ export default function TechnicianDashboard() {
                   <textarea rows={2} value={inspectionNotes} onChange={(e) => setInspectionNotes(e.target.value)} className="flex-grow bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] rounded-none p-3.5 outline-none focus:ring-2 focus:ring-gray-200/50 resize-none text-sm" placeholder="Additional details..."/>
                   {browserSupportsSpeech && (
                     <button type="button" onClick={() => toggleListen('inspection')} className={`w-14 rounded-none border transition-all shrink-0 flex items-center justify-center ${isListening && listeningField === 'inspection' ? 'bg-red-500/20 border-red-500 text-[#CC0000] animate-pulse' : 'bg-[#F9F9F7] border-2 border-[#111111] border-[#111111] border text-[#525252] hover:text-[#111111]'}`}>
-                      <span className="text-xl">🎤</span>
+                      <AppIcon name="microphone" />
                     </button>
                   )}
                 </div>
@@ -972,7 +975,7 @@ export default function TechnicianDashboard() {
                 <label className="block text-[#525252] text-xs mb-2">Document / फ़ाइल</label>
                 <label className="relative overflow-hidden border-dashed border-[#111111] rounded-none p-4 text-center bg-[#F9F9F7] border-2 hover:bg-[#111111] transition-colors block cursor-pointer">
                   <input type="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.webp,.heic,.heif,image/*" onChange={(e) => setInspectionFile(e.target.files?.[0] ?? null)} className="absolute inset-0 h-full w-full cursor-pointer opacity-0" />
-                  {inspectionFile ? <span className="text-[#111111] text-xs">📎 {inspectionFile.name}</span> : <span className="text-[#737373] text-xs uppercase tracking-wide">📎 Tap to attach File/Photo</span>}
+                  <span className={`inline-flex items-center gap-2 text-xs ${inspectionFile ? "text-[#111111]" : "text-[#737373] uppercase tracking-wide"}`}><AppIcon name="paperclip" size={18} />{inspectionFile ? inspectionFile.name : "Tap to attach File/Photo"}</span>
                 </label>
               </div>
               

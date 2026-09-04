@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LoadingScreen from '../components/LoadingScreen';
+import AppIcon from '../components/AppIcon';
 
 export default function UtilityReportPage() {
   const [reportData, setReportData] = useState<any>(null);
@@ -35,7 +36,7 @@ export default function UtilityReportPage() {
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* HEADER */}
-        <header className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header data-reveal className="bg-[#F9F9F7] border-2 border-[#111111] hard-shadow-hover rounded-none p-5 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
             <Link href="/" className="hover:opacity-80 transition-opacity">
               <img src="/logo.png" alt="Prem Industries Logo" className="h-16 w-auto object-contain" />
@@ -71,7 +72,7 @@ export default function UtilityReportPage() {
 
         {/* ALERTS SECTION */}
         {reportData && reportData.reports && reportData.reports.length > 0 && (
-          <div className="grid grid-cols-1 gap-6">
+          <div data-reveal className="grid grid-cols-1 gap-6">
             {reportData.reports.map((machine: any) => (
               <div key={machine.machine_id} className="border-2 border-[#111111] bg-white p-0 flex flex-col">
                 <div className="bg-[#111111] text-white p-4 flex justify-between items-center">
@@ -90,7 +91,7 @@ export default function UtilityReportPage() {
                     <div key={idx} className="py-4 first:pt-0 last:pb-0">
                       <div className="flex justify-between items-start mb-3">
                         <h3 className="text-lg font-semibold flex items-center gap-2">
-                          {alert.alert_level === 3 ? <span className="text-red-600">🚨 DUE FOR</span> : <span className="text-yellow-600">⚠️ UPCOMING</span>}
+                          {alert.alert_level === 3 ? <span className="text-red-600 inline-flex items-center gap-2"><AppIcon name="warning" size={18} /> DUE FOR</span> : <span className="text-yellow-600 inline-flex items-center gap-2"><AppIcon name="warning" size={18} /> UPCOMING</span>}
                           <span>{alert.service_type} Service</span>
                         </h3>
                         <span className={`px-3 py-1 text-xs font-bold uppercase border-2 ${alert.alert_level === 3 ? 'border-red-600 text-red-600' : 'border-[#111111] text-[#111111]'}`}>
