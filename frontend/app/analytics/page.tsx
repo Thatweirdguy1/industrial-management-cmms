@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import LoadingScreen from "../components/LoadingScreen";
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 
 interface AnalyticsData {
@@ -32,7 +33,7 @@ export default function AnalyticsDashboard() {
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-4"><p className="text-sm text-zinc-400 animate-pulse uppercase tracking-widest">Compiling Dashboards...</p></div>;
+  if (loading) return <LoadingScreen label="Compiling plant dashboards" />;
 
   const chartOnlyData = data?.chart_data.filter(m => m.Breakdowns > 0) || [];
 

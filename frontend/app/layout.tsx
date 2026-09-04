@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Lora, Inter, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
 
-const fontPlayfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-});
-
-const fontLora = Lora({
-  variable: "--font-lora",
+const fontDisplay = Plus_Jakarta_Sans({
+  variable: "--font-display",
   subsets: ["latin"],
 });
 
@@ -27,6 +22,7 @@ export const metadata: Metadata = {
   title: "Prem PM software",
   description: "Dadri Plant Control CMMS",
   manifest: "/manifest.json",
+  icons: { icon: "/logo.png", apple: "/logo.png" },
 };
 
 export default function RootLayout({
@@ -37,7 +33,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontPlayfair.variable} ${fontLora.variable} ${fontInter.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontDisplay.variable} ${fontInter.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LoadingScreen from "../components/LoadingScreen";
 
 interface Machine {
   id: number;
@@ -91,7 +92,7 @@ export default function MobileMachineApp() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] p-8 text-center text-[#111111] flex items-center justify-center">Loading / लोड हो रहा है...</div>;
+  if (loading) return <LoadingScreen label="Loading machine / मशीन लोड हो रही है" />;
   if (error) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] p-8 text-center text-red-500 font-serif flex items-center justify-center">{error}</div>;
   if (!machine) return null;
 
@@ -111,10 +112,10 @@ export default function MobileMachineApp() {
       <div className="p-6">
         {activeView === "home" && (
           <div className="space-y-4 mt-4">
-            <button onClick={() => setActiveView("fault")} className="w-full bg-[#111111] text-[#F9F9F7] border-2 border-[#111111] py-5 shadow-lg transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
+            <button onClick={() => setActiveView("fault")} title="Report an active machine breakdown" className="w-full btn-danger py-5 transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
               <span className="text-2xl">🚨</span><span className="text-xl tracking-wide">REPORT BREAKDOWN</span><span className="text-sm font-medium opacity-80">मशीन की खराबी दर्ज करें</span>
             </button>
-            <button onClick={() => setActiveView("pm")} className="w-full bg-[#111111] text-[#F9F9F7] border-2 border-[#111111] py-5 shadow-lg transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
+            <button onClick={() => setActiveView("pm")} title="Log preventive maintenance for this machine" className="w-full btn-primary py-5 transition-all active:scale-95 flex flex-col items-center justify-center gap-2">
               <span className="text-2xl">🛠️</span><span className="text-xl tracking-wide">LOG SERVICE (PM)</span><span className="text-sm font-medium opacity-80">मशीन सर्विस दर्ज करें</span>
             </button>
           </div>

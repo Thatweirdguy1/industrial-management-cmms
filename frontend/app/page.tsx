@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { compressImages } from "@/utils/imageCompression";
+import LoadingScreen from "./components/LoadingScreen";
 
 interface WorkOrder {
   id: number;
@@ -372,7 +373,7 @@ export default function TechnicianDashboard() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] flex items-center justify-center p-4"><p className="text-sm text-[#525252] font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
+  if (loading) return <LoadingScreen label="Loading system / सिस्टम लोड हो रहा है" />;
 
   return (
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
@@ -387,43 +388,43 @@ export default function TechnicianDashboard() {
             </div>
           </div>
             
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-              <Link href="/machines" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+            <div className="grid grid-cols-2 md:flex md:flex-wrap gap-3 w-full md:w-auto">
+              <Link href="/machines" title="Open the complete machine registry" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">🗄️</span>
                 <div className="text-left">
                   <div className="text-sm">View Registry</div>
                   <div className="text-[10px] text-current opacity-70">रजिस्ट्री देखें</div>
                 </div>
               </Link>
-              <Link href="/analytics" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <Link href="/analytics" title="View plant reliability and downtime analytics" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">📊</span>
                 <div className="text-left">
                   <div className="text-sm">Plant Analytics</div>
                   <div className="text-[10px] text-current opacity-70">एनालिटिक्स</div>
                 </div>
               </Link>
-              <Link href="/utility-report" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <Link href="/utility-report" title="Review the latest utility maintenance report" className="bg-[#111111] hover:bg-white text-[#F9F9F7] hover:text-[#111111] border-2 border-[#111111] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">⚙️</span>
                 <div className="text-left">
                   <div className="text-sm">Utility Report</div>
                   <div className="text-[10px] text-current opacity-70">यूटिलिटी रिपोर्ट</div>
                 </div>
               </Link>
-              <button onClick={() => setShowPMModal(true)} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowPMModal(true)} title="Record completed preventive maintenance" className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">🔧</span>
                 <div className="text-left">
                   <div className="text-sm">Log PM</div>
                   <div className="text-[10px] text-current opacity-70">पीएम दर्ज करें</div>
                 </div>
               </button>
-              <button onClick={() => { setInspectionMachineId((current) => current || String(machines[0]?.id ?? "")); setShowInspectionModal(true); }} className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => { setInspectionMachineId((current) => current || String(machines[0]?.id ?? "")); setShowInspectionModal(true); }} title="Attach an engineer inspection report" className="bg-white border-2 border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">📋</span>
                 <div className="text-left">
                   <div className="text-sm">Upload Report</div>
                   <div className="text-[10px] text-current opacity-70">रिपोर्ट अपलोड करें</div>
                 </div>
               </button>
-              <button onClick={() => setShowReportModal(true)} className="bg-white border-2 border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-[#F9F9F7] font-medium px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full sm:w-auto">
+              <button onClick={() => setShowReportModal(true)} title="Alert the maintenance team about a machine fault" className="bg-white border-2 border-[#CC0000] text-[#CC0000] hover:bg-[#CC0000] hover:text-[#F9F9F7] font-medium px-3 sm:px-5 py-3 rounded-none transition-all flex items-center justify-center gap-3 w-full md:w-auto">
                 <span className="text-lg">🚨</span>
                 <div className="text-left">
                   <div className="text-sm">Report Fault</div>

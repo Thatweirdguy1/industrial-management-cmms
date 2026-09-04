@@ -1,151 +1,148 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-news-bg: #F9F9F7;
-  --color-news-ink: #111111;
-  --color-news-gray: #E5E5E0;
-  --color-news-red: #CC0000;
-  
-  --font-playfair: var(--font-playfair);
-  --font-lora: var(--font-lora);
+  --color-news-bg: #070b14;
+  --color-news-ink: #f8fafc;
+  --color-news-gray: rgba(148, 163, 184, 0.18);
+  --color-news-red: #fb7185;
+  --font-display: var(--font-display);
   --font-inter: var(--font-inter);
   --font-mono: var(--font-mono);
 }
 
+:root {
+  color-scheme: dark;
+  --canvas: #070b14;
+  --surface: rgba(11, 21, 40, 0.84);
+  --surface-raised: rgba(23, 36, 61, 0.88);
+  --surface-input: rgba(4, 10, 23, 0.8);
+  --line: rgba(137, 206, 255, 0.16);
+  --line-strong: rgba(137, 206, 255, 0.34);
+  --ink: #f8fafc;
+  --muted: #aab9ca;
+  --dim: #718096;
+  --cyan: #38bdf8;
+  --cyan-strong: #0ea5e9;
+  --emerald: #4edea3;
+  --amber: #ffb95f;
+  --danger: #fb7185;
+  --radius-control: 0.75rem;
+  --radius-panel: 1rem;
+  --radius-hero: 1.5rem;
+}
+
+* { box-sizing: border-box; }
+html { background: var(--canvas); }
 body {
-  background: var(--color-news-bg);
-  color: var(--color-news-ink);
-  font-family: var(--font-lora), serif;
+  min-height: 100dvh;
+  margin: 0;
   overflow-x: hidden;
-  /* Newsprint background dot pattern */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23111111' fill-opacity='0.04' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+  color: var(--ink);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 8% 5%, rgba(16,185,129,.11), transparent 24rem),
+    radial-gradient(circle at 92% 8%, rgba(14,165,233,.15), transparent 30rem),
+    radial-gradient(circle at 70% 100%, rgba(79,70,229,.10), transparent 30rem),
+    var(--canvas);
+  background-attachment: fixed;
 }
-
-h1, h2, h3, h4, h5, h6, .font-serif, .font-display {
-  font-family: var(--font-playfair), serif;
-}
-
-.font-sans, .font-ui {
-  font-family: var(--font-inter), sans-serif;
-}
-
-.font-mono {
-  font-family: var(--font-mono), monospace;
-}
-
-/* Enforce sharp corners everywhere */
-.sharp-corners, * {
-  border-radius: 0px !important;
-}
-
-/* Dynamic Scrollbar Styling */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-::-webkit-scrollbar-track {
-  background: var(--color-news-bg); 
-  border-left: 1px solid var(--color-news-ink);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-news-ink); 
-}
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-news-red); 
-}
-
-/* Hard Shadow Hover Effect for Cards & Buttons */
-.hard-shadow-hover {
-  transition: all 150ms ease-out;
-}
-.hard-shadow-hover:hover {
-  box-shadow: 4px 4px 0px 0px var(--color-news-ink);
-  transform: translate(-2px, -2px);
-}
-
-/* Section Line Grid Texture */
-.newsprint-texture {
-  position: relative;
-}
-.newsprint-texture::before {
-  content: '';
-  position: absolute;
+body::before {
+  content: "";
+  position: fixed;
   inset: 0;
-  background-image:
-    linear-gradient(0deg, transparent 98%, rgba(0,0,0,0.02) 100%),
-    linear-gradient(90deg, transparent 98%, rgba(0,0,0,0.02) 100%);
-  background-size: 3px 3px;
+  z-index: -1;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: .3;
+  background-image: linear-gradient(rgba(148,163,184,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
 }
+h1, h2, h3, h4, h5, h6, .font-serif, .font-display {
+  font-family: var(--font-display), var(--font-inter), system-ui, sans-serif;
+  letter-spacing: -.025em;
+}
+.font-sans, .font-ui { font-family: var(--font-inter), system-ui, sans-serif; }
+.font-mono { font-family: var(--font-mono), ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+::selection { background: rgba(56,189,248,.3); color: white; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #080d18; }
+::-webkit-scrollbar-thumb { background: #263d5c; border: 2px solid #080d18; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--cyan-strong); }
 
-/* Grid Borders */
-.news-grid-cell {
-  border-bottom: 1px solid var(--color-news-ink);
+/* Compatibility skin: visual-only selectors preserve every existing handler and contract. */
+[class*="bg-[#F9F9F7]"], [class~="bg-white"], [class~="bg-zinc-50"], [class~="bg-zinc-100"], [class~="bg-neutral-100"] { background-color: var(--surface) !important; }
+[class~="bg-zinc-900"], [class*="bg-zinc-900/"], [class~="bg-zinc-950"], [class*="bg-zinc-950/"] { background-color: rgba(10,18,34,.88) !important; }
+[class*="text-[#111111]"], [class~="text-zinc-950"], [class~="text-zinc-100"], [class~="text-zinc-200"] { color: var(--ink) !important; }
+[class*="text-[#525252]"], [class*="text-[#737373]"], [class~="text-zinc-400"], [class~="text-zinc-500"], [class~="text-zinc-600"] { color: var(--muted) !important; }
+[class*="border-[#111111]"], [class~="border-zinc-800"], [class*="border-zinc-800/"] { border-color: var(--line) !important; }
+[class~="divide-zinc-800"] > :not(:last-child), [class*="divide-zinc-800/"] > :not(:last-child) { border-color: var(--line) !important; }
+main, body > div.min-h-screen { background-color: transparent !important; border-color: transparent !important; }
+header, .glass-panel, main > div > section, main > div > div[class*="border"] { backdrop-filter: blur(18px) saturate(145%); -webkit-backdrop-filter: blur(18px) saturate(145%); }
+main > div > div[class*="border"] { border-radius: var(--radius-panel); }
+.rounded-none { border-radius: var(--radius-control) !important; }
+.rounded-xl { border-radius: var(--radius-panel) !important; }
+.rounded-3xl { border-radius: var(--radius-hero) !important; }
+.hard-shadow-hover {
+  position: relative;
+  border-color: var(--line) !important;
+  background: linear-gradient(135deg, rgba(22,36,60,.9), rgba(9,18,35,.8)) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.06), 0 18px 50px rgba(0,0,0,.2);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
 }
+.hard-shadow-hover:hover { transform: translateY(-2px); border-color: var(--line-strong) !important; box-shadow: inset 0 1px rgba(255,255,255,.09), 0 22px 60px rgba(0,0,0,.28), 0 0 28px rgba(14,165,233,.06); }
+a, button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+a, button { cursor: pointer; }
+button, a[class*="px-"], a[class*="py-"] { min-height: 48px; }
+button, select, input, textarea { font: inherit; }
+input, select, textarea { color: var(--ink) !important; background: var(--surface-input) !important; border-color: var(--line-strong) !important; border-radius: var(--radius-control) !important; }
+input::placeholder, textarea::placeholder { color: var(--dim); }
+select option { color: var(--ink); background: #0b1528; }
+:where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; box-shadow: 0 0 0 5px rgba(56,189,248,.14); }
+.btn-primary, .btn-secondary, .btn-danger {
+  min-height: 48px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-control) !important;
+  font-family: var(--font-display), sans-serif;
+  font-weight: 650;
+  letter-spacing: .02em;
+  transition: transform 180ms ease, border-color 180ms ease, filter 180ms ease;
+}
+.btn-primary { background: linear-gradient(135deg, #38bdf8, #0ea5e9); color: #03111d; border-color: rgba(137,206,255,.55); }
+.btn-secondary { background: rgba(255,255,255,.05); color: var(--ink); }
+.btn-danger { background: linear-gradient(135deg, #f43f5e, #ea580c); color: white; border-color: rgba(251,113,133,.58); }
+.btn-primary:hover:not(:disabled), .btn-secondary:hover:not(:disabled), .btn-danger:hover:not(:disabled) { transform: translateY(-1px); filter: brightness(1.08); }
+table { border-collapse: separate; border-spacing: 0; }
+thead { background: rgba(4,10,23,.56) !important; }
+tbody tr { transition: background-color 160ms ease, box-shadow 160ms ease; }
+tbody tr:hover { background: rgba(14,165,233,.07) !important; box-shadow: inset 3px 0 var(--cyan-strong); }
+
+.skeleton-shell { min-height: 100dvh; padding: max(1rem, env(safe-area-inset-top)) .75rem max(1rem, env(safe-area-inset-bottom)); color: var(--ink); }
+.skeleton-frame { width: min(72rem, 100%); margin: 0 auto; display: grid; gap: .75rem; }
+.skeleton-bar, .skeleton-card, .skeleton-line { position: relative; overflow: hidden; border: 1px solid var(--line); background: rgba(18,31,53,.72); border-radius: var(--radius-panel); }
+.skeleton-bar { height: 6.25rem; }
+.skeleton-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+.skeleton-card { min-height: 8.5rem; }
+.skeleton-line { height: 3.25rem; }
+.skeleton-bar::after, .skeleton-card::after, .skeleton-line::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); background: linear-gradient(90deg, transparent, rgba(137,206,255,.12), transparent); animation: skeleton-sweep 1.5s ease-in-out infinite; }
+@keyframes skeleton-sweep { to { transform: translateX(100%); } }
+
 @media (min-width: 768px) {
-  .news-grid-cell {
-    border-right: 1px solid var(--color-news-ink);
-  }
-  .news-grid-cell:last-child {
-    border-right: none;
-  }
+  .skeleton-shell { padding: 2rem; }
+  .skeleton-frame { gap: 1rem; }
+  .skeleton-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+  .skeleton-card { min-height: 10rem; }
 }
-
-/* Buttons
-   The newsprint palette has exactly three button styles. They live here rather than
-   as inline utilities because spelling the ink/paper pairing out at every call site
-   is what produced the black-on-black buttons these replace: a find-and-replace
-   appended `text-[#111111]` onto elements that were already `bg-[#111111]`, and
-   arbitrary Tailwind colour utilities have equal specificity, so which one wins
-   depends on stylesheet order rather than on the order written in className. */
-.btn-primary,
-.btn-secondary,
-.btn-danger {
-  font-family: var(--font-playfair), serif;
-  letter-spacing: 0.1em;
-  border: 2px solid var(--color-news-ink);
-  transition: all 150ms ease-out;
-  cursor: pointer;
+@media (max-width: 767px) {
+  header { border-radius: var(--radius-hero) !important; }
+  main { padding-inline: .75rem !important; padding-bottom: max(1rem, env(safe-area-inset-bottom)) !important; }
+  h1 { font-size: clamp(1.5rem, 7vw, 2rem) !important; }
 }
-
-.btn-primary:disabled,
-.btn-secondary:disabled,
-.btn-danger:disabled {
-  cursor: not-allowed;
+@media (hover: hover) and (pointer: fine) {
+  [title] { position: relative; }
 }
-
-/* Ink on paper - the default action. */
-.btn-primary {
-  background: var(--color-news-ink);
-  color: var(--color-news-bg);
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
-.btn-primary:hover:not(:disabled) {
-  background: var(--color-news-bg);
-  color: var(--color-news-ink);
-  box-shadow: 4px 4px 0px 0px var(--color-news-ink);
-  transform: translate(-2px, -2px);
-}
-
-/* Outlined - cancel and other secondary actions. */
-.btn-secondary {
-  background: var(--color-news-bg);
-  color: var(--color-news-ink);
-}
-.btn-secondary:hover:not(:disabled) {
-  background: var(--color-news-ink);
-  color: var(--color-news-bg);
-}
-
-/* Breakdown reporting and team alerts only. */
-.btn-danger {
-  background: var(--color-news-red);
-  color: var(--color-news-bg);
-  border-color: var(--color-news-red);
-}
-.btn-danger:hover:not(:disabled) {
-  background: var(--color-news-bg);
-  color: var(--color-news-red);
-  box-shadow: 4px 4px 0px 0px var(--color-news-red);
-  transform: translate(-2px, -2px);
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  header, .hard-shadow-hover, main > div > div[class*="border"] { background-color: #0b1528 !important; }
 }

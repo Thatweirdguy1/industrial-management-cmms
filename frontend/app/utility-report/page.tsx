@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import LoadingScreen from '../components/LoadingScreen';
 
 export default function UtilityReportPage() {
   const [reportData, setReportData] = useState<any>(null);
@@ -27,13 +28,7 @@ export default function UtilityReportPage() {
     fetchReport();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#F9F9F7] flex items-center justify-center p-4">
-        <p className="text-sm text-[#525252] font-medium tracking-widest uppercase animate-pulse">Loading Utility Report...</p>
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen label="Loading utility report" />;
 
   return (
     <main className="min-h-screen bg-[#F9F9F7] text-[#111111] p-4 sm:p-8 font-sans selection:bg-[#111111] selection:text-white">

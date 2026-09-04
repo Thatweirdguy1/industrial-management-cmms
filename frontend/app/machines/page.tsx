@@ -4,6 +4,7 @@ import Image from "next/image";
 import { compressImages } from "@/utils/imageCompression";
 import { useRef } from "react";
 import Link from "next/link";
+import LoadingScreen from "../components/LoadingScreen";
 
 interface Machine {
   id: number;
@@ -524,7 +525,7 @@ export default function MachineDirectory() {
   const breakdownOrders = workOrders.filter(o => o.schedule_type === 'breakdown_report');
   const pmOrders = workOrders.filter(o => o.schedule_type !== 'breakdown_report');
 
-  if (loading) return <div className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] flex items-center justify-center p-4"><p className="text-sm text-[#525252] font-medium tracking-widest uppercase animate-pulse">Loading System / सिस्टम लोड हो रहा है...</p></div>;
+  if (loading) return <LoadingScreen label="Loading machine registry / मशीन रजिस्ट्री लोड हो रही है" />;
 
   return (
     <main className="min-h-screen bg-[#F9F9F7] border-2 border-[#111111] text-[#111111] font-serif p-4 sm:p-6 font-sans">
